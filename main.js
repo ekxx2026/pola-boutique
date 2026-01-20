@@ -691,16 +691,29 @@ async function actualizarProducto(e) {
 }
 
 async function eliminarProducto(id) {
+    console.log("🔥 Intentando eliminar producto con ID:", id);
+
     if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente de la nube?')) {
         const prod = productos.find(p => p.id === id);
-        if (prod && prod.firestoreId) {
-            try {
-                await db.ref("productos").child(prod.firestoreId).remove();
-                alert('🗑️ Producto eliminado de la nube');
-            } catch (error) {
-                console.error("Error al eliminar:", error);
-                alert('❌ Error al eliminar de Firebase');
-            }
+
+        if (!prod) {
+            alert("❌ Error: No se encontró el producto en la lista local.");
+            return;
+        }
+
+        if (!prod.firestoreId) {
+            alert("⚠️ Error: Este producto no tiene un ID de nube (firestoreId). \n\nPrueba recargar la página.");
+            console.error("Producto sin firestoreId:", prod);
+            return;
+        }
+
+        try {
+            console.log("📡 Borrando en Firebase path:", `productos/${prod.firestoreId}`);
+            await db.ref("productos").child(prod.firestoreId).remove();
+            alert('🗑️ Producto eliminado de la nube correctamente.');
+        } catch (error) {
+            console.error("Error al eliminar de Firebase:", error);
+            alert('❌ Error de Firebase: ' + error.message);
         }
     }
 }
@@ -742,20 +755,7 @@ function renderProductList() {
         productList.appendChild(item);
     });
 
-    // Event Listeners Dinámicos
-    document.querySelectorAll('.btn-editar').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const id = parseInt(this.dataset.id);
-            editarProducto(id);
-        });
-    });
-
-    document.querySelectorAll('.btn-eliminar').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const id = parseInt(this.dataset.id);
-            eliminarProducto(id);
-        });
-    });
+    // Event Listeners Dinámicos eliminados (usando Delegación abajo)
 }
 
 function getBadgeClass(badgeText) {
@@ -1103,7 +1103,24 @@ function setupEventListeners() {
         }
     });
 
-    // Download Button Logic - New for Static Workflow
+    // Administrador: Delegación de eventos para Editar/Eliminar
+    if (productList) {
+        productList.addEventListener('click', function (e) {
+            const btnEditar = e.target.closest('.btn-editar');
+            const btnEliminar = e.target.closest('.btn-eliminar');
+
+            if (btnEditar) {
+                const id = parseInt(btnEditar.dataset.id);
+                editarProducto(id);
+            }
+
+            if (btnEliminar) {
+                const id = parseInt(btnEliminar.dataset.id);
+                eliminarProducto(id);
+            }
+        });
+    }
+
     if (downloadCatalogBtn) {
         downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
     }
