@@ -6,6 +6,7 @@ const ADMIN_HASH = "cd0d2c4e146b03fa5a2158d45d504ec55fc9070595c5b59683d2d3df43e0
 
 // Productos: Se cargarán desde products.json
 let productos = [];
+let selectedFile = null; // Para almacenar el archivo antes de subirlo
 
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 let filtroActual = "Todos";
@@ -877,16 +878,17 @@ function configurarCargaImagenes() {
             if (urlPreviewImage) urlPreviewImage.src = '';
             if (productImageUrl) productImageUrl.value = '';
 
-            // Handle file selection
+            // Guardar el archivo para subirlo después
             if (this.files.length > 0) {
-                const file = this.files[0];
+                selectedFile = this.files[0];
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     filePreviewImage.src = e.target.result;
                     fileImagePreview.style.display = 'block';
-                    productImage.value = e.target.result;
+                    // productImage.value ya no guardará el base64 pesado, 
+                    // sino que el uploadTask se encargará de generar la URL real.
                 }
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(selectedFile);
             }
         });
     }
