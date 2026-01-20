@@ -140,17 +140,17 @@ async function init() {
     // Iniciar sistema de neuromarketing
     iniciarNotificacionesVentas();
 
-    // Registrar Service Worker para PWA
+    // SW KILL SWITCH: Des-registrar cualquier SW existente
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js?v=4')
-                .then(registration => {
-                    console.log('SW registrado exitosamente:', registration.scope);
-                })
-                .catch(error => {
-                    console.log('Fallo registro SW:', error);
-                });
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            for (let registration of registrations) {
+                registration.unregister();
+                console.log('SW Des-registrado');
+            }
         });
+
+        // Forzar recarga si detectamos que es la primera vez tras el cambio (opcional, pero ayuda)
+        // Por seguridad, solo limpiamos caché y dejamos que el SW haga el resto.
     }
 }
 
