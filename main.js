@@ -1031,7 +1031,8 @@ function setupEventListeners() {
     if (cancelLogin) cancelLogin.addEventListener('click', () => loginModal.classList.remove('active'));
 
     if (loginForm) loginForm.addEventListener('submit', async (e) => {
-        const email = document.getElementById('adminEmail').value;
+        e.preventDefault();
+        const email = "jose.nunez.galleani@gmail.com";
         const password = document.getElementById('adminPassword').value;
 
         const loginBtn = loginForm.querySelector('button[type="submit"]');
