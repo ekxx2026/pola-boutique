@@ -1034,6 +1034,7 @@ function setupEventListeners() {
         e.preventDefault();
         const email = "jose.nunez.galleani@gmail.com";
         const password = document.getElementById('adminPassword').value;
+        console.log("🔑 Intentando login con:", email);
 
         const loginBtn = loginForm.querySelector('button[type="submit"]');
         loginBtn.disabled = true;
