@@ -140,17 +140,17 @@ async function init() {
     // Iniciar sistema de neuromarketing
     iniciarNotificacionesVentas();
 
-    // SW KILL SWITCH: Des-registrar cualquier SW existente
+    // Registrar Service Worker para PWA
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
-            for (let registration of registrations) {
-                registration.unregister();
-                console.log('SW Des-registrado');
-            }
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js?v=8')
+                .then(registration => {
+                    console.log('SW registrado exitosamente:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Fallo registro SW:', error);
+                });
         });
-
-        // Forzar recarga si detectamos que es la primera vez tras el cambio (opcional, pero ayuda)
-        // Por seguridad, solo limpiamos caché y dejamos que el SW haga el resto.
     }
 }
 
@@ -938,27 +938,12 @@ function setupEventListeners() {
     if (loginForm) loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const password = document.getElementById('adminPassword').value;
-        // DEBUG: Mostrar hash si falla
-        const isValid = await checkPassword(password);
-        if (isValid) {
+        if (await checkPassword(password)) {
             loginModal.classList.remove('active');
             adminModal.classList.add('active');
             loginForm.reset();
         } else {
-            console.log("Password:", password); // Para devtools
-
-            // Recalcular hash para mostrarlo en el alert
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hash = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hash));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-            alert(`Error de Login (DEBUG MODE):\n\n` +
-                `Input: "${password}"\n` +
-                `Hash Generado: ${hashHex.substring(0, 10)}...\n` +
-                `Hash Esperado: ${ADMIN_HASH.substring(0, 10)}...\n\n` +
-                `Por favor envía una captura de este mensaje.`);
+            alert('Contraseña incorrecta.');
         }
     });
 
