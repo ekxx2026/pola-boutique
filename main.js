@@ -576,32 +576,59 @@ function cargarInstagramFeed() {
 }
 
 // CRUD Realtime Database
+// CRUD Realtime Database con ImgBB para fotos gratis
 async function agregarProducto(e) {
     if (e) e.preventDefault();
     const submitBtn = productForm.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
 
-    const nuevoProducto = {
-        id: Date.now(),
-        nombre: document.getElementById('productName').value,
-        precio: parseInt(document.getElementById('productPrice').value),
-        categoria: document.getElementById('productCategory').value,
-        descripcion: document.getElementById('productDescription').value,
-        imagen: productImage.value || 'https://via.placeholder.com/300',
-        badge: document.getElementById('productBadge').value,
-        detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '') || ["Consultar"]
-    };
+    const type = imageType.value;
+    let finalImageUrl = productImage.value || 'https://via.placeholder.com/300';
 
     try {
+        // MÉTODOS GRATIS: Usamos ImgBB para evitar cobros de Google
+        if (type === "file" && selectedFile) {
+            console.log("📤 Subiendo imagen a ImgBB (Gratis)...");
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            const IMGBB_API_KEY = "8f3750800b411f32a4e23588f615f5bc";
+
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                finalImageUrl = result.data.url;
+                console.log("✅ Imagen alojada en ImgBB:", finalImageUrl);
+            } else {
+                throw new Error("Error en ImgBB: " + result.error.message);
+            }
+        }
+
+        const nuevoProducto = {
+            id: Date.now(),
+            nombre: document.getElementById('productName').value,
+            precio: parseInt(document.getElementById('productPrice').value),
+            categoria: document.getElementById('productCategory').value,
+            descripcion: document.getElementById('productDescription').value,
+            imagen: finalImageUrl,
+            badge: document.getElementById('productBadge').value,
+            detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '') || ["Consultar"]
+        };
+
         await db.ref("productos").push(nuevoProducto);
         productForm.reset();
-        if (urlImagePreview) urlImagePreview.classList.add('hidden');
-        if (fileImagePreview) fileImagePreview.classList.add('hidden');
-        alert('✅ ¡Producto subido a la nube!');
+        selectedFile = null;
+        if (urlImagePreview) urlImagePreview.style.display = 'none';
+        if (fileImagePreview) fileImagePreview.style.display = 'none';
+        alert('✅ ¡Producto guardado exitosamente!');
     } catch (error) {
         console.error("Error al guardar:", error);
-        alert('❌ Error al guardar en Firebase: ' + error.message);
+        alert('❌ Error: ' + error.message);
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Agregar Producto';
@@ -624,23 +651,39 @@ async function actualizarProducto(e) {
         return;
     }
 
-    const productoEditado = {
-        nombre: document.getElementById('productName').value,
-        precio: parseInt(document.getElementById('productPrice').value),
-        categoria: document.getElementById('productCategory').value,
-        descripcion: document.getElementById('productDescription').value,
-        imagen: productImage.value,
-        badge: document.getElementById('productBadge').value,
-        detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '')
-    };
+    const type = imageType.value;
+    let finalImageUrl = productImage.value;
 
     try {
+        if (type === "file" && selectedFile) {
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            const IMGBB_API_KEY = "8f3750800b411f32a4e23588f615f5bc";
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) finalImageUrl = result.data.url;
+        }
+
+        const productoEditado = {
+            nombre: document.getElementById('productName').value,
+            precio: parseInt(document.getElementById('productPrice').value),
+            categoria: document.getElementById('productCategory').value,
+            descripcion: document.getElementById('productDescription').value,
+            imagen: finalImageUrl,
+            badge: document.getElementById('productBadge').value,
+            detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '')
+        };
+
         await db.ref("productos").child(prodRef.firestoreId).update(productoEditado);
-        alert('✅ Producto actualizado correctamente');
+        selectedFile = null;
+        alert('✅ Producto actualizado');
         cancelarEdicion();
     } catch (error) {
         console.error("Error al actualizar:", error);
-        alert('❌ Error al actualizar en Firebase');
+        alert('❌ Error al actualizar');
     } finally {
         updateBtn.disabled = false;
         updateBtn.textContent = 'Actualizar Producto';
@@ -662,21 +705,6 @@ async function eliminarProducto(id) {
     }
 }
 
-
-async function eliminarProducto(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente de la nube?')) {
-        const prod = productos.find(p => p.id === id);
-        if (prod && prod.firestoreId) {
-            try {
-                await db.collection("productos").doc(prod.firestoreId).delete();
-                alert('🗑️ Producto eliminado');
-            } catch (error) {
-                console.error("Error al eliminar:", error);
-                alert('❌ Error al eliminar');
-            }
-        }
-    }
-}
 
 // ===== ADMIN FUNCTIONS =====
 function renderProductList() {
