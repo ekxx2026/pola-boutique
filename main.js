@@ -1124,6 +1124,16 @@ function setupEventListeners() {
     if (downloadCatalogBtn) {
         downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
     }
+}tnEliminar) {
+    const id = parseInt(btnEliminar.dataset.id);
+    eliminarProducto(id);
+}
+        });
+    }
+
+if (downloadCatalogBtn) {
+    downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
+}
 }
 
 // ===== NEUROMARKETING: NOTIFICACIONES DE VENTAS =====
