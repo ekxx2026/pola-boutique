@@ -1032,7 +1032,7 @@ function setupEventListeners() {
 
     if (loginForm) loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = "admin@pola.com"; // Email por defecto que el usuario debe crear
+        const email = "jose.nunez.galleani@gmail.com"; // Email real del usuario
         const password = document.getElementById('adminPassword').value;
 
         const loginBtn = loginForm.querySelector('button[type="submit"]');
