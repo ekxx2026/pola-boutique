@@ -593,7 +593,7 @@ async function agregarProducto(e) {
             const formData = new FormData();
             formData.append('image', selectedFile);
 
-            const IMGBB_API_KEY = "8f3750800b411f32a4e23588f615f5bc";
+            const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e"; // Tu llave personal
 
             const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                 method: 'POST',
@@ -658,7 +658,7 @@ async function actualizarProducto(e) {
         if (type === "file" && selectedFile) {
             const formData = new FormData();
             formData.append('image', selectedFile);
-            const IMGBB_API_KEY = "8f3750800b411f32a4e23588f615f5bc";
+            const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e"; // Tu llave personal
             const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                 method: 'POST',
                 body: formData
@@ -1220,33 +1220,68 @@ async function migrarProductosAFirebase() {
         return;
     }
 
-    if (!confirm(`¿Deseas sincronizar ${window.productsData.length} productos con la nube? (Solo se subirán los que no existan)`)) return;
+    if (!confirm(`¿Deseas sincronizar ${window.productsData.length} productos?\n\nNota: Las imágenes locales se subirán a tu ImgBB automáticamente.`)) return;
 
-    console.log("🚀 Iniciando migración inteligente...");
+    const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e"; // Tu llave personal
+    console.log("🚀 Iniciando migración profesional...");
     let subidos = 0;
     let saltados = 0;
+
+    const migrationBtn = document.getElementById('migrateBtn');
+    if (migrationBtn) {
+        migrationBtn.disabled = true;
+        migrationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Migrando...';
+    }
 
     try {
         const ref = db.ref("productos");
 
         for (const prod of window.productsData) {
-            // Verificamos si ya existe por nombre (insensible a mayúsculas)
             const existe = productos.some(p => p.nombre.toLowerCase().trim() === prod.nombre.toLowerCase().trim());
 
             if (!existe) {
+                console.log(`📦 Procesando: ${prod.nombre}`);
+                let finalImageUrl = prod.imagen;
+
+                // Si la imagen es base64 o local, la subimos a ImgBB
+                if (prod.imagen && (prod.imagen.startsWith('data:image') || !prod.imagen.startsWith('http'))) {
+                    try {
+                        console.log(`  📤 Subiendo foto de ${prod.nombre} a ImgBB...`);
+                        const formData = new FormData();
+                        const base64Data = prod.imagen.split(',')[1] || prod.imagen;
+                        formData.append('image', base64Data);
+
+                        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const result = await response.json();
+                        if (result.success) finalImageUrl = result.data.url;
+                    } catch (err) {
+                        console.warn(`  ⚠️ Error subiendo foto, se usará enlace original.`);
+                    }
+                }
+
                 const { firestoreId, ...cleanProd } = prod;
+                cleanProd.imagen = finalImageUrl;
                 await ref.push(cleanProd);
-                console.log(`✅ Subido: ${prod.nombre}`);
+                console.log(`  ✅ Completado: ${prod.nombre}`);
                 subidos++;
             } else {
                 console.log(`⏩ Saltado (ya existe): ${prod.nombre}`);
                 saltados++;
             }
         }
-        alert(`✨ Proceso terminado.\n✅ Subidos: ${subidos}\n⏩ Ya existían: ${saltados}`);
+        alert(`✨ Sincronización terminada.\n✅ Subidos: ${subidos}\n⏩ Ya existían: ${saltados}`);
     } catch (error) {
-        console.error("Error migrando:", error);
-        alert("❌ Error durante la migración: " + error.message);
+        console.error("Error en migración:", error);
+        alert("❌ Error: " + error.message);
+    } finally {
+        if (migrationBtn) {
+            migrationBtn.disabled = false;
+            migrationBtn.innerHTML = '<span>☁️</span> Migrar a Nube';
+        }
     }
 }
 
