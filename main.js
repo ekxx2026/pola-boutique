@@ -17,7 +17,7 @@ let editingProductId = null;
 let loadingScreen, header, catalogo, zoomGaleria, zoomImg, zoomNombre, zoomPrecio, zoomBadge, zoomDescripcion, zoomDetalles, zoomProgress;
 let btnReserva, loginModal, adminModal, loginForm, productForm, productList;
 let carritoBtn, carritoModal, carritoCount, carritoItems, carritoTotal, vaciarCarritoBtn, comprarCarritoBtn;
-let instagramFeed;
+let instagramFeed, recommendationsGrid;
 
 // Elementos para carga de imágenes
 let productImageUrl, loadUrlButton, urlImagePreview, urlPreviewImage, fileImagePreview, filePreviewImage;
@@ -1095,51 +1095,12 @@ function setupEventListeners() {
 
     if (productForm) productForm.addEventListener('submit', (e) => {
         e.preventDefault();
-
-        const nombre = document.getElementById('productName').value.trim();
-        const precio = parseInt(document.getElementById('productPrice').value);
-        const imagen = document.getElementById('productImage').value.trim();
         const editing = isEditing.value === "true";
-
-        if (!nombre || !precio || !imagen) {
-            alert('Completa todos los campos obligatorios.');
-            return;
-        }
-
-        const nuevoProducto = {
-            id: editing ? parseInt(productId.value) : (Date.now()), // ID simple con timestamp
-            nombre,
-            precio,
-            imagen,
-            categoria: document.getElementById('productCategory').value,
-            badge: document.getElementById('productBadge').value,
-            descripcion: document.getElementById('productDescription').value || 'Producto boutique.',
-            detalles: ["Consultar detalles"]
-        };
-
         if (editing) {
-            const index = productos.findIndex(p => p.id === nuevoProducto.id);
-            if (index !== -1) productos[index] = nuevoProducto;
+            actualizarProducto(e);
         } else {
-            productos.push(nuevoProducto);
+            agregarProducto(e);
         }
-
-        renderCatalogo();
-        renderProductList();
-
-        if (!editing) {
-            productForm.reset();
-            mostrarEstadoURL('', '');
-            if (urlPreviewImage) urlPreviewImage.src = '';
-            if (urlImagePreview) urlImagePreview.style.display = 'none';
-        } else {
-            cancelarEdicion();
-            setTimeout(() => {
-                adminModal.classList.remove('active');
-            }, 500);
-        }
-
-        alert(editing ? "Producto actualizado." : "Producto agregado.");
     });
 
     // Download Button Logic - New for Static Workflow
