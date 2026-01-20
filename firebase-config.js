@@ -11,7 +11,6 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database(); // Cambiado a Realtime Database
-const storage = firebase.storage();
 const auth = firebase.auth();
 
 console.log("🔥 Firebase Inicializado");
