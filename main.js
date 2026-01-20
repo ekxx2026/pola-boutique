@@ -2,7 +2,7 @@
 const WHATSAPP_NUMERO = "56962281579";
 const INSTAGRAM_URL = "https://www.instagram.com/polagalleani?igsh=MWc3bDNjMmpkNHRkYQ==";
 const DIRECCION_TIENDA = "Nva uno 1676, Santiago";
-const ADMIN_HASH = "cd0d2c4e146b03fa5a21585b59683d2d3df43e0d2a2"; // Hash SHA-256 de la contraseña
+const ADMIN_HASH = "cd0d2c4e146b03fa5a2158d45d504ec55fc9070595c5b59683d2d3df43e0d2a2"; // Hash SHA-256 de la contraseña
 
 // Productos: Se cargarán desde products.json
 let productos = [];
