@@ -734,13 +734,11 @@ function renderProductList() {
                 ${producto.badge ? `<div style="margin-top: 5px;"><span class="badge ${getBadgeClass(producto.badge)}" style="font-size: 0.7rem; padding: 3px 8px;">${producto.badge}</span></div>` : ''}
             </div>
             <div class="product-item-actions">
-                <button class="btn-editar" data-id="${producto.id}" 
-                        aria-label="Editar producto ${producto.nombre}">
+                <button class="btn-editar" onclick="window.editarProducto('${producto.id}')">
                     ✏️ Editar
                 </button>
-                <button class="btn-eliminar" data-id="${producto.id}" 
-                        aria-label="Eliminar producto ${producto.nombre}">
-                    🗑️ Eliminar
+                <button class="btn-eliminar" onclick="window.eliminarProducto('${producto.id}')">
+                    🗑️ Borrar
                 </button>
             </div>
         `;
@@ -748,7 +746,7 @@ function renderProductList() {
         productList.appendChild(item);
     });
 
-    // Event Listeners Dinámicos eliminados (usando Delegación abajo)
+    // Event Listeners Dinámicos eliminados (usando onclick directo por robustez)
 }
 
 function getBadgeClass(badgeText) {
@@ -1096,24 +1094,6 @@ function setupEventListeners() {
         }
     });
 
-    // Administrador: Delegación de eventos para Editar/Eliminar
-    if (productList) {
-        productList.addEventListener('click', function (e) {
-            const btnEditar = e.target.closest('.btn-editar');
-            const btnEliminar = e.target.closest('.btn-eliminar');
-
-            if (btnEditar) {
-                const id = parseInt(btnEditar.dataset.id);
-                editarProducto(id);
-            }
-
-            if (btnEliminar) {
-                const id = parseInt(btnEliminar.dataset.id);
-                eliminarProducto(id);
-            }
-        });
-    }
-
     if (downloadCatalogBtn) {
         downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
     }
@@ -1282,7 +1262,7 @@ async function migrarProductosAFirebase() {
                 saltados++;
             }
         }
-        alert(`✨ Sincronización terminada.\n✅ Subidos: ${subidos}\n⏩ Ya existían: ${saltados}`);
+        alert(`✨ Sincronización terminada.\n✅ Subidos y convertidos a nube: ${subidos}\n⏩ Ya existían: ${saltados}\n\n¡Tus fotos ahora cargarán súper rápido!`);
     } catch (error) {
         console.error("Error en migración:", error);
         alert("❌ Error: " + error.message);
