@@ -1220,19 +1220,30 @@ async function migrarProductosAFirebase() {
         return;
     }
 
-    if (!confirm(`¿Deseas subir ${window.productsData.length} productos a Firebase ahora?`)) return;
+    if (!confirm(`¿Deseas sincronizar ${window.productsData.length} productos con la nube? (Solo se subirán los que no existan)`)) return;
 
-    console.log("🚀 Iniciando migración...");
+    console.log("🚀 Iniciando migración inteligente...");
+    let subidos = 0;
+    let saltados = 0;
+
     try {
         const ref = db.ref("productos");
-        // Subimos cada uno
+
         for (const prod of window.productsData) {
-            // Limpiamos el objeto por si tiene basura local
-            const { firestoreId, ...cleanProd } = prod;
-            await ref.push(cleanProd);
-            console.log(`✅ Subido: ${prod.nombre}`);
+            // Verificamos si ya existe por nombre (insensible a mayúsculas)
+            const existe = productos.some(p => p.nombre.toLowerCase().trim() === prod.nombre.toLowerCase().trim());
+
+            if (!existe) {
+                const { firestoreId, ...cleanProd } = prod;
+                await ref.push(cleanProd);
+                console.log(`✅ Subido: ${prod.nombre}`);
+                subidos++;
+            } else {
+                console.log(`⏩ Saltado (ya existe): ${prod.nombre}`);
+                saltados++;
+            }
         }
-        alert("✨ ¡Migración completada con éxito! Ahora tus productos viven en la nube.");
+        alert(`✨ Proceso terminado.\n✅ Subidos: ${subidos}\n⏩ Ya existían: ${saltados}`);
     } catch (error) {
         console.error("Error migrando:", error);
         alert("❌ Error durante la migración: " + error.message);
