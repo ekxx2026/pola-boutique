@@ -1166,6 +1166,33 @@ function mejorarResponsiveCarrito() {
     // Implementar si es necesario ajustes adicionales
 }
 
+
+// ===== UTILIDAD DE MIGRACIÓN (SÓLO PARA USO INICIAL) =====
+async function migrarProductosAFirebase() {
+    if (!window.productsData || window.productsData.length === 0) {
+        alert("❌ No hay productos locales para migrar.");
+        return;
+    }
+
+    if (!confirm(`¿Deseas subir ${window.productsData.length} productos a Firebase ahora?`)) return;
+
+    console.log("🚀 Iniciando migración...");
+    try {
+        const ref = db.ref("productos");
+        // Subimos cada uno
+        for (const prod of window.productsData) {
+            // Limpiamos el objeto por si tiene basura local
+            const { firestoreId, ...cleanProd } = prod;
+            await ref.push(cleanProd);
+            console.log(`✅ Subido: ${prod.nombre}`);
+        }
+        alert("✨ ¡Migración completada con éxito! Ahora tus productos viven en la nube.");
+    } catch (error) {
+        console.error("Error migrando:", error);
+        alert("❌ Error durante la migración: " + error.message);
+    }
+}
+
 // Iniciar app
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
