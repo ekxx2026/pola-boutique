@@ -372,10 +372,19 @@
             </form>
 
             <div class="product-list-container">
-                <h4>Productos Existentes</h4>
-                <div id="productList">
+                <h4>☁️ Productos en la Nube (Activos)</h4>
+                <div id="productList" class="product-list">
                     <!-- Lista de productos se cargará aquí -->
                 </div>
+            </div>
+
+            <!-- Lista de Productos Locales (Importación Manual) -->
+            <div id="localProductSection" class="product-list-container"
+                style="display: none; border-top: 2px dashed #FF9800; margin-top: 20px; padding-top: 20px;">
+                <h4 style="color: #E65100;">📂 Productos Pendientes de Subir (Local)</h4>
+                <p style="font-size: 0.8rem; margin-bottom: 10px; color: #666;">Haz clic en uno para cargarlo en el
+                    formulario, luego elige su foto y guárdalo.</p>
+                <div id="localProductList" class="product-list"></div>
             </div>
         </div>
     </div>
@@ -449,7 +458,7 @@
 
     <!-- Scripts -->
     <script src="products.js"></script>
-    <script src="main.js?v=22"></script>
+    <script src="main.js?v=23"></script>
     <!-- Deploy Trigger v2: Force Vercel Update -->
 </body>
 
