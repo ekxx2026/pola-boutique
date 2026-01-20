@@ -285,10 +285,10 @@
             <div class="form-header">
                 <h3>🔧 Panel de Administración</h3>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <button type="button" id="migrateBtn" title="Migrar datos locales a Firebase"
-                        onclick="window.migrarProductosAFirebase()"
+                    <button type="button" id="migrateBtn" title="Migrar de forma segura (manual)"
+                        onclick="window.toggleLocalList()"
                         style="background: #FF9800; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                        <span>☁️</span> Migrar a Nube
+                        <span>📷</span> Importar Manual
                     </button>
                     <div id="modoEdicion" class="modo-edicion" style="display: none;">Modo Edición</div>
                     <button type="button" id="downloadCatalogBtn" title="Descargar Catálogo JSON"
@@ -449,7 +449,7 @@
 
     <!-- Scripts -->
     <script src="products.js"></script>
-    <script src="main.js?v=21"></script>
+    <script src="main.js?v=22"></script>
     <!-- Deploy Trigger v2: Force Vercel Update -->
 </body>
 

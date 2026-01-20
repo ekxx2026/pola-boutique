@@ -1208,9 +1208,69 @@ function iniciarNotificacionesVentas() {
     }, 10000);
 }
 
-function mejorarResponsiveCarrito() {
-    // Implementar si es necesario ajustes adicionales
+// ===== MIGRACIÓN MANUAL (ITEM POR ITEM) =====
+window.toggleLocalList = function () {
+    const section = document.getElementById('localProductSection');
+    if (section) {
+        const isHidden = section.style.display === 'none';
+        section.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) renderLocalProductList();
+    }
+};
+
+function renderLocalProductList() {
+    const localList = document.getElementById('localProductList');
+    if (!localList || !window.productsData) return;
+
+    localList.innerHTML = '';
+
+    // Solo mostrar los que NO están en la nube (buscando por nombre)
+    const pendientes = window.productsData.filter(lp =>
+        !productos.some(p => p.nombre.toLowerCase().trim() === lp.nombre.toLowerCase().trim())
+    );
+
+    if (pendientes.length === 0) {
+        localList.innerHTML = '<p style="text-align: center; padding: 10px; color: green;">✅ ¡Todos los productos están en la nube!</p>';
+        return;
+    }
+
+    pendientes.forEach(prod => {
+        const item = document.createElement('div');
+        item.className = 'product-item';
+        item.style.borderLeft = '4px solid #FF9800';
+        item.innerHTML = `
+            <div class="product-item-info">
+                <strong>${prod.nombre}</strong>
+                <small>${prod.categoria} - $${prod.precio.toLocaleString('es-CL')}</small>
+            </div>
+            <button class="btn-importar" onclick="window.cargarProductoLocal('${prod.nombre.replace(/'/g, "\\'")}')" 
+                    style="background: #E65100; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                📥 Cargar Datos
+            </button>
+        `;
+        localList.appendChild(item);
+    });
 }
+
+window.cargarProductoLocal = function (nombre) {
+    const prod = window.productsData.find(p => p.nombre === nombre);
+    if (!prod) return;
+
+    // Llenar el formulario con los datos locales
+    document.getElementById('productName').value = prod.nombre;
+    document.getElementById('productPrice').value = prod.precio;
+    document.getElementById('productCategory').value = prod.categoria;
+    document.getElementById('productDescription').value = prod.descripcion || "";
+    document.getElementById('productBadge').value = prod.badge || "";
+    document.getElementById('productDetails').value = (prod.detalles || []).join('\n');
+
+    // Importante: No ponemos el link de imagen local para obligar al usuario a elegir una foto 
+    // real o cargar el link y así se sube a ImgBB de forma segura.
+    alert(`📂 Datos de "${prod.nombre}" cargados.\n\nAHORA elige la foto de este vestido y dale a "Agregar Producto".`);
+
+    // Hacer scroll al inicio del form
+    document.querySelector('.admin-form').scrollTop = 0;
+};
 
 
 // ===== UTILIDAD DE MIGRACIÓN (SÓLO PARA USO INICIAL) =====
