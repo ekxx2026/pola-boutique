@@ -635,66 +635,13 @@ async function agregarProducto(e) {
     }
 }
 
-async function actualizarProducto(e) {
-    if (e) e.preventDefault();
-    const updateBtn = document.getElementById('updateProduct');
-    updateBtn.disabled = true;
-    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+// EXPOSICIÓN GLOBAL DE FUNCIONES CRÍTICAS (PARA EVITAR ERRORES DE SCOPE)
+window.eliminarProducto = async function (id) {
+    const targetId = parseInt(id);
+    console.log("🛠️ Intentando eliminar ID:", targetId);
 
-    const id = parseInt(productId.value);
-
-    // Buscar en el array local de productos sincronizados con Firebase
-    const prodRef = productos.find(p => p.id === id);
-
-    if (!prodRef || !prodRef.firestoreId) {
-        alert("Error: No se pudo encontrar el ID en la base de datos");
-        updateBtn.disabled = false;
-        updateBtn.textContent = 'Actualizar Producto';
-        return;
-    }
-
-    const type = imageType.value;
-    let finalImageUrl = productImage.value;
-
-    try {
-        if (type === "file" && selectedFile) {
-            const formData = new FormData();
-            formData.append('image', selectedFile);
-            const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e"; // Tu llave personal
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            if (result.success) finalImageUrl = result.data.url;
-        }
-
-        const productoEditado = {
-            nombre: document.getElementById('productName').value,
-            precio: parseInt(document.getElementById('productPrice').value),
-            categoria: document.getElementById('productCategory').value,
-            descripcion: document.getElementById('productDescription').value,
-            imagen: finalImageUrl,
-            badge: document.getElementById('productBadge').value,
-            detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '')
-        };
-
-        await db.ref("productos").child(prodRef.firestoreId).update(productoEditado);
-        selectedFile = null;
-        alert('✅ Producto actualizado');
-        cancelarEdicion();
-    } catch (error) {
-        console.error("Error al actualizar:", error);
-        alert('❌ Error al actualizar');
-    } finally {
-        updateBtn.disabled = false;
-        updateBtn.textContent = 'Actualizar Producto';
-    }
-}
-
-async function eliminarProducto(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto de la nube?')) {
-        const prod = productos.find(p => p.id === id);
+    if (confirm('¿Estás seguro de que deseas ELIMINAR este producto permanentemente de la nube?')) {
+        const prod = productos.find(p => p.id == targetId);
 
         if (!prod || !prod.firestoreId) {
             alert('❌ Error: No se encontró el ID de este producto en la nube. Intenta recargar la página.');
@@ -702,14 +649,64 @@ async function eliminarProducto(id) {
         }
 
         try {
+            console.log("📡 Conectando con Firebase para borrar:", prod.firestoreId);
             await db.ref("productos").child(prod.firestoreId).remove();
-            alert('🗑️ Producto eliminado correctamente.');
+            alert('✅ ¡Producto eliminado correctamente!');
         } catch (error) {
             console.error("Error al eliminar:", error);
-            alert('❌ Error de conexión al eliminar.');
+            alert('❌ Error de conexión al eliminar. Verifica tu internet.');
         }
     }
-}
+};
+
+window.editarProducto = function (id) {
+    const targetId = parseInt(id);
+    const producto = productos.find(p => p.id == targetId);
+    if (!producto) return;
+
+    editingProductId = targetId;
+    productId.value = targetId;
+    isEditing.value = "true";
+
+    modoEdicion.style.display = "block";
+    formButtons.style.display = "none";
+    editButtons.style.display = "flex";
+
+    // Cargar datos
+    document.getElementById('productName').value = producto.nombre;
+    document.getElementById('productPrice').value = producto.precio;
+
+    // Imagen
+    if (producto.imagen && producto.imagen.startsWith('data:')) {
+        imageType.value = "file";
+        filePreviewImage.src = producto.imagen;
+        fileImagePreview.style.display = 'block';
+        productImage.value = producto.imagen;
+        productImageUrl.value = '';
+        urlImagePreview.style.display = 'none';
+        urlPreviewImage.src = '';
+    } else {
+        imageType.value = "url";
+        productImageUrl.value = producto.imagen || '';
+        urlPreviewImage.src = producto.imagen || '';
+        urlImagePreview.style.display = producto.imagen ? 'block' : 'none';
+        productImage.value = producto.imagen || '';
+        fileImagePreview.style.display = 'none';
+        filePreviewImage.src = '';
+    }
+
+    document.getElementById('productCategory').value = producto.categoria;
+    document.getElementById('productBadge').value = producto.badge || '';
+    document.getElementById('productDescription').value = producto.descripcion || '';
+
+    // Scroll al inicio
+    const adminFormContainer = document.querySelector('.admin-form');
+    if (adminFormContainer) adminFormContainer.scrollTop = 0;
+
+    renderProductList();
+    mostrarEstadoURL('Modo edición activo.', 'url-exitosa');
+};
+
 
 
 // ===== ADMIN FUNCTIONS =====
