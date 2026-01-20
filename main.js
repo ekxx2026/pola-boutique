@@ -938,12 +938,27 @@ function setupEventListeners() {
     if (loginForm) loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const password = document.getElementById('adminPassword').value;
-        if (await checkPassword(password)) {
+        // DEBUG: Mostrar hash si falla
+        const isValid = await checkPassword(password);
+        if (isValid) {
             loginModal.classList.remove('active');
             adminModal.classList.add('active');
             loginForm.reset();
         } else {
-            alert('Contraseña incorrecta.');
+            console.log("Password:", password); // Para devtools
+
+            // Recalcular hash para mostrarlo en el alert
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hash = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hash));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            alert(`Error de Login (DEBUG MODE):\n\n` +
+                `Input: "${password}"\n` +
+                `Hash Generado: ${hashHex.substring(0, 10)}...\n` +
+                `Hash Esperado: ${ADMIN_HASH.substring(0, 10)}...\n\n` +
+                `Por favor envía una captura de este mensaje.`);
         }
     });
 
