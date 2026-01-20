@@ -1,0 +1,444 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique Ultra-Lujo | Ropa al Alcance de Todos</title>
+    <meta name="description"
+        content="Descubre nuestra colección exclusiva de moda de lujo. Vestidos, shorts, blusas y palazos de diseñador. Ropa de calidad al alcance de todos.">
+    <meta name="keywords"
+        content="moda, lujo, boutique, vestidos, shorts, blusas, palazos, diseño, ropa elegante, santiago">
+    <meta name="author" content="Pola Galleani Ultra-Lujo">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://pola-boutique.vercel.app/" />
+
+    <!-- Open Graph (Facebook/WhatsApp/LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pola-boutique.vercel.app/">
+    <meta property="og:title" content="Pola Galleani | Boutique Ultra-Lujo">
+    <meta property="og:description"
+        content="Descubre nuestra colección exclusiva de moda. Vestidos, shorts y blusas con diseño de alta costura al alcance de todos.">
+    <meta property="og:image" content="https://pola-boutique.vercel.app/og-image.png">
+    <meta property="og:locale" content="es_CL">
+    <meta property="og:site_name" content="Pola Galleani">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pola Galleani - Moda de Lujo">
+    <meta name="twitter:description" content="Moda exclusiva y elegante. Reserva tu prenda favorita vía WhatsApp.">
+    <meta name="twitter:image" content="https://pola-boutique.vercel.app/og-image.png">
+
+    <!-- Schema.org JSON-LD (Google Rich Results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ClothingStore",
+      "name": "Pola Galleani Boutique",
+      "image": [
+        "https://pola-boutique.vercel.app/logo-pola.png",
+        "https://pola-boutique.vercel.app/og-image.png"
+      ],
+      "description": "Boutique de moda ultra-lujo ofreciendo vestidos, shorts y blusas exclusivas en Santiago.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Nva uno 1676",
+        "addressLocality": "Santiago",
+        "addressRegion": "RM",
+        "postalCode": "8320000",
+        "addressCountry": "CL"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -33.4489,
+        "longitude": -70.6693
+      },
+      "url": "https://pola-boutique.vercel.app/",
+      "telephone": "+56962281579",
+      "priceRange": "$$$"
+    }
+    </script>
+
+    <!-- Fuentes mejoradas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+        <div style="color: var(--color-oro); font-family: 'Playfair Display', serif; margin-top: 20px;">
+            BOUTIQUE ULTRA-LUJO
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="logo-container">
+            <img src="logo-pola.png" alt="Logo Pola Galleani" class="logo"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iNTAiIGZpbGw9IiMwQTAwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjRDQgQkYgMzc/IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Qk9VVElRVUU8L3RleHQ+PC9zdmc+'">
+            <div>
+                <h1 class="brand-title">BOUTIQUE ULTRA-LUJO</h1>
+                <p class="eslogan">ROPA AL ALCANCE DE TODOS</p>
+            </div>
+        </div>
+
+        <div class="contact-info">
+            <a href="https://wa.me/56962281579" class="whatsapp-button" target="_blank"
+                aria-label="Contactar por WhatsApp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M17.472 14.382C17.119 14.192 15.369 13.318 15.049 13.208C14.73 13.098 14.496 13.037 14.262 13.382C14.029 13.725 13.36 14.533 13.159 14.757C12.956 14.979 12.754 15.009 12.404 14.827C12.052 14.646 10.922 14.262 9.584 13.029C8.528 12.056 7.815 10.854 7.616 10.493C7.414 10.133 7.592 9.943 7.768 9.761C7.926 9.598 8.117 9.336 8.297 9.124C8.475 8.913 8.534 8.761 8.653 8.517C8.775 8.274 8.714 8.062 8.634 7.892C8.552 7.72 7.906 6.066 7.636 5.398C7.377 4.758 7.113 4.843 6.924 4.835C6.745 4.828 6.539 4.828 6.331 4.828C6.126 4.828 5.79 4.908 5.508 5.228C5.226 5.549 4.425 6.326 4.425 7.909C4.425 9.492 5.568 11.096 5.732 11.319C5.897 11.542 7.962 14.856 11.178 16.29C13.84 17.478 14.387 17.241 14.972 17.185C15.558 17.129 16.858 16.402 17.129 15.617C17.399 14.832 17.399 14.164 17.319 14.023C17.238 13.882 17.035 13.788 16.681 13.606H17.472Z" />
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M12.015 24C18.665 24 24.032 18.633 24.032 11.984C24.032 5.334 18.665 -0.032 12.015 -0.032C5.365 -0.032 -0.003 5.334 -0.003 11.984C-0.003 14.07 0.509 16.037 1.417 17.766L0 23.003L5.344 21.564C6.985 22.482 8.878 22.999 10.887 22.999H12.015V24ZM12.016 1.956C17.525 1.956 22.008 6.44 22.008 11.948C22.008 17.457 17.525 21.941 12.016 21.941C10.147 21.941 8.411 21.432 6.921 20.547L6.568 20.337L3.633 21.127L4.437 18.239L4.205 17.859C3.18 16.185 2.583 14.192 2.583 12.052C2.583 6.543 6.815 1.956 12.016 1.956Z" />
+                </svg> WhatsApp
+            </a>
+        </div>
+
+        <div class="nav-container">
+            <nav class="tabs" role="tablist">
+                <div class="tab active" data-categoria="Todos" role="tab" aria-selected="true">Todos</div>
+                <div class="tab" data-categoria="Short" role="tab" aria-selected="false">Shorts</div>
+                <div class="tab" data-categoria="Vestido" role="tab" aria-selected="false">Vestidos</div>
+                <div class="tab" data-categoria="Blusa" role="tab" aria-selected="false">Blusas</div>
+                <div class="tab" data-categoria="Palazo" role="tab" aria-selected="false">Palazos</div>
+                <button class="tab instagram-tab" aria-label="Visitar nuestro Instagram"
+                    onclick="window.open('https://www.instagram.com/polagalleani?igsh=MWc3bDNjMmpkNHRkYQ==', '_blank')">
+                    <span>📷</span> @polagalleani
+                </button>
+                <button class="tab" id="btnAdmin"
+                    style="background: transparent; color: var(--color-negro); opacity: 0.1; padding: 10px; border: none; box-shadow: none; filter: grayscale(100%); transition: opacity 0.3s;"
+                    onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.1'" title="Administración"
+                    aria-label="Abrir panel de administración">
+                    <span>🔒</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Botón del carrito -->
+    <button class="carrito-btn" id="carritoBtn" aria-label="Abrir carrito de compras">
+        🛒
+        <span class="carrito-count" id="carritoCount">0</span>
+    </button>
+
+    <!-- Main Content -->
+    <main class="catalogo-container">
+        <section aria-labelledby="titulo-catalogo">
+            <h2 id="titulo-catalogo"
+                style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 15px; text-align: center;">
+                Colección Exclusiva
+            </h2>
+            <p style="color: #666; max-width: 600px; margin: 0 auto 40px; text-align: center;">
+                Descubre nuestra selección premium de prendas diseñadas con los más altos estándares de calidad y
+                elegancia. Moda exclusiva al alcance de todos.
+            </p>
+        </section>
+
+        <div class="catalogo" id="catalogo" role="list">
+            <!-- Productos se cargan aquí dinámicamente -->
+        </div>
+    </main>
+
+    <!-- Sección de Testimonios -->
+    <section class="testimonios" aria-labelledby="titulo-testimonios">
+        <h2 id="titulo-testimonios">Lo que dicen nuestros clientes</h2>
+        <div class="testimonios-grid">
+            <div class="testimonio">
+                <p class="testimonio-text">"La calidad de los vestidos es increíble. Me sentí espectacular en mi evento.
+                    El servicio al cliente es excepcional."</p>
+                <div class="testimonio-autor">
+                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Foto de María González">
+                    <div>
+                        <h4>María González</h4>
+                        <p>Clienta frecuente</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonio">
+                <p class="testimonio-text">"Excelente relación calidad-precio. Siempre atentos a los detalles y con
+                    envíos rápidos. Totalmente recomendado."</p>
+                <div class="testimonio-autor">
+                    <img src="https://randomuser.me/api/portraits/men/54.jpg" alt="Foto de Carlos López">
+                    <div>
+                        <h4>Carlos López</h4>
+                        <p>Primera compra</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonio">
+                <p class="testimonio-text">"Los envíos son rápidos y el packaging es de lujo. La ropa es exactamente
+                    como se muestra en las fotos."</p>
+                <div class="testimonio-autor">
+                    <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Foto de Ana Martínez">
+                    <div>
+                        <h4>Ana Martínez</h4>
+                        <p>Compra online</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Instagram -->
+    <section class="instagram-feed" aria-labelledby="titulo-instagram">
+        <h2 id="titulo-instagram">Síguenos en Instagram</h2>
+        <div class="instagram-grid" id="instagramFeed">
+            <!-- Las imágenes de Instagram se cargarán aquí -->
+        </div>
+    </section>
+
+    <!-- Zoom Gallery -->
+    <div id="zoomGaleria" role="dialog" aria-labelledby="zoomNombre" aria-modal="true">
+        <button class="close-zoom" aria-label="Cerrar zoom">✕</button>
+
+        <div class="zoom-nav-container">
+            <button id="prev" class="zoom-nav" aria-label="Imagen anterior">‹</button>
+
+            <div class="zoom-content">
+                <div class="zoom-image-container">
+                    <img id="zoomImg" alt="Vista ampliada del producto">
+                    <div class="zoom-progress" id="zoomProgress"></div>
+                </div>
+
+                <div class="zoom-info">
+                    <h3 id="zoomNombre"></h3>
+                    <div id="zoomPrecio" class="zoom-price"></div>
+                    <div id="zoomBadge" class="zoom-badge"></div>
+                    <p id="zoomDescripcion" class="zoom-description"></p>
+
+                    <div class="zoom-details">
+                        <h4>Detalles del Producto</h4>
+                        <ul id="zoomDetalles">
+                            <!-- Los detalles se cargarán dinámicamente -->
+                        </ul>
+                    </div>
+
+                    <div class="zoom-recommendations">
+                        <h4>Más para ti</h4>
+                        <div id="recommendationsGrid" class="recommendations-grid">
+                            <!-- Productos recomendados se cargarán aquí -->
+                        </div>
+                    </div>
+
+                    <button id="btnReserva" class="btn-reserva" style="margin-top: 20px; width: 100%;">
+                        <span>💬</span> Reservar por WhatsApp
+                    </button>
+                </div>
+            </div>
+
+            <button id="next" class="zoom-nav" aria-label="Siguiente imagen">›</button>
+        </div>
+    </div>
+
+    <!-- Carrito de Compras -->
+    <div class="carrito-modal" id="carritoModal">
+        <div class="carrito-content">
+            <h3>🛒 Tu Carrito</h3>
+            <div id="carritoItems">
+                <!-- Los items del carrito se cargan aquí -->
+            </div>
+            <div class="carrito-total">
+                Total: $<span id="carritoTotal">0</span>
+            </div>
+            <div class="carrito-acciones">
+                <button class="btn-vaciar" id="vaciarCarrito">Vaciar Carrito</button>
+                <button class="btn-comprar" id="comprarCarrito">Completar Pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Admin -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-form">
+            <h3>🔐 Acceso Administrador</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminPassword">Contraseña</label>
+                    <input type="password" id="adminPassword" required aria-required="true"
+                        placeholder="Ingresa la contraseña">
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-submit">Acceder</button>
+                    <button type="button" class="btn-cancel" id="cancelLogin">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Modal con carga por URL y edición -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-form">
+            <div class="form-header">
+                <h3>🔧 Panel de Administración</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div id="modoEdicion" class="modo-edicion" style="display: none;">Modo Edición</div>
+                    <button type="button" id="downloadCatalogBtn" title="Descargar Catálogo JSON"
+                        onclick="window.exportarCatalogoJS()"
+                        style="background: #2196F3; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; gap: 5px;">
+                        <span>📥</span> JSON
+                    </button>
+                </div>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId" value="">
+                <input type="hidden" id="isEditing" value="false">
+
+                <div class="form-group">
+                    <label for="productName">Nombre del Producto</label>
+                    <input type="text" id="productName" required aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice">Precio ($)</label>
+                    <input type="number" id="productPrice" required min="0" aria-required="true">
+                </div>
+
+                <!-- ===== OPCIÓN DE IMAGEN POR URL ===== -->
+                <div class="form-group" id="urlImageSection">
+                    <label for="productImageUrl">URL de la Imagen</label>
+                    <div class="url-input-container">
+                        <input type="url" id="productImageUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                        <button type="button" class="upload-button" id="loadUrlButton"
+                            onclick="window.cargarImagenDesdeURL()">
+                            <span>🔗</span> Cargar
+                        </button>
+                    </div>
+                    <div id="urlStatus"></div>
+                    <div class="image-preview" id="urlImagePreview">
+                        <img id="urlPreviewImage" src="" alt="Vista previa desde URL">
+                    </div>
+                </div>
+
+                <!-- ===== SOLO URL POR AHORA ===== -->
+
+                <!-- ===== TIPO DE IMAGEN ===== -->
+                <input type="hidden" id="imageType" value="url">
+                <input type="hidden" id="productImage" value="">
+
+                <div class="form-group">
+                    <label for="productCategory">Categoría</label>
+                    <select id="productCategory" required aria-required="true">
+                        <option value="Short">Short</option>
+                        <option value="Vestido">Vestido</option>
+                        <option value="Blusa">Blusa</option>
+                        <option value="Palazo">Palazo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productBadge">Etiqueta (Badge)</label>
+                    <select id="productBadge">
+                        <option value="">Sin etiqueta</option>
+                        <option value="Nuevo">Nuevo</option>
+                        <option value="Más vendido">Más vendido</option>
+                        <option value="Edición limitada">Edición limitada</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productDescription">Descripción</label>
+                    <textarea id="productDescription" rows="3"
+                        placeholder="Material, tallas, características..."></textarea>
+                </div>
+
+                <div class="form-buttons" id="formButtons">
+                    <button type="submit" class="btn-submit">Agregar Producto</button>
+                    <button type="button" class="btn-cancel" id="cancelAdmin">Cancelar</button>
+                </div>
+
+                <div class="form-buttons" id="editButtons" style="display: none;">
+                    <button type="button" class="btn-cancelar-edicion" id="cancelEdit">Cancelar Edición</button>
+                    <button type="submit" class="btn-actualizar">Actualizar Producto</button>
+                </div>
+            </form>
+
+            <div class="product-list-container">
+                <h4>Productos Existentes</h4>
+                <div id="productList">
+                    <!-- Lista de productos se cargará aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BOUTIQUE ULTRA-LUJO</h4>
+                <p>Moda de lujo y exclusividad. Ropa al alcance de todos.</p>
+                <p>📍 Dirección: Nva uno 1676, Santiago</p>
+                <p>📞 Teléfono: +56 9 62281 579</p>
+                <p>📧 Email: polagalleani@gmail.com</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Nuestra Ubicación</h4>
+                <div class="map-container">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3329.270257621343!2d-70.6500007!3d-33.4412468!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c5a6a81d0a29%3A0x1a7b7c8a4b9e0b1c!2sNva%20uno%201676%2C%20Santiago%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses-419!2scl!4v1640000000000!5m2!1ses-419!2scl"
+                        width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade" title="Ubicación de Boutique Ultra-Lujo">
+                    </iframe>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Horarios de Atención</h4>
+                <p>Lunes a Viernes: 10:00 - 20:00</p>
+                <p>Sábados: 11:00 - 19:00</p>
+                <p>Domingos: 12:00 - 18:00</p>
+                <p>Festivos: Consultar</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Síguenos</h4>
+                <p>Descubre nuestras últimas colecciones y novedades exclusivas.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/polagalleani?igsh=MWc3bDNjMmpkNHRkYQ==" class="social-link"
+                        aria-label="Instagram" target="_blank">📷</a>
+                    <a href="#" class="social-link" aria-label="Facebook">📘</a>
+                    <a href="#" class="social-link" aria-label="Pinterest">📌</a>
+                    <a href="#" class="social-link" aria-label="TikTok">🎵</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright">
+            © 2024 Boutique Ultra-Lujo. Todos los derechos reservados. | Ropa al alcance de todos
+        </div>
+    </footer>
+    <!-- Elementos de Neuromarketing -->
+    <div id="salesToast" class="sales-toast">
+        <img id="salesToastImg" src="" alt="Venta reciente">
+        <div class="sales-toast-content">
+            <strong id="salesToastTitle">¡Nueva venta!</strong>
+            <span id="salesToastText">Alguien compró un producto</span>
+        </div>
+    </div>
+
+    <a href="https://wa.me/56962281579?text=Hola!%20Me%20gustar%C3%ADa%20recibir%20asesor%C3%ADa%20de%20imagen%20para%20elegir%20mi%20outfit."
+        class="whatsapp-float" target="_blank" aria-label="Asesoría por WhatsApp">
+        <span>💬</span>
+    </a>
+
+    <!-- Scripts -->
+    <script src="products.js"></script>
+    <script src="main.js?v=2"></script>
+</body>
+
+</html>

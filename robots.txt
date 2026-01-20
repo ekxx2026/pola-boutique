@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pola-boutique.vercel.app/sitemap.xml
