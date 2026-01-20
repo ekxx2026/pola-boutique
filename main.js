@@ -113,51 +113,51 @@ async function init() {
 
     renderizarCarrito();
     setupEventListeners();
-}
 
-// Alias para mantener compatibilidad si se usa en otros sitios
-function renderizarCatalogo() { renderCatalogo(); }
-function renderizarCarrito() { actualizarCarritoUI(); }
-function actualizarListaProductosAdmin() { renderProductList(); }
 
-// Configurar eventos
-setupEventListeners();
+    // Alias para mantener compatibilidad si se usa en otros sitios
+    function renderizarCatalogo() { renderCatalogo(); }
+    function renderizarCarrito() { actualizarCarritoUI(); }
+    function actualizarListaProductosAdmin() { renderProductList(); }
 
-// Configurar scroll header
-window.addEventListener("scroll", handleScroll);
+    // Configurar eventos
+    setupEventListeners();
 
-// Cargar productos en admin
-renderProductList();
+    // Configurar scroll header
+    window.addEventListener("scroll", handleScroll);
 
-// Cargar feed de Instagram (simulado)
-cargarInstagramFeed();
+    // Cargar productos en admin
+    renderProductList();
 
-// Mejoras responsive del carrito
-mejorarResponsiveCarrito();
+    // Cargar feed de Instagram (simulado)
+    cargarInstagramFeed();
 
-// Configurar carga de imágenes
-configurarCargaImagenes();
+    // Mejoras responsive del carrito
+    mejorarResponsiveCarrito();
 
-// Configurar botón de descarga
-if (downloadCatalogBtn) {
-    downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
-}
+    // Configurar carga de imágenes
+    configurarCargaImagenes();
 
-// Iniciar sistema de neuromarketing
-iniciarNotificacionesVentas();
+    // Configurar botón de descarga
+    if (downloadCatalogBtn) {
+        downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
+    }
 
-// Registrar Service Worker para PWA
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js?v=8')
-            .then(registration => {
-                console.log('SW registrado exitosamente:', registration.scope);
-            })
-            .catch(error => {
-                console.log('Fallo registro SW:', error);
-            });
-    });
-}
+    // Iniciar sistema de neuromarketing
+    iniciarNotificacionesVentas();
+
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js?v=8')
+                .then(registration => {
+                    console.log('SW registrado exitosamente:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Fallo registro SW:', error);
+                });
+        });
+    }
 }
 
 function handleScroll() {
