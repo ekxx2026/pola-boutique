@@ -143,7 +143,7 @@ async function init() {
     // Registrar Service Worker para PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
+            navigator.serviceWorker.register('/service-worker.js?v=4')
                 .then(registration => {
                     console.log('SW registrado exitosamente:', registration.scope);
                 })
