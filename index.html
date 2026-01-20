@@ -312,20 +312,32 @@
                     <input type="number" id="productPrice" required min="0" aria-required="true">
                 </div>
 
-                <!-- ===== OPCIÓN DE IMAGEN POR URL ===== -->
-                <div class="form-group" id="urlImageSection">
-                    <label for="productImageUrl">URL de la Imagen</label>
+                <!-- ===== SUBIR DESDE PC (ImgBB) ===== -->
+                <div class="form-group" id="fileImageSection">
+                    <label>Imagen del Producto</label>
+                    <div id="uploadArea" class="upload-area">
+                        <div class="upload-icon">📷</div>
+                        <p class="upload-text">Arrastra una imagen o haz clic para subir desde tu PC</p>
+                        <button type="button" class="btn-editar" id="uploadButton">Seleccionar Archivo</button>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="image-preview" id="fileImagePreview">
+                        <img id="filePreviewImage" src="" alt="Vista previa de archivo">
+                    </div>
+                </div>
+
+                <!-- ===== OPCIÓN ALTERNATIVA: URL ===== -->
+                <div class="form-group" id="urlImageSection" style="margin-top: 10px;">
+                    <label for="productImageUrl" style="font-size: 0.8rem; color: #666;">¿Ya tienes un link? Pégalo
+                        aquí:</label>
                     <div class="url-input-container">
                         <input type="url" id="productImageUrl" placeholder="https://ejemplo.com/imagen.jpg">
                         <button type="button" class="upload-button" id="loadUrlButton"
-                            onclick="window.cargarImagenDesdeURL()">
-                            <span>🔗</span> Cargar
+                            onclick="window.cargarImagenDesdeURL()" style="padding: 5px 10px; font-size: 0.8rem;">
+                            <span>🔗</span> Link
                         </button>
                     </div>
                     <div id="urlStatus"></div>
-                    <div class="image-preview" id="urlImagePreview">
-                        <img id="urlPreviewImage" src="" alt="Vista previa desde URL">
-                    </div>
                 </div>
 
                 <!-- ===== SOLO URL POR AHORA ===== -->
@@ -458,7 +470,7 @@
 
     <!-- Scripts -->
     <script src="products.js"></script>
-    <script src="main.js?v=29"></script>
+    <script src="main.js?v=30"></script>
     <!-- Deploy Trigger v2: Force Vercel Update -->
 </body>
 

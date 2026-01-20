@@ -583,7 +583,7 @@ async function agregarProducto(e) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
 
-    const type = imageType.value;
+    const type = imageType.value || "file"; // Priorizar archivo si existe
     let finalImageUrl = productImage.value || 'https://via.placeholder.com/300';
 
     try {
@@ -642,6 +642,8 @@ async function actualizarProducto(e) {
     updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
     const id = parseInt(productId.value);
+
+    // Buscar en el array local de productos sincronizados con Firebase
     const prodRef = productos.find(p => p.id === id);
 
     if (!prodRef || !prodRef.firestoreId) {
@@ -691,29 +693,20 @@ async function actualizarProducto(e) {
 }
 
 async function eliminarProducto(id) {
-    console.log("🔥 Intentando eliminar producto con ID:", id);
-
-    if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente de la nube?')) {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto de la nube?')) {
         const prod = productos.find(p => p.id === id);
 
-        if (!prod) {
-            alert("❌ Error: No se encontró el producto en la lista local.");
-            return;
-        }
-
-        if (!prod.firestoreId) {
-            alert("⚠️ Error: Este producto no tiene un ID de nube (firestoreId). \n\nPrueba recargar la página.");
-            console.error("Producto sin firestoreId:", prod);
+        if (!prod || !prod.firestoreId) {
+            alert('❌ Error: No se encontró el ID de este producto en la nube. Intenta recargar la página.');
             return;
         }
 
         try {
-            console.log("📡 Borrando en Firebase path:", `productos/${prod.firestoreId}`);
             await db.ref("productos").child(prod.firestoreId).remove();
-            alert('🗑️ Producto eliminado de la nube correctamente.');
+            alert('🗑️ Producto eliminado correctamente.');
         } catch (error) {
-            console.error("Error al eliminar de Firebase:", error);
-            alert('❌ Error de Firebase: ' + error.message);
+            console.error("Error al eliminar:", error);
+            alert('❌ Error de conexión al eliminar.');
         }
     }
 }
