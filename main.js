@@ -810,29 +810,7 @@ function editarProducto(id) {
     mostrarEstadoURL('Modo edición activo.', 'url-exitosa');
 }
 
-function eliminarProducto(id) {
-    if (confirm('¿Estás seguro de eliminar este producto?')) {
-        const index = productos.findIndex(p => p.id === id);
-        if (index !== -1) {
-            productos.splice(index, 1);
-            // No saved to local storage anymore, we rely on Download button manually
-            // BUT for immediate session experience, we still update variable
-            renderCatalogo();
-            renderProductList();
-        }
 
-        const carritoIndex = carrito.findIndex(item => item.id === id);
-        if (carritoIndex !== -1) {
-            carrito.splice(carritoIndex, 1);
-            localStorage.setItem("carrito", JSON.stringify(carrito));
-            actualizarCarritoUI();
-        }
-
-        if (editingProductId === id) {
-            cancelarEdicion();
-        }
-    }
-}
 
 function cancelarEdicion() {
     editingProductId = null;
