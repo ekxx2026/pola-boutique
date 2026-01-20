@@ -82,7 +82,7 @@ function initializeElements() {
 // ===== FUNCIONES PRINCIPALES =====
 
 async function init() {
-    console.log("🚀 Inicializando Boutique con Firebase...");
+    console.log("🚀 Inicializando Boutique con Firebase (Realtime)...");
     initializeElements();
 
     if (loadingScreen) {
@@ -94,71 +94,57 @@ async function init() {
         }, 500);
     }
 
-    // Escuchar cambios en Firestore en tiempo real
-    db.collection("productos").orderBy("id", "desc").onSnapshot((snapshot) => {
-        productos = snapshot.docs.map(doc => ({
-            firestoreId: doc.id,
-            ...doc.data()
-        }));
-        console.log("📦 Productos actualizados desde Firestore:", productos.length);
-        renderizarCatalogo();
-        actualizarListaProductosAdmin(); // Nueva función para admin
-    }, (error) => {
-        console.error("❌ Error al cargar productos:", error);
-        if (typeof window.productsData !== 'undefined' && productos.length === 0) {
-            productos = window.productsData;
-            renderizarCatalogo();
+    // Escuchar cambios en Realtime Database
+    db.ref("productos").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Convertimos el objeto de Firebase en array y ordenamos por ID descendente
+            productos = Object.keys(data).map(key => ({
+                firestoreId: key, // Usamos firestoreId como nombre de variable para no romper el resto del código
+                ...data[key]
+            })).sort((a, b) => b.id - a.id);
+        } else {
+            console.warn("⚠️ La base de datos está vacía.");
+            productos = [];
+
+            // Auto-migración si detectamos productos locales
+            if (typeof window.productsData !== 'undefined' && window.productsData.length > 0) {
+                console.log("💡 Detectados productos locales. ¿Deseas migrarlos? Llama a 'migrarProductosAFirebase()'");
+            }
         }
+
+        console.log("📦 Productos actualizados desde Firebase:", productos.length);
+        renderizarCatalogo();
+        renderizarListaAdmin();
+    }, (error) => {
+        console.error("❌ Error de Firebase:", error);
     });
 
     renderizarCarrito();
     setupEventListeners();
 
-
-    // Alias para mantener compatibilidad si se usa en otros sitios
-    function renderizarCatalogo() { renderCatalogo(); }
-    function renderizarCarrito() { actualizarCarritoUI(); }
-    function actualizarListaProductosAdmin() { renderProductList(); }
-
-    // Configurar eventos
-    setupEventListeners();
-
-    // Configurar scroll header
+    // Iniciar el resto de módulos
     window.addEventListener("scroll", handleScroll);
-
-    // Cargar productos en admin
-    renderProductList();
-
-    // Cargar feed de Instagram (simulado)
     cargarInstagramFeed();
-
-    // Mejoras responsive del carrito
     mejorarResponsiveCarrito();
-
-    // Configurar carga de imágenes
     configurarCargaImagenes();
-
-    // Configurar botón de descarga
-    if (downloadCatalogBtn) {
-        downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
-    }
-
-    // Iniciar sistema de neuromarketing
     iniciarNotificacionesVentas();
 
     // Registrar Service Worker para PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js?v=8')
-                .then(registration => {
-                    console.log('SW registrado exitosamente:', registration.scope);
-                })
-                .catch(error => {
-                    console.log('Fallo registro SW:', error);
-                });
+                .then(reg => console.log('SW ok'))
+                .catch(err => console.log('SW error', err));
         });
     }
 }
+
+// Helpers globales para evitar errores de referencia
+function renderizarCatalogo() { if (typeof renderCatalogo === 'function') renderCatalogo(); }
+function renderizarCarrito() { if (typeof actualizarCarritoUI === 'function') actualizarCarritoUI(); }
+function renderizarListaAdmin() { if (typeof renderProductList === 'function') renderProductList(); }
+
 
 function handleScroll() {
     header.classList.toggle("scrolled", window.scrollY > 100);
@@ -588,7 +574,7 @@ function cargarInstagramFeed() {
     }
 }
 
-// CRUD Firestore
+// CRUD Realtime Database
 async function agregarProducto(e) {
     if (e) e.preventDefault();
     const submitBtn = productForm.querySelector('button[type="submit"]');
@@ -603,15 +589,15 @@ async function agregarProducto(e) {
         descripcion: document.getElementById('productDescription').value,
         imagen: productImage.value || 'https://via.placeholder.com/300',
         badge: document.getElementById('productBadge').value,
-        detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '')
+        detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '') || ["Consultar"]
     };
 
     try {
-        await db.collection("productos").add(nuevoProducto);
+        await db.ref("productos").push(nuevoProducto);
         productForm.reset();
-        urlImagePreview.classList.add('hidden');
-        fileImagePreview.classList.add('hidden');
-        alert('✅ Producto agregado a la nube');
+        if (urlImagePreview) urlImagePreview.classList.add('hidden');
+        if (fileImagePreview) fileImagePreview.classList.add('hidden');
+        alert('✅ ¡Producto subido a la nube!');
     } catch (error) {
         console.error("Error al guardar:", error);
         alert('❌ Error al guardar en Firebase: ' + error.message);
@@ -631,7 +617,7 @@ async function actualizarProducto(e) {
     const prodRef = productos.find(p => p.id === id);
 
     if (!prodRef || !prodRef.firestoreId) {
-        alert("Error: No se pudo encontrar el ID de Firestore");
+        alert("Error: No se pudo encontrar el ID en la base de datos");
         updateBtn.disabled = false;
         updateBtn.textContent = 'Actualizar Producto';
         return;
@@ -648,8 +634,8 @@ async function actualizarProducto(e) {
     };
 
     try {
-        await db.collection("productos").doc(prodRef.firestoreId).update(productoEditado);
-        alert('✅ Producto actualizado');
+        await db.ref("productos").child(prodRef.firestoreId).update(productoEditado);
+        alert('✅ Producto actualizado correctamente');
         cancelarEdicion();
     } catch (error) {
         console.error("Error al actualizar:", error);
@@ -659,6 +645,22 @@ async function actualizarProducto(e) {
         updateBtn.textContent = 'Actualizar Producto';
     }
 }
+
+async function eliminarProducto(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente de la nube?')) {
+        const prod = productos.find(p => p.id === id);
+        if (prod && prod.firestoreId) {
+            try {
+                await db.ref("productos").child(prod.firestoreId).remove();
+                alert('🗑️ Producto eliminado de la nube');
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+                alert('❌ Error al eliminar de Firebase');
+            }
+        }
+    }
+}
+
 
 async function eliminarProducto(id) {
     if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente de la nube?')) {
