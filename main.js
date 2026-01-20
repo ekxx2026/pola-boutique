@@ -82,76 +82,82 @@ function initializeElements() {
 // ===== FUNCIONES PRINCIPALES =====
 
 async function init() {
-    console.log("🚀 Inicializando Boutique...");
-    // Inicializar referencias a elementos DOM
+    console.log("🚀 Inicializando Boutique con Firebase...");
     initializeElements();
 
-    // Ocultar loading screen lo antes posible para evitar bloqueos
     if (loadingScreen) {
         setTimeout(() => {
             loadingScreen.style.opacity = "0";
             setTimeout(() => {
                 loadingScreen.style.display = "none";
             }, 800);
-        }, 500); // Reducido de 1500 a 500 para mayor respuesta
+        }, 500);
     }
 
-    // Cargar productos desde variable global (definida en products.js)
-    try {
-        if (window.productsData) {
+    // Escuchar cambios en Firestore en tiempo real
+    db.collection("productos").orderBy("id", "desc").onSnapshot((snapshot) => {
+        productos = snapshot.docs.map(doc => ({
+            firestoreId: doc.id,
+            ...doc.data()
+        }));
+        console.log("📦 Productos actualizados desde Firestore:", productos.length);
+        renderizarCatalogo();
+        actualizarListaProductosAdmin(); // Nueva función para admin
+    }, (error) => {
+        console.error("❌ Error al cargar productos:", error);
+        if (typeof window.productsData !== 'undefined' && productos.length === 0) {
             productos = window.productsData;
-            console.log("✅ Productos cargados desde products.js:", productos.length);
-        } else {
-            console.warn("⚠️ No se encontró window.productsData, intentando localStorage...");
-            productos = JSON.parse(localStorage.getItem("productos")) || [];
+            renderizarCatalogo();
         }
-    } catch (error) {
-        console.error("❌ Error cargando productos:", error);
-        productos = [];
-    }
+    });
 
-    // Renderizar catálogo inicial
-    renderCatalogo();
-    actualizarCarritoUI();
-
-    // Configurar eventos
+    renderizarCarrito();
     setupEventListeners();
+}
 
-    // Configurar scroll header
-    window.addEventListener("scroll", handleScroll);
+// Alias para mantener compatibilidad si se usa en otros sitios
+function renderizarCatalogo() { renderCatalogo(); }
+function renderizarCarrito() { actualizarCarritoUI(); }
+function actualizarListaProductosAdmin() { renderProductList(); }
 
-    // Cargar productos en admin
-    renderProductList();
+// Configurar eventos
+setupEventListeners();
 
-    // Cargar feed de Instagram (simulado)
-    cargarInstagramFeed();
+// Configurar scroll header
+window.addEventListener("scroll", handleScroll);
 
-    // Mejoras responsive del carrito
-    mejorarResponsiveCarrito();
+// Cargar productos en admin
+renderProductList();
 
-    // Configurar carga de imágenes
-    configurarCargaImagenes();
+// Cargar feed de Instagram (simulado)
+cargarInstagramFeed();
 
-    // Configurar botón de descarga
-    if (downloadCatalogBtn) {
-        downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
-    }
+// Mejoras responsive del carrito
+mejorarResponsiveCarrito();
 
-    // Iniciar sistema de neuromarketing
-    iniciarNotificacionesVentas();
+// Configurar carga de imágenes
+configurarCargaImagenes();
 
-    // Registrar Service Worker para PWA
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js?v=8')
-                .then(registration => {
-                    console.log('SW registrado exitosamente:', registration.scope);
-                })
-                .catch(error => {
-                    console.log('Fallo registro SW:', error);
-                });
-        });
-    }
+// Configurar botón de descarga
+if (downloadCatalogBtn) {
+    downloadCatalogBtn.addEventListener('click', exportarCatalogoJS);
+}
+
+// Iniciar sistema de neuromarketing
+iniciarNotificacionesVentas();
+
+// Registrar Service Worker para PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js?v=8')
+            .then(registration => {
+                console.log('SW registrado exitosamente:', registration.scope);
+            })
+            .catch(error => {
+                console.log('Fallo registro SW:', error);
+            });
+    });
+}
 }
 
 function handleScroll() {
@@ -582,6 +588,93 @@ function cargarInstagramFeed() {
     }
 }
 
+// CRUD Firestore
+async function agregarProducto(e) {
+    if (e) e.preventDefault();
+    const submitBtn = productForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+    const nuevoProducto = {
+        id: Date.now(),
+        nombre: document.getElementById('productName').value,
+        precio: parseInt(document.getElementById('productPrice').value),
+        categoria: document.getElementById('productCategory').value,
+        descripcion: document.getElementById('productDescription').value,
+        imagen: productImage.value || 'https://via.placeholder.com/300',
+        badge: document.getElementById('productBadge').value,
+        detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '')
+    };
+
+    try {
+        await db.collection("productos").add(nuevoProducto);
+        productForm.reset();
+        urlImagePreview.classList.add('hidden');
+        fileImagePreview.classList.add('hidden');
+        alert('✅ Producto agregado a la nube');
+    } catch (error) {
+        console.error("Error al guardar:", error);
+        alert('❌ Error al guardar en Firebase: ' + error.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Agregar Producto';
+    }
+}
+
+async function actualizarProducto(e) {
+    if (e) e.preventDefault();
+    const updateBtn = document.getElementById('updateProduct');
+    updateBtn.disabled = true;
+    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+    const id = parseInt(productId.value);
+    const prodRef = productos.find(p => p.id === id);
+
+    if (!prodRef || !prodRef.firestoreId) {
+        alert("Error: No se pudo encontrar el ID de Firestore");
+        updateBtn.disabled = false;
+        updateBtn.textContent = 'Actualizar Producto';
+        return;
+    }
+
+    const productoEditado = {
+        nombre: document.getElementById('productName').value,
+        precio: parseInt(document.getElementById('productPrice').value),
+        categoria: document.getElementById('productCategory').value,
+        descripcion: document.getElementById('productDescription').value,
+        imagen: productImage.value,
+        badge: document.getElementById('productBadge').value,
+        detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '')
+    };
+
+    try {
+        await db.collection("productos").doc(prodRef.firestoreId).update(productoEditado);
+        alert('✅ Producto actualizado');
+        cancelarEdicion();
+    } catch (error) {
+        console.error("Error al actualizar:", error);
+        alert('❌ Error al actualizar en Firebase');
+    } finally {
+        updateBtn.disabled = false;
+        updateBtn.textContent = 'Actualizar Producto';
+    }
+}
+
+async function eliminarProducto(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente de la nube?')) {
+        const prod = productos.find(p => p.id === id);
+        if (prod && prod.firestoreId) {
+            try {
+                await db.collection("productos").doc(prod.firestoreId).delete();
+                alert('🗑️ Producto eliminado');
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+                alert('❌ Error al eliminar');
+            }
+        }
+    }
+}
+
 // ===== ADMIN FUNCTIONS =====
 function renderProductList() {
     if (!productList) return;
@@ -937,13 +1030,24 @@ function setupEventListeners() {
 
     if (loginForm) loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const email = "admin@pola.com"; // Email por defecto que el usuario debe crear
         const password = document.getElementById('adminPassword').value;
-        if (await checkPassword(password)) {
+
+        const loginBtn = loginForm.querySelector('button[type="submit"]');
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
             loginModal.classList.remove('active');
             adminModal.classList.add('active');
             loginForm.reset();
-        } else {
-            alert('Contraseña incorrecta.');
+        } catch (error) {
+            console.error("Login Error:", error);
+            alert('❌ Error de autenticación: ' + error.message);
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Entrar al Panel';
         }
     });
 
