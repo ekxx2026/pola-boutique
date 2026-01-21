@@ -60,15 +60,10 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         return;
     }
 
-    // Observer para animacion
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('show');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
+    // GSAP ScrollTrigger Animation
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+    }
 
     filtrados.forEach((prod, index) => {
         const card = document.createElement("div");
@@ -104,7 +99,26 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         `;
 
         elements.catalogo.appendChild(card);
-        observer.observe(card);
+
+        // Individual Animation with GSAP
+        if (window.gsap) {
+            gsap.fromTo(card,
+                { opacity: 0, y: 30 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 90%",
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        } else {
+            card.classList.add('show');
+        }
 
         // Bind Events
         card.querySelector('.zoom-indicator').addEventListener('click', () => onOpenZoom(prod));
@@ -243,7 +257,20 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
 
         elements.zoomGaleria.classList.add("show");
         document.body.style.overflow = "hidden";
-        setTimeout(() => elements.zoomImg.classList.add("showZoom"), 50);
+
+        // GSAP: Silk Reveal Animation
+        if (window.gsap) {
+            gsap.fromTo(elements.zoomImg,
+                { opacity: 0, scale: 0.9, filter: "blur(10px)" },
+                { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "expo.out" }
+            );
+            gsap.fromTo(elements.zoomInfo,
+                { opacity: 0, x: 50 },
+                { opacity: 1, x: 0, duration: 0.8, delay: 0.2, ease: "power3.out" }
+            );
+        } else {
+            setTimeout(() => elements.zoomImg.classList.add("showZoom"), 50);
+        }
 
         // SEO: Update tags
         updateSEOTags(prod);
