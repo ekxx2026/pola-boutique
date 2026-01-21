@@ -30,12 +30,35 @@ export function addToCart(producto) {
         carrito.push({
             ...producto,
             cantidad: 1,
-            // Guardamos solo lo necesario
             precio: producto.precio,
             nombre: producto.nombre,
             imagen: producto.imagen
         });
     }
+
+    // === Analytics Tracking ===
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'add_to_cart', {
+            currency: 'CLP',
+            value: producto.precio,
+            items: [{
+                item_id: producto.id,
+                item_name: producto.nombre,
+                price: producto.precio,
+                quantity: 1
+            }]
+        });
+    }
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'AddToCart', {
+            content_name: producto.nombre,
+            content_ids: [producto.id],
+            content_type: 'product',
+            value: producto.precio,
+            currency: 'CLP'
+        });
+    }
+
     saveCart();
 }
 
@@ -68,26 +91,45 @@ export function getCartCount() {
     return carrito.reduce((sum, item) => sum + item.cantidad, 0);
 }
 
-// === CRO: WHATSAPP OPTIMIZADO (Fase 3.1) ===
+// === CRO: WHATSAPP OPTIMIZADO (Fase 3.2) ===
 export function generarEnlaceWhatsApp() {
     const productos = getCart();
     const WHATSAPP_NUMERO = '56962281579';
 
-    // Construir mensaje formateado
-    let mensaje = "Hola Pola Galleani! 👋\n\n";
-    mensaje += "Me interesa comprar:\n";
+    if (productos.length === 0) return null;
+
+    let mensaje = "¡Hola Pola Galleani! ✨✨\n\n";
+    mensaje += "Me encantaría realizar un pedido de los siguientes productos:\n\n";
 
     productos.forEach(p => {
         const subtotal = p.precio * p.cantidad;
-        mensaje += `• ${p.nombre} (x${p.cantidad}) - $${subtotal.toLocaleString('es-CL')}\n`;
+        mensaje += `🛍️ *${p.nombre}*\n`;
+        mensaje += `   Cantidad: ${p.cantidad}\n`;
+        mensaje += `   Precio unitario: $${p.precio.toLocaleString('es-CL')}\n`;
+        mensaje += `   Subtotal: $${subtotal.toLocaleString('es-CL')}\n\n`;
     });
 
     const total = getCartTotal();
-    mensaje += `\n💰 Total: $${total.toLocaleString('es-CL')} CLP\n\n`;
-    mensaje += `📦 Link: ${window.location.origin}\n`;
-    mensaje += "¿Cuál es el proceso de compra?";
+    mensaje += `--------------------------\n`;
+    mensaje += `💰 *TOTAL A PAGAR: $${total.toLocaleString('es-CL')} CLP*\n`;
+    mensaje += `--------------------------\n\n`;
+    mensaje += `📍 *Link de la tienda:* ${window.location.origin}\n`;
+    mensaje += "✨ ¿Me podrías confirmar disponibilidad y el proceso de pago?\n\n";
+    mensaje += "¡Muchas gracias!";
 
-    // Encode para URL
+    // Analytics (Begin Checkout)
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'begin_checkout', {
+            currency: 'CLP',
+            value: total,
+            items: productos.map(p => ({
+                item_id: p.id,
+                item_name: p.nombre,
+                quantity: p.cantidad
+            }))
+        });
+    }
+
     const encoded = encodeURIComponent(mensaje);
     return `https://wa.me/${WHATSAPP_NUMERO}?text=${encoded}`;
 }

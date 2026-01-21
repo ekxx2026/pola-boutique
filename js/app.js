@@ -58,6 +58,17 @@ async function init() {
 
     // 5. Routing
     window.addEventListener('hashchange', checkHash);
+
+    // 6. Global Accessibility: ESC to close modals
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            UI.closeZoomModal();
+            if (dom.carritoModal) dom.carritoModal.classList.remove('active');
+            if (dom.adminModal) dom.adminModal.classList.remove('active');
+            if (dom.loginModal) dom.loginModal.classList.remove('active');
+            history.pushState(null, null, ' '); // Clear hash
+        }
+    });
 }
 
 
@@ -275,10 +286,7 @@ function setupGlobalEvents(dom) {
             }
 
             const whatsappUrl = Cart.generarEnlaceWhatsApp();
-            window.open(whatsappUrl, '_blank');
-
-            // Placeholder para Analytics (Fase 3.2)
-            // gtag('event', 'begin_checkout', {...});
+            if (whatsappUrl) window.open(whatsappUrl, '_blank');
 
             UI.showToast('Redirigiendo a WhatsApp...', 'success');
         };

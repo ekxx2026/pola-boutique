@@ -193,6 +193,16 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
                     await navigator.clipboard.writeText(window.location.href);
                     showToast('Enlace copiado', 'success');
                 }
+
+                // === Analytics (Share) ===
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'share', {
+                        method: navigator.share ? 'native' : 'clipboard',
+                        content_type: 'product',
+                        item_id: prod.id
+                    });
+                }
+
             } catch (err) {
                 console.log('Share cancelled');
             }
@@ -237,6 +247,20 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
 
         // SEO: Update tags
         updateSEOTags(prod);
+
+        // === Analytics (View Item) ===
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'view_item', {
+                currency: 'CLP',
+                value: prod.precio,
+                items: [{
+                    item_id: prod.id,
+                    item_name: prod.nombre,
+                    item_category: prod.categoria,
+                    price: prod.precio
+                }]
+            });
+        }
 
     }, 200);
 }

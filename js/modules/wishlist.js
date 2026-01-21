@@ -36,5 +36,16 @@ export function toggleWishlist(productId) {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(wishlist));
     notifyListeners();
+
+    // === Analytics (Wishlist) ===
+    if (added && typeof gtag !== 'undefined') {
+        gtag('event', 'add_to_wishlist', {
+            currency: 'CLP',
+            items: [{
+                item_id: productId
+            }]
+        });
+    }
+
     return added;
 }
