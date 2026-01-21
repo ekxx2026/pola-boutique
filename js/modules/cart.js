@@ -67,3 +67,28 @@ export function getCartTotal() {
 export function getCartCount() {
     return carrito.reduce((sum, item) => sum + item.cantidad, 0);
 }
+
+// === CRO: WHATSAPP OPTIMIZADO (Fase 3.1) ===
+export function generarEnlaceWhatsApp() {
+    const productos = getCart();
+    const WHATSAPP_NUMERO = '56962281579';
+
+    // Construir mensaje formateado
+    let mensaje = "Hola Pola Galleani! 👋\n\n";
+    mensaje += "Me interesa comprar:\n";
+
+    productos.forEach(p => {
+        const subtotal = p.precio * p.cantidad;
+        mensaje += `• ${p.nombre} (x${p.cantidad}) - $${subtotal.toLocaleString('es-CL')}\n`;
+    });
+
+    const total = getCartTotal();
+    mensaje += `\n💰 Total: $${total.toLocaleString('es-CL')} CLP\n\n`;
+    mensaje += `📦 Link: ${window.location.origin}\n`;
+    mensaje += "¿Cuál es el proceso de compra?";
+
+    // Encode para URL
+    const encoded = encodeURIComponent(mensaje);
+    return `https://wa.me/${WHATSAPP_NUMERO}?text=${encoded}`;
+}
+
