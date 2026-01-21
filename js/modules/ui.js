@@ -99,26 +99,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         `;
 
         elements.catalogo.appendChild(card);
-
-        // Individual Animation with GSAP
-        if (window.gsap) {
-            gsap.fromTo(card,
-                { opacity: 0, y: 30 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.8,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 90%",
-                        toggleActions: "play none none none"
-                    }
-                }
-            );
-        } else {
-            card.classList.add('show');
-        }
+        card.classList.add('show');
 
         // Bind Events
         card.querySelector('.zoom-indicator').addEventListener('click', () => onOpenZoom(prod));
