@@ -266,9 +266,17 @@ export function setupImageHandlers() {
     const productImageUrl = document.getElementById('productImageUrl');
     const fileInput = document.getElementById('fileInput');
     const uploadButton = document.getElementById('uploadButton');
+    const uploadArea = document.getElementById('uploadArea');
     const imageType = document.getElementById('imageType');
 
-    if (loadUrlBtn) loadUrlBtn.addEventListener('click', loadFromUrl);
+    // URL Handler
+    if (loadUrlBtn) {
+        // Remove ancient onclick if possible or just override behavior
+        loadUrlBtn.onclick = (e) => {
+            e.preventDefault();
+            loadFromUrl();
+        };
+    }
 
     if (productImageUrl) {
         productImageUrl.addEventListener('keypress', (e) => {
@@ -278,36 +286,64 @@ export function setupImageHandlers() {
             }
         });
         productImageUrl.addEventListener('input', () => {
-            imageType.value = "url";
-            document.getElementById('fileImagePreview').style.display = 'none';
-            document.getElementById('filePreviewImage').src = '';
+            if (imageType) imageType.value = "url";
+            const filePreview = document.getElementById('fileImagePreview');
+            const fileImg = document.getElementById('filePreviewImage');
+            if (filePreview) filePreview.style.display = 'none';
+            if (fileImg) fileImg.src = '';
         });
     }
 
+    // File Handler
     if (fileInput) {
         fileInput.addEventListener('change', function () {
-            imageType.value = "file";
-            document.getElementById('urlImagePreview').style.display = 'none';
-            document.getElementById('urlPreviewImage').src = '';
+            if (imageType) imageType.value = "file";
+            const urlPreview = document.getElementById('urlImagePreview');
+            const urlImg = document.getElementById('urlPreviewImage');
+            if (urlPreview) urlPreview.style.display = 'none';
+            if (urlImg) urlImg.src = '';
+
             if (productImageUrl) productImageUrl.value = '';
 
             if (this.files.length > 0) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    document.getElementById('filePreviewImage').src = e.target.result;
-                    document.getElementById('fileImagePreview').style.display = 'block';
-                    // We don't set hidden input here, we handle file object in app.js
+                    const fileImg = document.getElementById('filePreviewImage');
+                    const filePreview = document.getElementById('fileImagePreview');
+                    if (fileImg) fileImg.src = e.target.result;
+                    if (filePreview) filePreview.style.display = 'block';
                 }
                 reader.readAsDataURL(this.files[0]);
             }
         });
     }
 
-    if (uploadButton) {
-        uploadButton.addEventListener('click', (e) => {
+    // Trigger File Input
+    const triggerFile = (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Avoid double bubbling
+        if (fileInput) fileInput.click();
+    };
+
+    if (uploadButton) uploadButton.onclick = triggerFile;
+    if (uploadArea) uploadArea.onclick = (e) => {
+        if (e.target !== uploadButton && e.target !== fileInput) triggerFile(e);
+    };
+
+    // Drag & Drop
+    if (uploadArea) {
+        uploadArea.ondragover = (e) => { e.preventDefault(); uploadArea.style.borderColor = '#4CAF50'; };
+        uploadArea.ondragleave = (e) => { e.preventDefault(); uploadArea.style.borderColor = '#ccc'; };
+        uploadArea.ondrop = (e) => {
             e.preventDefault();
-            if (fileInput) fileInput.click();
-        });
+            uploadArea.style.borderColor = '#ccc';
+            if (e.dataTransfer.files.length && fileInput) {
+                fileInput.files = e.dataTransfer.files;
+                // Manually trigger change event
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        };
     }
 }
 
