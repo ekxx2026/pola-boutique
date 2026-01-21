@@ -4,6 +4,7 @@ import * as Auth from './modules/auth.js';
 import * as Cart from './modules/cart.js';
 import * as UI from './modules/ui.js';
 import * as DB from './modules/db.js';
+import * as Wishlist from './modules/wishlist.js';
 
 let state = {
     productos: [],
@@ -22,13 +23,26 @@ async function init() {
     const dom = UI.initUIElements();
 
     // 2. Subscribe to Data
+    // 2. Subscribe to Data
+    const renderApp = () => {
+        UI.renderCatalog(
+            state.productos,
+            state.filtroActual,
+            (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
+            openZoom,
+            Wishlist.toggleWishlist,
+            Wishlist.getWishlist()
+        );
+    };
+
     DB.subscribeToProducts((list) => {
         state.productos = list;
-        UI.renderCatalog(state.productos, state.filtroActual, Cart.addToCart, openZoom);
+        renderApp();
         UI.renderAdminList(state.productos, startEdit, deleteProduct);
-
-        checkHash(); // Check URI after data
+        checkHash();
     });
+
+    Wishlist.subscribeToWishlist(() => renderApp());
 
     Cart.subscribeToCart(updateCartUI);
 
@@ -76,12 +90,20 @@ function openZoom(prod, updateHistory = true) {
         }
     }
 
-    UI.showZoomModal(prod, state.productos, index, (newIndex) => {
-        state.currentZoomIndex = newIndex;
-        if (state.productos[newIndex]) {
-            openZoom(state.productos[newIndex]);
-        }
-    });
+    UI.showZoomModal(
+        prod,
+        state.productos,
+        index,
+        (newIndex) => {
+            state.currentZoomIndex = newIndex;
+            if (state.productos[newIndex]) {
+                openZoom(state.productos[newIndex]);
+            }
+        },
+        (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
+        Wishlist.toggleWishlist,
+        Wishlist.getWishlist()
+    );
 }
 
 function updateCartUI(cartItems) {
@@ -188,15 +210,15 @@ async function handleProductSubmit(e) {
 
         if (state.editingProducto) {
             await DB.updateProduct(state.editingProducto.firestoreId, formData);
-            alert('✅ Producto actualizado correctamente');
+            UI.showToast('Producto actualizado correctamente', 'success');
         } else {
             await DB.addProduct(formData);
-            alert('✅ Producto creado correctamente');
+            UI.showToast('Producto creado correctamente', 'success');
         }
         cancelEdit();
     } catch (err) {
         console.error(err);
-        alert("❌ Error: " + err.message);
+        UI.showToast("Error: " + err.message, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -226,14 +248,42 @@ function setupGlobalEvents(dom) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             state.filtroActual = tab.dataset.categoria;
-            UI.renderCatalog(state.productos, state.filtroActual, Cart.addToCart, openZoom);
+            // Trigger render with current data
+            UI.renderCatalog(
+                state.productos,
+                state.filtroActual,
+                (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
+                openZoom,
+                Wishlist.toggleWishlist,
+                Wishlist.getWishlist()
+            );
         });
     });
 
     // Modals
     if (dom.carritoBtn) dom.carritoBtn.onclick = () => dom.carritoModal.classList.add('active');
     if (dom.carritoModal) dom.carritoModal.onclick = (e) => { if (e.target === dom.carritoModal) dom.carritoModal.classList.remove('active'); };
-    if (dom.vaciarCarritoBtn) dom.vaciarCarritoBtn.onclick = () => Cart.clearCart();
+    if (dom.vaciarCarrito) dom.vaciarCarrito.onclick = () => Cart.clearCart();
+
+    // CRO: Botón Comprar con WhatsApp (Fase 3.1)
+    const comprarBtn = document.getElementById('comprarCarrito');
+    if (comprarBtn) {
+        comprarBtn.onclick = () => {
+            if (Cart.getCart().length === 0) {
+                UI.showToast('El carrito está vacío', 'error');
+                return;
+            }
+
+            const whatsappUrl = Cart.generarEnlaceWhatsApp();
+            window.open(whatsappUrl, '_blank');
+
+            // Placeholder para Analytics (Fase 3.2)
+            // gtag('event', 'begin_checkout', {...});
+
+            UI.showToast('Redirigiendo a WhatsApp...', 'success');
+        };
+    }
+
 
     // Zoom Nav
     document.getElementById('prev').onclick = () => {
@@ -260,7 +310,7 @@ function setupGlobalEvents(dom) {
             dom.adminModal.classList.add('active');
             dom.loginForm.reset();
         } catch (err) {
-            alert(err.message);
+            UI.showToast(err.message, 'error');
         }
     };
     document.getElementById('cancelLogin').onclick = () => dom.loginModal.classList.remove('active');
@@ -278,7 +328,7 @@ function setupGlobalEvents(dom) {
     const sitemapBtn = document.getElementById('downloadSitemapBtn');
     if (sitemapBtn) {
         sitemapBtn.onclick = () => {
-            if (!state.productos || !state.productos.length) return alert("No hay productos.");
+            if (!state.productos || !state.productos.length) return UI.showToast("No hay productos.", 'error');
             const xml = Utils.generateSitemap(state.productos);
             const blob = new Blob([xml], { type: 'application/xml' });
             const url = URL.createObjectURL(blob);
