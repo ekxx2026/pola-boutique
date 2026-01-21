@@ -2157,4 +2157,112 @@
         }
 
         /* Hide shimmer when image is loaded (handled by Z-index naturally if opaque) 
-   or we can remove class via JS. For now, simple layer is fine. */
+           or we can remove class via JS. For now, simple layer is fine. */
+
+        /* ===== OPTIMIZACIÓN MOBILE ===== */
+        @media (max-width: 768px) {
+            #header {
+                padding: 10px 15px;
+            }
+
+            .logo {
+                max-width: 55px;
+            }
+
+            .brand-title {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+            }
+
+            .eslogan {
+                display: none;
+                /* Ahorrar espacio en móvil */
+            }
+
+            .nav-container {
+                margin-left: 10px;
+            }
+
+            .tab {
+                padding: 8px 15px;
+                font-size: 0.75rem;
+            }
+
+            .catalogo-container {
+                padding: 110px 12px 40px;
+            }
+
+            .catalogo {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .image-container {
+                height: 220px;
+            }
+
+            .card-info {
+                padding: 12px;
+            }
+
+            .nombre-producto {
+                font-size: 0.85rem;
+            }
+
+            .precio-producto {
+                font-size: 0.95rem;
+            }
+
+            .wishlist-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1.2rem;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            /* Modal Zoom Mobile */
+            .zoom-content {
+                flex-direction: column;
+                padding: 15px;
+                height: auto;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .zoom-image-container {
+                width: 100%;
+                height: 300px;
+            }
+
+            .zoom-info {
+                width: 100%;
+                padding: 15px 0;
+            }
+
+            .zoom-actions-container {
+                flex-wrap: wrap;
+            }
+
+            .btn-agregar-carrito,
+            .btn-reserva {
+                font-size: 0.9rem;
+                padding: 10px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .brand-title {
+                display: none;
+                /* Solo logo en pantallas muy pequeñas */
+            }
+
+            .catalogo {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .image-container {
+                height: 180px;
+            }
+        }
