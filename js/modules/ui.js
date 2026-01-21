@@ -169,6 +169,10 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate) {
         elements.zoomGaleria.classList.add("show");
         document.body.style.overflow = "hidden";
         setTimeout(() => elements.zoomImg.classList.add("showZoom"), 50);
+
+        // SEO: Update tags
+        updateSEOTags(prod);
+
     }, 200);
 }
 
@@ -176,7 +180,79 @@ export function closeZoomModal() {
     if (elements.zoomGaleria) {
         elements.zoomGaleria.classList.remove("show");
         document.body.style.overflow = "auto";
+        resetSEOTags();
+        // Clear hash silently if needed, but app.js will handle history
     }
+}
+
+// === SEO HELPERS ===
+function updateSEOTags(prod) {
+    // Title
+    document.title = `${prod.nombre} | Pola Galleani`;
+
+    // Meta Description
+    const desc = `Compra ${prod.nombre} - ${prod.categoria}. ${prod.descripcion || 'Moda exclusiva y elegante.'}`;
+    setMeta('description', desc);
+    setMeta('og:description', desc);
+
+    // OG Tags
+    setMeta('og:title', `${prod.nombre} | $${formatPrice(prod.precio)}`);
+    setMeta('og:image', prod.imagen);
+    setMeta('og:url', window.location.href);
+
+    // JSON-LD
+    const schema = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": prod.nombre,
+        "image": prod.imagen,
+        "description": desc,
+        "brand": {
+            "@type": "Brand",
+            "name": "Pola Galleani"
+        },
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "CLP",
+            "price": prod.precio,
+            "availability": "https://schema.org/InStock"
+        }
+    };
+    injectJSONLD(schema);
+}
+
+function resetSEOTags() {
+    document.title = "Pola Galleani | Boutique Ultra-Lujo";
+    const desc = "Descubre la última colección de moda de lujo en Pola Galleani. Vestidos, blusas y más.";
+    setMeta('description', desc);
+    setMeta('og:description', desc);
+    setMeta('og:title', "Pola Galleani | Boutique Ultra-Lujo");
+    setMeta('og:image', "https://i.ibb.co/example/default-preview.jpg"); // Fallback or keep current
+    // We don't remove JSON-LD, just let it be or clear it
+    const script = document.getElementById('json-ld-product');
+    if (script) script.remove();
+}
+
+function setMeta(name, content) {
+    let element = document.querySelector(`meta[name="${name}"]`) || document.querySelector(`meta[property="${name}"]`);
+    if (!element) {
+        element = document.createElement('meta');
+        if (name.startsWith('og:')) element.setAttribute('property', name);
+        else element.setAttribute('name', name);
+        document.head.appendChild(element);
+    }
+    element.setAttribute('content', content);
+}
+
+function injectJSONLD(data) {
+    let script = document.getElementById('json-ld-product');
+    if (!script) {
+        script = document.createElement('script');
+        script.id = 'json-ld-product';
+        script.type = 'application/ld+json';
+        document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(data);
 }
 
 // === WHATSAPP ===

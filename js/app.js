@@ -29,6 +29,7 @@ async function init() {
 
         // Hide loading once data is ready (or empty)
         UI.hideLoadingScreen();
+        checkHash(); // Check URI after data
     });
 
     Cart.subscribeToCart(updateCartUI);
@@ -42,19 +43,45 @@ async function init() {
     // 4. Bind Events
     UI.setupImageHandlers(); // Init image logic
     setupGlobalEvents(dom);
+
+    // 5. Routing
+    window.addEventListener('hashchange', checkHash);
 }
 
 
 // ===== BUSINESS LOGIC HANDLERS =====
 
-function openZoom(prod) {
+function checkHash() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#product/')) {
+        const parts = hash.split('/');
+        const id = parseInt(parts[1]);
+        if (!isNaN(id)) {
+            const prod = state.productos.find(p => p.id === id);
+            if (prod) openZoom(prod, false); // false = don't push state again
+        }
+    } else {
+        UI.closeZoomModal();
+    }
+}
+
+function openZoom(prod, updateHistory = true) {
     const index = state.productos.findIndex(p => p.id === prod.id);
     state.currentZoomIndex = index;
+
+    // Update URL logic
+    if (updateHistory) {
+        const slug = Utils.slugify(prod.nombre);
+        const newHash = `#product/${prod.id}/${slug}`;
+        if (window.location.hash !== newHash) {
+            history.pushState(null, null, newHash);
+        }
+    }
+
     UI.showZoomModal(prod, state.productos, index, (newIndex) => {
         state.currentZoomIndex = newIndex;
         if (state.productos[newIndex]) {
-            UI.showZoomModal(state.productos[newIndex], state.productos, newIndex, openZoom);
-            // Recursive hack for navigation callback, refactor later
+            openZoom(state.productos[newIndex]);
         }
     });
 }
@@ -221,7 +248,10 @@ function setupGlobalEvents(dom) {
         if (newIdx >= state.productos.length) newIdx = 0;
         openZoom(state.productos[newIdx]);
     };
-    document.querySelector('.close-zoom').onclick = () => UI.closeZoomModal();
+    document.querySelector('.close-zoom').onclick = () => {
+        UI.closeZoomModal();
+        history.pushState(null, null, ' '); // Clear hash
+    };
 
     // Login
     if (dom.loginForm) dom.loginForm.onsubmit = async (e) => {
@@ -245,4 +275,20 @@ function setupGlobalEvents(dom) {
     if (dom.cancelAdmin) dom.cancelAdmin.onclick = () => dom.adminModal.classList.remove('active');
     if (dom.productForm) dom.productForm.onsubmit = handleProductSubmit;
     if (dom.cancelEdit) dom.cancelEdit.onclick = cancelEdit;
+
+    // Sitemap
+    const sitemapBtn = document.getElementById('downloadSitemapBtn');
+    if (sitemapBtn) {
+        sitemapBtn.onclick = () => {
+            if (!state.productos || !state.productos.length) return alert("No hay productos.");
+            const xml = Utils.generateSitemap(state.productos);
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sitemap.xml';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+    }
 }

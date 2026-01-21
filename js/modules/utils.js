@@ -26,3 +26,42 @@ export function mostrarEstadoURL(mensaje, tipo, statusElementId = 'urlStatus') {
         statusDiv.style.display = mensaje ? 'block' : 'none';
     }
 }
+
+export function slugify(text) {
+    return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
+}
+
+export function generateSitemap(products) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+    // Home
+    xml += '  <url>\n';
+    xml += `    <loc>${baseUrl}</loc>\n`;
+    xml += '    <changefreq>daily</changefreq>\n';
+    xml += '    <priority>1.0</priority>\n';
+    xml += '  </url>\n';
+
+    // Products
+    products.forEach(p => {
+        const slug = slugify(p.nombre);
+        // Using hash routing for now as requested
+        const url = `${baseUrl}#product/${p.id}/${slug}`;
+
+        xml += '  <url>\n';
+        xml += `    <loc>${url}</loc>\n`;
+        xml += '    <changefreq>weekly</changefreq>\n';
+        xml += '    <priority>0.8</priority>\n';
+        // xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`; // Optional if we tracked dates
+        xml += '  </url>\n';
+    });
+
+    xml += '</urlset>';
+    return xml;
+}
