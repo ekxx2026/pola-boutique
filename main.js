@@ -609,6 +609,7 @@ async function agregarProducto(e) {
             }
         }
 
+        const detallesText = document.getElementById('productDetails') ? document.getElementById('productDetails').value : "";
         const nuevoProducto = {
             id: Date.now(),
             nombre: document.getElementById('productName').value,
@@ -617,7 +618,7 @@ async function agregarProducto(e) {
             descripcion: document.getElementById('productDescription').value,
             imagen: finalImageUrl,
             badge: document.getElementById('productBadge').value,
-            detalles: document.getElementById('productDetails').value.split('\n').filter(d => d.trim() !== '') || ["Consultar"]
+            detalles: detallesText.split('\n').filter(d => d.trim() !== '') || ["Consultar"]
         };
 
         await db.ref("productos").push(nuevoProducto);
@@ -754,49 +755,7 @@ function getBadgeClass(badgeText) {
     return "";
 }
 
-function editarProducto(id) {
-    const producto = productos.find(p => p.id === id);
-    if (!producto) return;
-
-    editingProductId = id;
-    productId.value = id;
-    isEditing.value = "true";
-
-    modoEdicion.style.display = "block";
-    formButtons.style.display = "none";
-    editButtons.style.display = "flex";
-
-    // Cargar datos
-    document.getElementById('productName').value = producto.nombre;
-    document.getElementById('productPrice').value = producto.precio;
-
-    // Imagen
-    if (producto.imagen.startsWith('data:')) {
-        imageType.value = "file";
-        filePreviewImage.src = producto.imagen;
-        fileImagePreview.style.display = 'block';
-        productImage.value = producto.imagen;
-        productImageUrl.value = '';
-        urlImagePreview.style.display = 'none';
-        urlPreviewImage.src = '';
-    } else {
-        imageType.value = "url";
-        productImageUrl.value = producto.imagen;
-        urlPreviewImage.src = producto.imagen;
-        urlImagePreview.style.display = 'block';
-        productImage.value = producto.imagen;
-        fileImagePreview.style.display = 'none';
-        filePreviewImage.src = '';
-    }
-
-    document.getElementById('productCategory').value = producto.categoria;
-    document.getElementById('productBadge').value = producto.badge || '';
-    document.getElementById('productDescription').value = producto.descripcion || '';
-
-    document.querySelector('.admin-form').scrollTop = 0;
-    renderProductList();
-    mostrarEstadoURL('Modo edición activo.', 'url-exitosa');
-}
+// Duplicate function check (Old local functions removed)
 
 
 
