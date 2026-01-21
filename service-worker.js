@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pola-galleani-v8';
+const CACHE_NAME = 'pola-galleani-v10';
 const urlsToCache = [
     '/',
     '/index.html',

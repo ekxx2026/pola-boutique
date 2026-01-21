@@ -2,7 +2,7 @@
 const WHATSAPP_NUMERO = "56962281579";
 const INSTAGRAM_URL = "https://www.instagram.com/polagalleani?igsh=MWc3bDNjMmpkNHRkYQ==";
 const DIRECCION_TIENDA = "Nva uno 1676, Santiago";
-const ADMIN_HASH = "cd0d2c4e146b03fa5a2158d45d504ec55fc9070595c5b59683d2d3df43e0d2a2"; // Hash SHA-256 de la contraseña
+
 
 // Productos: Se cargarán desde products.json
 let productos = [];
@@ -95,6 +95,24 @@ async function init() {
         }, 500);
     }
 
+    // Auth State Observer
+    auth.onAuthStateChanged(user => {
+        const btnAdmin = document.getElementById('btnAdmin');
+        if (user) {
+            console.log("👤 Admin conectado:", user.email);
+            if (btnAdmin) {
+                btnAdmin.style.opacity = '1';
+                btnAdmin.style.filter = 'none';
+            }
+        } else {
+            console.log("👤 Admin desconectado");
+            if (btnAdmin) {
+                btnAdmin.style.opacity = '0.1';
+                btnAdmin.style.filter = 'grayscale(100%)';
+            }
+        }
+    });
+
     // Escuchar cambios en Realtime Database
     db.ref("productos").on("value", (snapshot) => {
         const data = snapshot.val();
@@ -134,11 +152,18 @@ async function init() {
     // Registrar Service Worker para PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js?v=8')
+            navigator.serviceWorker.register('/service-worker.js?v=10')
                 .then(reg => console.log('SW ok'))
                 .catch(err => console.log('SW error', err));
         });
     }
+
+    // Global Error Handler for Debugging
+    window.onerror = function (msg, url, lineNo, columnNo, error) {
+        console.error('🔴 Error Global:', msg, 'en', url, 'línea', lineNo);
+        // alert('⚠️ Error Detectado: ' + msg + '\nLínea: ' + lineNo);
+        return false;
+    };
 }
 
 // Helpers globales para evitar errores de referencia
@@ -490,23 +515,25 @@ function actualizarCarritoUI() {
     });
 
     carritoTotal.textContent = total.toLocaleString('es-CL');
+}
 
-    // Agregar eventos a los botones de cantidad
-    document.querySelectorAll('.incrementar').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = parseInt(btn.dataset.id);
+// Event Delegation for Cart
+if (document.getElementById('carritoItems')) {
+    document.getElementById('carritoItems').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+
+        const id = parseInt(btn.dataset.id);
+        if (isNaN(id)) return;
+
+        if (btn.classList.contains('incrementar')) {
             const item = carrito.find(item => item.id === id);
             if (item) {
                 item.cantidad += 1;
                 localStorage.setItem("carrito", JSON.stringify(carrito));
                 actualizarCarritoUI();
             }
-        });
-    });
-
-    document.querySelectorAll('.decrementar').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = parseInt(btn.dataset.id);
+        } else if (btn.classList.contains('decrementar')) {
             const itemIndex = carrito.findIndex(item => item.id === id);
             if (itemIndex !== -1) {
                 if (carrito[itemIndex].cantidad > 1) {
@@ -517,7 +544,7 @@ function actualizarCarritoUI() {
                 localStorage.setItem("carrito", JSON.stringify(carrito));
                 actualizarCarritoUI();
             }
-        });
+        }
     });
 }
 
@@ -577,7 +604,7 @@ function cargarInstagramFeed() {
 
 // CRUD Realtime Database
 // CRUD Realtime Database con ImgBB para fotos gratis
-async function agregarProducto(e) {
+window.agregarProducto = async function (e) {
     if (e) e.preventDefault();
     const submitBtn = productForm.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
@@ -708,6 +735,78 @@ window.editarProducto = function (id) {
     mostrarEstadoURL('Modo edición activo.', 'url-exitosa');
 };
 
+
+window.actualizarProducto = async function (e) {
+    if (e) e.preventDefault();
+    const submitBtn = productForm.querySelector('.btn-actualizar') || productForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+    }
+
+    const type = imageType.value || "url";
+    let finalImageUrl = productImage.value;
+
+    try {
+        console.log("🔄 Iniciando actualización de producto...");
+
+        // Si hay un archivo seleccionado en modo edición, lo subimos a ImgBB
+        if (type === "file" && selectedFile) {
+            console.log("📤 Subiendo nueva imagen a ImgBB...");
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e";
+
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                finalImageUrl = result.data.url;
+                console.log("✅ Nueva imagen en ImgBB:", finalImageUrl);
+            } else {
+                throw new Error("Error en ImgBB: " + result.error.message);
+            }
+        } else if (type === "url") {
+            finalImageUrl = productImageUrl.value || productImage.value;
+        }
+
+        const detallesText = document.getElementById('productDetails') ? document.getElementById('productDetails').value : "";
+        const prodData = {
+            id: parseInt(productId.value),
+            nombre: document.getElementById('productName').value,
+            precio: parseInt(document.getElementById('productPrice').value),
+            categoria: document.getElementById('productCategory').value,
+            descripcion: document.getElementById('productDescription').value,
+            imagen: finalImageUrl,
+            badge: document.getElementById('productBadge').value,
+            detalles: detallesText.split('\n').filter(d => d.trim() !== '')
+        };
+
+        // Buscar el firestoreId usando el id numérico
+        const prod = productos.find(p => p.id == prodData.id);
+        if (!prod || !prod.firestoreId) {
+            throw new Error("No se encontró el ID único (firestoreId) para este producto. Intenta recargar.");
+        }
+
+        console.log("📡 Enviando actualización a Firebase:", prod.firestoreId);
+        await db.ref("productos").child(prod.firestoreId).update(prodData);
+
+        alert('✅ ¡Producto actualizado exitosamente en la nube!');
+        cancelarEdicion();
+    } catch (error) {
+        console.error("Error al actualizar:", error);
+        alert('❌ Error: ' + error.message);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Actualizar Producto';
+        }
+    }
+};
 
 
 // ===== ADMIN FUNCTIONS =====
@@ -927,15 +1026,7 @@ function mostrarEstadoURL(mensaje, tipo) {
     }
 }
 
-// ===== SEGURIDAD =====
-async function checkPassword(input) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input);
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hash));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex === ADMIN_HASH;
-}
+// ===== SEGURIDAD (Manejada por Firebase Auth) =====
 
 // ===== SETUP EVENTS =====
 function setupEventListeners() {
@@ -944,7 +1035,11 @@ function setupEventListeners() {
         tab.addEventListener('click', function () {
             if (this.classList.contains('instagram-tab')) return;
             if (this.id === 'btnAdmin') {
-                loginModal.classList.add('active');
+                if (auth.currentUser) {
+                    adminModal.classList.add('active');
+                } else {
+                    loginModal.classList.add('active');
+                }
                 return;
             }
 
@@ -987,7 +1082,7 @@ function setupEventListeners() {
 
     if (loginForm) loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = "jose.nunez.galleani@gmail.com";
+        const email = document.getElementById('adminEmail').value;
         const password = document.getElementById('adminPassword').value;
         console.log("🔑 Intentando login con:", email);
 
@@ -996,32 +1091,28 @@ function setupEventListeners() {
         loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
 
         try {
-            // MÉTODO SIEMPRE EFICAZ: Bypass local para evitar bloqueos de IP
-            if (password === "pola2026") {
-                console.log("🔓 Acceso concedido por Llave Maestra");
-                loginModal.classList.remove('active');
-                adminModal.classList.add('active');
-                loginForm.reset();
-                return;
-            }
-
-            // Si no es la clave maestra, intenta con Firebase Auth
             await auth.signInWithEmailAndPassword(email, password);
+            console.log("✅ Login exitoso");
             loginModal.classList.remove('active');
-            adminModal.classList.add('active');
+            // La UI se actualizará automáticamente con onAuthStateChanged
             loginForm.reset();
         } catch (error) {
             console.error("Login Error:", error);
-            // Si está bloqueado por IP, avisar al usuario del método alternativo
-            if (error.code === 'auth/too-many-requests') {
-                alert('⚠️ Firebase te ha bloqueado temporalmente por seguridad. \n\nUsa la Llave Maestra de emergencia para entrar ahora mismo.');
-            } else {
-                alert('❌ Error: ' + error.message);
-            }
+            alert('❌ Error: ' + error.message);
         } finally {
             loginBtn.disabled = false;
             loginBtn.textContent = 'Entrar al Panel';
         }
+    });
+
+    // Logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) logoutBtn.addEventListener('click', () => {
+        auth.signOut().then(() => {
+            console.log('👋 Sesión cerrada');
+            adminModal.classList.remove('active');
+            alert('Has cerrado sesión correctamente');
+        });
     });
 
     // Admin
@@ -1044,9 +1135,9 @@ function setupEventListeners() {
         e.preventDefault();
         const editing = isEditing.value === "true";
         if (editing) {
-            actualizarProducto(e);
+            window.actualizarProducto(e);
         } else {
-            agregarProducto(e);
+            window.agregarProducto(e);
         }
     });
 
@@ -1159,7 +1250,7 @@ window.cargarProductoLocal = function (nombre) {
 
 
 // ===== UTILIDAD DE MIGRACIÓN (SÓLO PARA USO INICIAL) =====
-async function migrarProductosAFirebase() {
+window.migrarProductosAFirebase = async function () {
     if (!window.productsData || window.productsData.length === 0) {
         alert("❌ No hay productos locales para migrar.");
         return;

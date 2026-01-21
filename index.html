@@ -266,6 +266,10 @@
             <h3>🔐 Acceso Administrador</h3>
             <form id="loginForm">
                 <div class="form-group">
+                    <label for="adminEmail">Email</label>
+                    <input type="email" id="adminEmail" required aria-required="true" placeholder="admin@ejemplo.com">
+                </div>
+                <div class="form-group">
                     <label for="adminPassword">Contraseña</label>
                     <input type="password" id="adminPassword" required aria-required="true"
                         placeholder="Ingresa la contraseña">
@@ -285,6 +289,10 @@
             <div class="form-header">
                 <h3>🔧 Panel de Administración</h3>
                 <div style="display: flex; gap: 10px; align-items: center;">
+                    <button type="button" id="logoutBtn" title="Cerrar Sesión"
+                        style="background: #ef5350; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <span>🚪</span> Salir
+                    </button>
                     <button type="button" id="migrateBtn" title="Migrar de forma segura (manual)"
                         onclick="window.toggleLocalList()"
                         style="background: #FF9800; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
@@ -399,6 +407,12 @@
             <div id="localProductSection" class="product-list-container"
                 style="display: none; border-top: 2px dashed #FF9800; margin-top: 20px; padding-top: 20px;">
                 <h4 style="color: #E65100;">📂 Productos Pendientes de Subir (Local)</h4>
+                <div style="margin: 10px 0; display: flex; gap: 10px;">
+                    <button type="button" onclick="migrarProductosAFirebase()"
+                        style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">
+                        ☁️ Migrar TODO a la Nube (Auto)
+                    </button>
+                </div>
                 <p style="font-size: 0.8rem; margin-bottom: 10px; color: #666;">Haz clic en uno para cargarlo en el
                     formulario, luego elige su foto y guárdalo.</p>
                 <div id="localProductList" class="product-list"></div>
@@ -450,7 +464,7 @@
         </div>
 
         <div class="copyright">
-            © 2024 Boutique Ultra-Lujo. Todos los derechos reservados. | Ropa al alcance de todos
+            © 2024 Boutique Ultra-Lujo. Todos los derechos reservados. | Ropa al alcance de todos | v2.0 (Seguro)
         </div>
     </footer>
     <!-- Elementos de Neuromarketing -->
@@ -475,7 +489,7 @@
 
     <!-- Scripts -->
     <script src="products.js"></script>
-    <script src="main.js?v=33"></script>
+    <script src="main.js?v=37"></script>
     <!-- Deploy Trigger v2: Force Vercel Update -->
 </body>
 
