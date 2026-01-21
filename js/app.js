@@ -27,8 +27,6 @@ async function init() {
         UI.renderCatalog(state.productos, state.filtroActual, Cart.addToCart, openZoom);
         UI.renderAdminList(state.productos, startEdit, deleteProduct);
 
-        // Hide loading once data is ready (or empty)
-        UI.hideLoadingScreen();
         checkHash(); // Check URI after data
     });
 

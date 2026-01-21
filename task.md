@@ -15,6 +15,6 @@ Basado en el Informe de Auditoría 2026.
 - [x] Generar Sitemap XML básico <!-- id: 5 -->
 
 ## UX y Contenido
-- [ ] **Actualizar Copywriting** (Cambiar slogan a "Lujo Accesible", mejorar textos) <!-- id: 6 -->
-- [ ] Eliminar "Loading Screen" artificial para mejorar carga percibida <!-- id: 7 -->
+- [x] **Actualizar Copywriting** (Cambiar slogan a "Lujo Accesible", mejorar textos) <!-- id: 6 -->
+- [x] Eliminar "Loading Screen" artificial para mejorar carga percibida <!-- id: 7 -->
 - [ ] Mejorar navegación por teclado en modales (Accesibilidad) <!-- id: 8 -->
