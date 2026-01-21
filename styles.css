@@ -201,12 +201,8 @@
             transition: var(--transicion);
             text-transform: uppercase;
             letter-spacing: 3px;
-        }
-
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        position: relative;
-        white-space: nowrap;
+            position: relative;
+            white-space: nowrap;
         }
 
         .tab:hover {
@@ -538,18 +534,22 @@
         }
 
         .card-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 500;
             margin-bottom: 8px;
             color: var(--color-negro);
-            line-height: 1.3;
+            line-height: 1.2;
+            letter-spacing: 1px;
         }
 
         .card-price {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--color-oro);
+            font-family: 'Tenor Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--color-oro-oscuro);
             margin-bottom: 15px;
+            letter-spacing: 1.5px;
         }
 
         .card-description {
@@ -690,18 +690,23 @@
         }
 
         .zoom-info h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 300;
             margin-bottom: 15px;
             color: var(--color-negro);
-            line-height: 1.3;
+            line-height: 1.1;
+            font-style: italic;
+            letter-spacing: 1px;
         }
 
         .zoom-price {
+            font-family: 'Tenor Sans', sans-serif;
             font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--color-oro);
+            font-weight: 400;
+            color: var(--color-oro-oscuro);
             margin-bottom: 20px;
+            letter-spacing: 3px;
         }
 
         .zoom-badge {
@@ -733,10 +738,12 @@
         }
 
         .zoom-details h4 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 10px;
+            font-family: 'Tenor Sans', sans-serif;
+            margin-bottom: 15px;
             color: var(--color-negro);
-            font-size: 1.1rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .zoom-details ul {
@@ -1278,10 +1285,13 @@
         }
 
         .testimonios h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            font-weight: 300;
             margin-bottom: 40px;
             color: var(--color-negro);
+            font-style: italic;
+            letter-spacing: 2px;
         }
 
         .testimonios-grid {
@@ -1344,10 +1354,13 @@
         }
 
         .footer-section h4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 500;
             margin-bottom: 20px;
             color: var(--color-oro);
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         .footer-section p {
