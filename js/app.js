@@ -40,6 +40,7 @@ async function init() {
     });
 
     // 4. Bind Events
+    UI.setupImageHandlers(); // Init image logic
     setupGlobalEvents(dom);
 }
 
@@ -102,6 +103,7 @@ function updateCartUI(cartItems) {
 
 function startEdit(prod) {
     state.editingProducto = prod;
+    document.getElementById('productId').value = prod.id; // Sync hidden ID
     UI.fillProductForm(prod);
     document.getElementById('modoEdicion').style.display = 'block';
     document.getElementById('formButtons').style.display = 'none';
@@ -111,49 +113,68 @@ function startEdit(prod) {
 
 function cancelEdit() {
     state.editingProducto = null;
+    document.getElementById('productId').value = '';
     document.getElementById('productForm').reset();
     document.getElementById('modoEdicion').style.display = 'none';
     document.getElementById('formButtons').style.display = 'flex';
     document.getElementById('editButtons').style.display = 'none';
+
+    // Reset image previews
+    document.getElementById('urlImagePreview').style.display = 'none';
+    document.getElementById('fileImagePreview').style.display = 'none';
+    document.getElementById('urlPreviewImage').src = '';
+    document.getElementById('filePreviewImage').src = '';
+    document.getElementById('imageType').value = 'url';
 }
 
 async function handleProductSubmit(e) {
     e.preventDefault();
-    // Gather form data
-    const nombre = document.getElementById('productName').value;
-    const precio = parseInt(document.getElementById('productPrice').value);
-    const categoria = document.getElementById('productCategory').value;
-    // ... complete mapping from UI form ...
-
-    // For MVP migration, we stick to the existing logic concept
-    // But implementation details are complex with image upload.
-    // For risk management, we might keep admin logic in main.js for now?
-    // NO, let's commit to the refactor.
-
-    const formData = {
-        nombre,
-        precio,
-        categoria,
-        descripcion: document.getElementById('productDescription').value,
-        badge: document.getElementById('productBadge').value,
-        detalles: document.getElementById('productDetails').value.split('\n'),
-        id: state.editingProducto ? state.editingProducto.id : Date.now(),
-        // Imagen handling is missing here for brevity within this tool execution
-        // We will need to bind the upload logic from utils/db
-        imagen: document.getElementById('productImage').value || "https://via.placeholder.com/300"
-    };
+    const btn = e.submitter || document.querySelector('#productForm button[type="submit"]'); // Fallback for submitter
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
     try {
+        const type = document.getElementById('imageType').value;
+        let finalImageUrl = document.getElementById('productImage').value;
+        const fileInput = document.getElementById('fileInput');
+
+        // Handle File Upload
+        if (type === "file" && fileInput.files.length > 0) {
+            finalImageUrl = await DB.subirImagenImgBB(fileInput.files[0]);
+            console.log("✅ Imagen subida a ImgBB:", finalImageUrl);
+        } else if (type === "url") {
+            finalImageUrl = document.getElementById('productImageUrl').value || document.getElementById('productImage').value;
+        }
+
+        // Fallback or validation
+        if (!finalImageUrl) throw new Error("Debes proporcionar una imagen (URL o Archivo)");
+
+        const formData = {
+            nombre: document.getElementById('productName').value,
+            precio: parseInt(document.getElementById('productPrice').value),
+            categoria: document.getElementById('productCategory').value,
+            descripcion: document.getElementById('productDescription').value,
+            badge: document.getElementById('productBadge').value,
+            detalles: document.getElementById('productDetails').value.split('\n').filter(l => l.trim().length > 0),
+            id: state.editingProducto ? state.editingProducto.id : Date.now(),
+            imagen: finalImageUrl
+        };
+
         if (state.editingProducto) {
             await DB.updateProduct(state.editingProducto.firestoreId, formData);
-            alert('Producto actualizado');
+            alert('✅ Producto actualizado correctamente');
         } else {
             await DB.addProduct(formData);
-            alert('Producto creado');
+            alert('✅ Producto creado correctamente');
         }
         cancelEdit();
     } catch (err) {
-        alert("Error: " + err.message);
+        console.error(err);
+        alert("❌ Error: " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
 

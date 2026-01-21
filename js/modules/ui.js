@@ -233,5 +233,111 @@ export function fillProductForm(prod) {
     elements.productDescription.value = prod.descripcion || '';
     elements.productBadge.value = prod.badge || '';
     elements.productDetails.value = (prod.detalles || []).join('\n');
-    // Image handling logic would go here (complex, handled in main app for now)
+    // Image handling logic
+    const imgType = document.getElementById('imageType');
+    const pImage = document.getElementById('productImage');
+    const pImageUrl = document.getElementById('productImageUrl');
+    const fileIn = document.getElementById('fileInput');
+    const filePrev = document.getElementById('filePreviewImage');
+    const urlPrev = document.getElementById('urlPreviewImage');
+
+    if (prod.imagen && prod.imagen.startsWith('data:')) {
+        imgType.value = "file";
+        filePrev.src = prod.imagen;
+        document.getElementById('fileImagePreview').style.display = 'block';
+        pImage.value = prod.imagen;
+        pImageUrl.value = '';
+        document.getElementById('urlImagePreview').style.display = 'none';
+        urlPrev.src = '';
+    } else {
+        imgType.value = "url";
+        pImageUrl.value = prod.imagen || '';
+        urlPrev.src = prod.imagen || '';
+        document.getElementById('urlImagePreview').style.display = prod.imagen ? 'block' : 'none';
+        pImage.value = prod.imagen || '';
+        document.getElementById('fileImagePreview').style.display = 'none';
+        filePrev.src = '';
+    }
+}
+
+// === IMAGE HANDLING ===
+export function setupImageHandlers() {
+    const loadUrlBtn = document.getElementById('loadUrlButton');
+    const productImageUrl = document.getElementById('productImageUrl');
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const imageType = document.getElementById('imageType');
+
+    if (loadUrlBtn) loadUrlBtn.addEventListener('click', loadFromUrl);
+
+    if (productImageUrl) {
+        productImageUrl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                loadFromUrl();
+            }
+        });
+        productImageUrl.addEventListener('input', () => {
+            imageType.value = "url";
+            document.getElementById('fileImagePreview').style.display = 'none';
+            document.getElementById('filePreviewImage').src = '';
+        });
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function () {
+            imageType.value = "file";
+            document.getElementById('urlImagePreview').style.display = 'none';
+            document.getElementById('urlPreviewImage').src = '';
+            if (productImageUrl) productImageUrl.value = '';
+
+            if (this.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('filePreviewImage').src = e.target.result;
+                    document.getElementById('fileImagePreview').style.display = 'block';
+                    // We don't set hidden input here, we handle file object in app.js
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+
+    if (uploadButton) {
+        uploadButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (fileInput) fileInput.click();
+        });
+    }
+}
+
+function loadFromUrl() {
+    const inputUrl = document.getElementById("productImageUrl");
+    const imgPreview = document.getElementById("urlPreviewImage");
+    const containerPreview = document.getElementById("urlImagePreview");
+    const inputHidden = document.getElementById("productImage");
+    const inputType = document.getElementById("imageType");
+
+    if (!inputUrl) return;
+    const url = inputUrl.value.trim();
+    if (!url) {
+        alert("Por favor, ingresa una URL.");
+        return;
+    }
+
+    if (imgPreview) imgPreview.src = '';
+    if (containerPreview) containerPreview.style.display = 'block';
+
+    const imgTest = new Image();
+    imgTest.crossOrigin = "Anonymous";
+    imgTest.onload = function () {
+        if (imgPreview) imgPreview.src = url;
+        if (inputHidden) inputHidden.value = url;
+        if (inputType) inputType.value = "url";
+    };
+    imgTest.onerror = function () {
+        if (containerPreview) containerPreview.style.display = 'none';
+        alert("No se pudo cargar la imagen. Verifica el enlace.");
+    };
+    imgTest.src = url;
 }
