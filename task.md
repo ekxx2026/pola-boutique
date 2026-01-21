@@ -18,3 +18,14 @@ Basado en el Informe de Auditoría 2026.
 - [x] **Actualizar Copywriting** (Cambiar slogan a "Lujo Accesible", mejorar textos) <!-- id: 6 -->
 - [x] Eliminar "Loading Screen" artificial para mejorar carga percibida <!-- id: 7 -->
 - [ ] Mejorar navegación por teclado en modales (Accesibilidad) <!-- id: 8 -->
+
+## Fase 2: Excelencia y Conversión
+- [x] **Implementar Notificaciones "Toast"** (Reemplazar alerts) <!-- id: 9 -->
+- [x] **Lista de Deseos (Wishlist)** <!-- id: 10 -->
+- [x] **Botón Compartir (Share API)** <!-- id: 11 -->
+- [x] **Skeleton Loading** (Carga progresiva) <!-- id: 12 -->
+
+## Fase 3: Optimización y Conversión (Auditoría Pro 2026)
+- [x] **CRO: Optimizar Funnel WhatsApp** (Mensaje pre-rellenado) <!-- id: 13 -->
+- [ ] **Analytics: GA4 + Meta Pixel** (Tracking completo) <!-- id: 14 -->
+- [ ] **Accesibilidad: WCAG 2.1 AA** (Trap focus, ESC, contraste) <!-- id: 15 -->

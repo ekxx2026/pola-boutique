@@ -277,34 +277,46 @@ export function closeZoomModal() {
 // === SEO HELPERS ===
 function updateSEOTags(prod) {
     // Title
-    document.title = `${prod.nombre} | Pola Galleani`;
+    document.title = `${prod.nombre} | Pola Galleani Boutique`;
 
     // Meta Description
-    const desc = `Compra ${prod.nombre} - ${prod.categoria}. ${prod.descripcion || 'Moda exclusiva y elegante.'}`;
+    const desc = `✨ Descubre ${prod.nombre} en Pola Galleani. ${prod.descripcion || 'Moda exclusiva de alta calidad.'} Reserva hoy por WhatsApp.`;
     setMeta('description', desc);
     setMeta('og:description', desc);
 
     // OG Tags
-    setMeta('og:title', `${prod.nombre} | $${formatPrice(prod.precio)}`);
+    const priceFormatted = `$${prod.precio.toLocaleString('es-CL')}`;
+    setMeta('og:title', `${prod.nombre} | ${priceFormatted}`);
     setMeta('og:image', prod.imagen);
     setMeta('og:url', window.location.href);
+    setMeta('og:type', 'product');
 
-    // JSON-LD
+    // Product specific meta for Social/Google
+    setMeta('product:price:amount', prod.precio);
+    setMeta('product:price:currency', 'CLP');
+    setMeta('product:availability', 'instock');
+    setMeta('product:condition', 'new');
+
+    // JSON-LD (Schema.org)
     const schema = {
         "@context": "https://schema.org/",
         "@type": "Product",
         "name": prod.nombre,
-        "image": prod.imagen,
+        "image": [prod.imagen],
         "description": desc,
+        "sku": `POLA-${prod.id}`,
         "brand": {
             "@type": "Brand",
             "name": "Pola Galleani"
         },
         "offers": {
             "@type": "Offer",
+            "url": window.location.href,
             "priceCurrency": "CLP",
             "price": prod.precio,
-            "availability": "https://schema.org/InStock"
+            "availability": "https://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition",
+            "priceValidUntil": "2026-12-31"
         }
     };
     injectJSONLD(schema);
