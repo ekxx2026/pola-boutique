@@ -45,7 +45,7 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Tenor Sans', 'Montserrat', sans-serif;
             background-color: var(--color-fondo);
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             background-blend-mode: overlay;
@@ -129,12 +129,13 @@
         }
 
         .brand-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
             font-weight: 300;
             color: var(--color-negro);
-            letter-spacing: 5px;
+            letter-spacing: 8px;
             text-transform: uppercase;
+            font-style: italic;
         }
 
         .eslogan {
@@ -194,14 +195,18 @@
         .tab {
             padding: 12px 25px;
             cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 400;
             color: #888;
             transition: var(--transicion);
-            letter-spacing: 2px;
             text-transform: uppercase;
-            position: relative;
-            white-space: nowrap;
+            letter-spacing: 3px;
+        }
+
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        position: relative;
+        white-space: nowrap;
         }
 
         .tab:hover {
