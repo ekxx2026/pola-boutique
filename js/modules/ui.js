@@ -72,11 +72,40 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         card.style.transitionDelay = `${delay}s`;
 
         let badgeHtml = '';
+        let mobileLabel = '';
+
         if (prod.badge) {
             const cls = getBadgeClass(prod.badge);
-            badgeHtml = `<div class="badge ${cls}" data-label="${prod.badge}"></div>`;
+            const lower = prod.badge.toLowerCase();
+            let icon = '★';
+            let label = prod.badge;
+            if (lower.includes('nuevo')) {
+                icon = '🆕';
+                label = 'Nuevo de esta temporada';
+                mobileLabel = 'Nuevo';
+            } else if (lower.includes('vendido')) {
+                icon = '★';
+                label = 'Más vendido de la boutique';
+                mobileLabel = 'Top ventas';
+            } else if (lower.includes('edición')) {
+                icon = '✨';
+                label = 'Edición limitada, pocas unidades';
+                mobileLabel = 'Edición limitada';
+            } else {
+                mobileLabel = prod.badge;
+            }
+            badgeHtml = `<div class="badge ${cls}" data-label="${label}"><span class="badge-icon">${icon}</span></div>`;
         }
-        if (index % 4 === 0) badgeHtml += `<div class="badge escasez" data-label="Stock limitado"></div>`;
+
+        const hasEscasez = index % 4 === 0;
+        if (hasEscasez) {
+            badgeHtml += `<div class="badge escasez" data-label="Stock limitado, últimas unidades"><span class="badge-icon">!</span></div>`;
+            if (!mobileLabel) mobileLabel = 'Stock limitado';
+        }
+
+        const mobileLabelHtml = mobileLabel
+            ? `<div class="badge-label-mobile">${mobileLabel}</div>`
+            : '';
 
         card.innerHTML = `
             ${badgeHtml}
@@ -88,6 +117,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
                 </button>
             </div>
             <div class="card-content">
+                ${mobileLabelHtml}
                 <h3 class="card-title">${prod.nombre}</h3>
                 <div class="card-price">$${formatPrice(prod.precio)}</div>
                 <p class="card-description">${prod.descripcion || 'Diseño exclusivo.'}</p>

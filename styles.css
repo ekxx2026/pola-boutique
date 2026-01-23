@@ -153,7 +153,12 @@
             gap: 15px;
             margin-top: 0;
             margin-left: 0;
-            padding-left: 5px;
+            padding-left: 0;
+        }
+
+        .header-whatsapp {
+            margin-left: 10px;
+            white-space: nowrap;
         }
 
         /* ===== NAVEGACIÓN EN LÍNEA ===== */
@@ -509,6 +514,20 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+        }
+
+        .badge-icon {
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+
+        .badge-label-mobile {
+            display: none;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--color-oro-oscuro);
+            margin-bottom: 4px;
         }
 
         .badge::after {
@@ -1587,6 +1606,10 @@
 
             .contact-info {
                 gap: 5px;
+            }
+
+            .badge-label-mobile {
+                display: inline-block;
             }
 
 
