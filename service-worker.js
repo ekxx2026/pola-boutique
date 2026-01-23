@@ -3,7 +3,7 @@ const urlsToCache = [
     '/',
     '/index.html',
     '/styles.css',
-    '/main.js',
+    '/js/app.js',
     '/products.js',
     '/logo.png',
     '/logo-pola.png'

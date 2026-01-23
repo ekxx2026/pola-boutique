@@ -13,6 +13,8 @@ let state = {
     editingProducto: null
 };
 
+let activeFocusTrap = null;
+
 // Auto-run init
 document.addEventListener('DOMContentLoaded', init);
 
@@ -52,23 +54,37 @@ async function init() {
         onLogout: () => UI.toggleAdmin(false)
     });
 
-    // 4. Bind Events
-    UI.setupImageHandlers(); // Init image logic
+    UI.setupImageHandlers();
     setupGlobalEvents(dom);
+
+    if (dom.header) {
+        window.addEventListener('scroll', () => {
+            dom.header.classList.toggle('scrolled', window.scrollY > 100);
+        });
+    }
+
+    initSalesToast();
+    initInstagramFeed();
 
     // 5. Routing
     window.addEventListener('hashchange', checkHash);
 
-    // 6. Global Accessibility: ESC to close modals
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             UI.closeZoomModal();
             if (dom.carritoModal) dom.carritoModal.classList.remove('active');
             if (dom.adminModal) dom.adminModal.classList.remove('active');
             if (dom.loginModal) dom.loginModal.classList.remove('active');
-            history.pushState(null, null, ' '); // Clear hash
+            history.pushState(null, null, ' ');
+            releaseFocusTrap();
         }
     });
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js?v=10').catch(() => {});
+        });
+    }
 }
 
 
@@ -153,7 +169,100 @@ function updateCartUI(cartItems) {
         });
     }
 
-    if (totalEl) totalEl.textContent = `$${Utils.formatPrice(Cart.getCartTotal())}`;
+    if (totalEl) totalEl.textContent = Utils.formatPrice(Cart.getCartTotal());
+}
+
+
+function initSalesToast() {
+    const nombres = ["María", "Claudia", "Fernanda", "Javiera", "Valentina", "Pola", "Andrea"];
+    const comunas = ["Santiago", "Las Condes", "Vitacura", "Providencia", "Ñuñoa", "Lo Barnechea"];
+
+    const toast = document.getElementById('salesToast');
+    const toastImg = document.getElementById('salesToastImg');
+    const toastTitle = document.getElementById('salesToastTitle');
+    const toastText = document.getElementById('salesToastText');
+
+    if (!toast || !toastImg || !toastTitle || !toastText) return;
+
+    function mostrarRandom() {
+        if (!state.productos || !state.productos.length) return;
+
+        const randomProd = state.productos[Math.floor(Math.random() * state.productos.length)];
+        const randomNombre = nombres[Math.floor(Math.random() * nombres.length)];
+        const randomComuna = comunas[Math.floor(Math.random() * comunas.length)];
+
+        toastImg.src = randomProd.imagen;
+        toastTitle.textContent = randomNombre + " de " + randomComuna;
+        toastText.textContent = "Acaba de reservar un " + randomProd.nombre;
+
+        toast.classList.add('active');
+
+        setTimeout(() => {
+            toast.classList.remove('active');
+        }, 5000);
+    }
+
+    setTimeout(() => {
+        mostrarRandom();
+        const intervalo = Math.random() * (60000 - 30000) + 30000;
+        setInterval(mostrarRandom, intervalo);
+    }, 10000);
+}
+
+function initInstagramFeed() {
+    const imagenes = [
+        "https://i.ibb.co/0pgLs2ds/Ajustes-de-Imagen-15.jpg",
+        "https://i.ibb.co/Z1YdX5vt/Ajustes-de-Imagen-14.jpg",
+        "https://i.ibb.co/bjXyPNCW/Ajustes-de-Imagen-13.jpg",
+        "https://i.ibb.co/WWz6y4By/Ajustes-de-Imagen-12.jpg",
+        "https://i.ibb.co/LhtVL4F1/Ajustes-de-Imagen-11.jpg",
+        "https://i.ibb.co/HDv2Pzpy/Ajustes-de-Imagen-8.jpg"
+    ];
+
+    const feed = document.getElementById('instagramFeed');
+    if (!feed) return;
+
+    feed.innerHTML = '';
+    imagenes.forEach((img, index) => {
+        const item = document.createElement('div');
+        item.className = 'instagram-item';
+        item.innerHTML = `<img src="${img}" alt="Publicación de Instagram ${index + 1}" loading="lazy">`;
+        feed.appendChild(item);
+    });
+}
+
+
+function trapFocus(modal) {
+    releaseFocusTrap();
+    if (!modal) return;
+    const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusable = Array.from(modal.querySelectorAll(selectors)).filter(el => !el.disabled && el.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    function onKeyDown(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }
+    modal.addEventListener('keydown', onKeyDown);
+    first.focus();
+    activeFocusTrap = { modal, onKeyDown };
+}
+
+function releaseFocusTrap() {
+    if (!activeFocusTrap) return;
+    activeFocusTrap.modal.removeEventListener('keydown', activeFocusTrap.onKeyDown);
+    activeFocusTrap = null;
 }
 
 
@@ -251,8 +360,13 @@ function setupGlobalEvents(dom) {
         tab.addEventListener('click', () => {
             if (tab.classList.contains('instagram-tab')) return;
             if (tab.id === 'btnAdmin') {
-                if (auth.currentUser) dom.adminModal.classList.add('active');
-                else dom.loginModal.classList.add('active');
+                if (auth.currentUser) {
+                    dom.adminModal.classList.add('active');
+                    trapFocus(dom.adminModal);
+                } else {
+                    dom.loginModal.classList.add('active');
+                    trapFocus(dom.loginModal);
+                }
                 return;
             }
 
@@ -271,9 +385,18 @@ function setupGlobalEvents(dom) {
         });
     });
 
-    // Modals
-    if (dom.carritoBtn) dom.carritoBtn.onclick = () => dom.carritoModal.classList.add('active');
-    if (dom.carritoModal) dom.carritoModal.onclick = (e) => { if (e.target === dom.carritoModal) dom.carritoModal.classList.remove('active'); };
+    if (dom.carritoBtn) dom.carritoBtn.onclick = () => {
+        if (dom.carritoModal) {
+            dom.carritoModal.classList.add('active');
+            trapFocus(dom.carritoModal);
+        }
+    };
+    if (dom.carritoModal) dom.carritoModal.onclick = (e) => {
+        if (e.target === dom.carritoModal) {
+            dom.carritoModal.classList.remove('active');
+            releaseFocusTrap();
+        }
+    };
     if (dom.vaciarCarrito) dom.vaciarCarrito.onclick = () => Cart.clearCart();
 
     // CRO: Botón Comprar con WhatsApp (Fase 3.1)
@@ -309,7 +432,6 @@ function setupGlobalEvents(dom) {
         history.pushState(null, null, ' '); // Clear hash
     };
 
-    // Login
     if (dom.loginForm) dom.loginForm.onsubmit = async (e) => {
         e.preventDefault();
         try {
@@ -317,18 +439,25 @@ function setupGlobalEvents(dom) {
             dom.loginModal.classList.remove('active');
             dom.adminModal.classList.add('active');
             dom.loginForm.reset();
+            releaseFocusTrap();
         } catch (err) {
             UI.showToast(err.message, 'error');
         }
     };
-    document.getElementById('cancelLogin').onclick = () => dom.loginModal.classList.remove('active');
+    document.getElementById('cancelLogin').onclick = () => {
+        dom.loginModal.classList.remove('active');
+        releaseFocusTrap();
+    };
 
-    // Admin
     if (dom.logoutBtn) dom.logoutBtn.onclick = () => {
         Auth.logout();
         dom.adminModal.classList.remove('active');
+        releaseFocusTrap();
     };
-    if (dom.cancelAdmin) dom.cancelAdmin.onclick = () => dom.adminModal.classList.remove('active');
+    if (dom.cancelAdmin) dom.cancelAdmin.onclick = () => {
+        dom.adminModal.classList.remove('active');
+        releaseFocusTrap();
+    };
     if (dom.productForm) dom.productForm.onsubmit = handleProductSubmit;
     if (dom.cancelEdit) dom.cancelEdit.onclick = cancelEdit;
 
@@ -348,3 +477,140 @@ function setupGlobalEvents(dom) {
         };
     }
 }
+
+function renderLocalProductList() {
+    const localList = document.getElementById('localProductList');
+    if (!localList || !window.productsData) return;
+
+    localList.innerHTML = '';
+
+    const pendientes = window.productsData.filter(lp =>
+        !state.productos.some(p => (p.nombre || '').toLowerCase().trim() === (lp.nombre || '').toLowerCase().trim())
+    );
+
+    if (!pendientes.length) {
+        localList.innerHTML = '<p style="text-align: center; padding: 10px; color: green;">✅ ¡Todos los productos están en la nube!</p>';
+        return;
+    }
+
+    pendientes.forEach(prod => {
+        const item = document.createElement('div');
+        item.className = 'product-item';
+        item.style.borderLeft = '4px solid #FF9800';
+        item.innerHTML = `
+            <div class="product-item-info">
+                <strong>${prod.nombre}</strong>
+                <small>${prod.categoria} - $${Utils.formatPrice(prod.precio)}</small>
+            </div>
+            <button class="btn-importar" onclick="window.cargarProductoLocal('${prod.nombre.replace(/'/g, "\\'")}')" 
+                    style="background: #E65100; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                📥 Cargar Datos
+            </button>
+        `;
+        localList.appendChild(item);
+    });
+}
+
+window.toggleLocalList = function () {
+    const section = document.getElementById('localProductSection');
+    if (section) {
+        const isHidden = section.style.display === 'none' || section.style.display === '';
+        section.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) renderLocalProductList();
+    }
+};
+
+window.cargarProductoLocal = function (nombre) {
+    if (!window.productsData) return;
+    const prod = window.productsData.find(p => p.nombre === nombre);
+    if (!prod) return;
+
+    const nameEl = document.getElementById('productName');
+    const priceEl = document.getElementById('productPrice');
+    const catEl = document.getElementById('productCategory');
+    const descEl = document.getElementById('productDescription');
+    const badgeEl = document.getElementById('productBadge');
+    const detailsEl = document.getElementById('productDetails');
+
+    if (!nameEl || !priceEl || !catEl || !descEl || !badgeEl || !detailsEl) return;
+
+    nameEl.value = prod.nombre;
+    priceEl.value = prod.precio;
+    catEl.value = prod.categoria;
+    descEl.value = prod.descripcion || "";
+    badgeEl.value = prod.badge || "";
+    detailsEl.value = (prod.detalles || []).join('\n');
+
+    const adminForm = document.querySelector('.admin-form');
+    if (adminForm) adminForm.scrollTop = 0;
+
+    UI.showToast(`Datos de "${prod.nombre}" cargados. Ahora elige la foto y guarda.`, 'info');
+};
+
+window.migrarProductosAFirebase = async function () {
+    if (!window.productsData || !window.productsData.length) {
+        UI.showToast('No hay productos locales para migrar.', 'error');
+        return;
+    }
+
+    if (!confirm(`¿Deseas sincronizar ${window.productsData.length} productos?\n\nNota: Solo se subirán los que no existan en la nube.`)) return;
+
+    const migrationBtn = document.getElementById('migrateBtn');
+    if (migrationBtn) {
+        migrationBtn.disabled = true;
+        migrationBtn.innerHTML = '<span>⏳</span> Migrando...';
+    }
+
+    let subidos = 0;
+    let saltados = 0;
+
+    try {
+        for (const prod of window.productsData) {
+            const existe = state.productos.some(p => (p.nombre || '').toLowerCase().trim() === (prod.nombre || '').toLowerCase().trim());
+
+            if (existe) {
+                saltados++;
+                continue;
+            }
+
+            await DB.migrarProductoIndividual(prod, prod.imagen);
+            subidos++;
+        }
+
+        UI.showToast(`Sincronización terminada. Subidos: ${subidos}. Ya existían: ${saltados}.`, 'success');
+    } catch (error) {
+        console.error('Error en migración:', error);
+        UI.showToast('Error en migración: ' + error.message, 'error');
+    } finally {
+        if (migrationBtn) {
+            migrationBtn.disabled = false;
+            migrationBtn.innerHTML = '<span>📷</span> Importar Manual';
+        }
+    }
+};
+
+window.exportarCatalogoJS = function () {
+    if (!state.productos || !state.productos.length) {
+        UI.showToast('No hay productos para exportar.', 'error');
+        return;
+    }
+
+    const exportList = state.productos.map(p => {
+        const clone = { ...p };
+        delete clone.firestoreId;
+        return clone;
+    });
+
+    const jsonContent = JSON.stringify(exportList, null, 2);
+    const jsContent = `window.productsData = ${jsonContent};`;
+
+    const dataStr = "data:text/javascript;charset=utf-8," + encodeURIComponent(jsContent);
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "products.js");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+
+    UI.showToast("Catálogo descargado como 'products.js'.", 'success');
+};

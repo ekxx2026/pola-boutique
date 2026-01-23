@@ -6,7 +6,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/0pgLs2ds/Ajustes-de-Imagen-15.jpg",
     "categoria": "Vestido",
     "badge": "Nuevo",
-    "descripcion": "Vestido negro de noche con diseño elegante y sofisticado. Perfecto para eventos formales.",
+    "descripcion": "Vestido largo negro de noche con caída fluida y brillo sutil. Diseñado para estilizar la figura y aportar presencia en cualquier evento de gala.",
     "detalles": [
       "Tallas: S, M, L",
       "Color: Negro",
@@ -21,7 +21,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/Z1YdX5vt/Ajustes-de-Imagen-14.jpg",
     "categoria": "Vestido",
     "badge": "Más vendido",
-    "descripcion": "Vestido rojo largo con escote elegante. Ideal para bodas y eventos especiales.",
+    "descripcion": "Vestido rojo de gala con escote clásico y falda de movimiento suave. Ideal para bodas, graduaciones y cenas elegantes donde quieras ser el centro de atención.",
     "detalles": [
       "Tallas: XS, S, M",
       "Color: Rojo pasión",
@@ -36,7 +36,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/bjXyPNCW/Ajustes-de-Imagen-13.jpg",
     "categoria": "Blusa",
     "badge": "Nuevo",
-    "descripcion": "Blusa blanca con detalles de encaje y manga larga. Fresca y sofisticada para el día.",
+    "descripcion": "Blusa blanca de corte limpio con detalles de encaje delicado en mangas y cuello. Ligera, fresca y perfecta para elevar un look diario a nivel boutique.",
     "detalles": [
       "Tallas: XS, S, M, L",
       "Color: Blanco",
@@ -51,7 +51,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/WWz6y4By/Ajustes-de-Imagen-12.jpg",
     "categoria": "Short",
     "badge": "",
-    "descripcion": "Producto boutique.",
+    "descripcion": "Short de denim estructurado con cintura favorecedora y lavado moderno. Pensado para combinar comodidad absoluta con un look de boutique.",
     "detalles": [
       "Consultar detalles"
     ]
@@ -63,7 +63,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/LhtVL4F1/Ajustes-de-Imagen-11.jpg",
     "categoria": "Vestido",
     "badge": "Edición limitada",
-    "descripcion": "Vestido floral con estampado vibrante y diseño fluido. Perfecto para el verano.",
+    "descripcion": "Vestido floral veraniego con estampado vibrante y silueta fluida. Acompaña el movimiento del cuerpo y resalta la piel bronceada en días de sol.",
     "detalles": [
       "Talla única ajustable",
       "Estampado: Floral tropical",
@@ -78,7 +78,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/HDv2Pzpy/Ajustes-de-Imagen-8.jpg",
     "categoria": "Blusa",
     "badge": "Nuevo",
-    "descripcion": "Blusa azul con corte casual y mangas acampanadas. Versátil y cómoda.",
+    "descripcion": "Blusa azul de textura suave con mangas ligeramente acampanadas. Versátil, cómoda y lo suficientemente elegante para reuniones, trabajo o salidas nocturnas.",
     "detalles": [
       "Tallas: S, M, L",
       "Color: Azul cielo",
@@ -93,7 +93,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/WN7Pmkjt/Ajustes-de-Imagen-9.jpg",
     "categoria": "Palazo",
     "badge": "Más vendido",
-    "descripcion": "Palazo negro con caída perfecta y detalles dorados. Elegante para ocasiones especiales.",
+    "descripcion": "Palazo negro de corte amplio con caída impecable y detalles dorados en la cintura. Una pieza protagonista que alarga visualmente la silueta y viste sola.",
     "detalles": [
       "Talla única",
       "Color: Negro con detalles dorados",
@@ -108,7 +108,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/LD5JWRz4/Ajustes-de-Imagen-1.jpg",
     "categoria": "Vestido",
     "badge": "Nuevo",
-    "descripcion": "Vestido blanco con diseño minimalista y corte recto. Moderno y sofisticado.",
+    "descripcion": "Vestido blanco minimalista de líneas puras y corte recto. Combina la elegancia de la alta costura con la simpleza perfecta para eventos de día o de noche.",
     "detalles": [
       "Tallas: XS, S, M",
       "Color: Blanco puro",
@@ -123,7 +123,7 @@ window.productsData = [
     "imagen": "https://i.ibb.co/fVS0Vgtf/Ajustes-de-Imagen-4.jpg",
     "categoria": "Short",
     "badge": "Más vendido",
-    "descripcion": "Short blanco de tela con corte casual y bolsillos. Fresco y moderno.",
+    "descripcion": "Short blanco de tela ligera con bolsillos funcionales y corte limpio. Versátil para looks urbanos o playeros, manteniendo siempre una estética pulida.",
     "detalles": [
       "Tallas: 26-32",
       "Color: Blanco",

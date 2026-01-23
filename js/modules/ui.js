@@ -238,6 +238,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
 
         elements.zoomGaleria.classList.add("show");
         document.body.style.overflow = "hidden";
+        trapFocusZoom();
 
         // GSAP: Silk Reveal Animation
         if (window.gsap) {
@@ -278,7 +279,7 @@ export function closeZoomModal() {
         elements.zoomGaleria.classList.remove("show");
         document.body.style.overflow = "auto";
         resetSEOTags();
-        // Clear hash silently if needed, but app.js will handle history
+        releaseZoomFocus();
     }
 }
 
@@ -331,13 +332,12 @@ function updateSEOTags(prod) {
 }
 
 function resetSEOTags() {
-    document.title = "Pola Galleani | Boutique Ultra-Lujo";
-    const desc = "Descubre la última colección de moda de lujo en Pola Galleani. Vestidos, blusas y más.";
+    document.title = "Pola Galleani | Lujo Accesible";
+    const desc = "Descubre nuestra Nueva Colección 2026. Diseños exclusivos que definen tu estilo. Ropa al alcance de todos con calidad de alta costura.";
     setMeta('description', desc);
     setMeta('og:description', desc);
-    setMeta('og:title', "Pola Galleani | Boutique Ultra-Lujo");
-    setMeta('og:image', "https://i.ibb.co/example/default-preview.jpg"); // Fallback or keep current
-    // We don't remove JSON-LD, just let it be or clear it
+    setMeta('og:title', "Pola Galleani | Lujo Accesible");
+    setMeta('og:image', "https://pola-boutique.vercel.app/og-image.png");
     const script = document.getElementById('json-ld-product');
     if (script) script.remove();
 }
@@ -362,6 +362,43 @@ function injectJSONLD(data) {
         document.head.appendChild(script);
     }
     script.textContent = JSON.stringify(data);
+}
+
+function trapFocusZoom() {
+    if (!elements.zoomGaleria) return;
+    const modal = elements.zoomGaleria;
+    const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusable = Array.from(modal.querySelectorAll(selectors)).filter(el => !el.disabled && el.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    function onKeyDown(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }
+    modal.addEventListener('keydown', onKeyDown);
+    first.focus();
+    modal.dataset.trapHandler = 'true';
+    modal._trapHandler = onKeyDown;
+}
+
+function releaseZoomFocus() {
+    if (!elements.zoomGaleria) return;
+    const modal = elements.zoomGaleria;
+    if (modal._trapHandler) {
+        modal.removeEventListener('keydown', modal._trapHandler);
+        delete modal._trapHandler;
+    }
 }
 
 // === WHATSAPP ===

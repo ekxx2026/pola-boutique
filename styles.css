@@ -1,4 +1,4 @@
-﻿        /* ===== SCROLLBAR DE LUJO ===== */
+        /* ===== SCROLLBAR DE LUJO ===== */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -178,8 +178,8 @@
 
         /* ===== CATÁLOGO MEJORADO CON IMÁGENES OPTIMIZADAS ===== */
         .catalogo-container {
-            padding: 100px 40px 60px;
-            /* Reducido drásticamente para header horizontal */
+            padding: 120px 40px 60px;
+            /* Margen extra para despegar el título del header */
             max-width: 1600px;
             margin: 0 auto;
         }
@@ -405,8 +405,8 @@
 
         /* ===== CATÁLOGO MEJORADO CON IMÁGENES OPTIMIZADAS ===== */
         .catalogo-container {
-            padding: 160px 40px 60px;
-            /* Reducido de 200px */
+            padding: 180px 40px 60px;
+            /* Más espacio superior para evitar solape con el header fijo */
             max-width: 1600px;
             margin: 0 auto;
         }
@@ -1567,8 +1567,8 @@
 
 
             .catalogo-container {
-                padding: 130px 20px 40px;
-                /* Ajuste para header móvil */
+                padding: 150px 20px 40px;
+                /* Un poco más de espacio para que el título no quede pegado al header en móvil */
             }
 
             .catalogo {
@@ -2207,7 +2207,7 @@
             }
 
             .catalogo-container {
-                padding: 110px 12px 40px;
+                padding: 140px 12px 40px;
             }
 
             .catalogo {
