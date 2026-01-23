@@ -152,9 +152,8 @@
             align-items: center;
             gap: 15px;
             margin-top: 0;
-            margin-left: auto;
-            /* Empuja a la derecha si es necesario */
-            padding-left: 20px;
+            margin-left: 0;
+            padding-left: 5px;
         }
 
         /* ===== NAVEGACIÓN EN LÍNEA ===== */
@@ -495,18 +494,44 @@
 
         .badge {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 8px 18px;
-            border-radius: 50px;
-            font-size: 0.7rem;
+            top: 18px;
+            left: 18px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
             z-index: 2;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .badge::after {
+            content: attr(data-label);
+            position: absolute;
+            left: 50%;
+            bottom: -8px;
+            transform: translateX(-50%) translateY(6px);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: var(--transicion);
+        }
+
+        .badge:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
         .badge.nuevo {
@@ -2057,6 +2082,17 @@
             font-size: 1.2rem;
         }
 
+        #btnAdmin {
+            color: transparent !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        #btnAdmin span {
+            display: none;
+        }
+
         /* === WISHLIST === */
         .wishlist-btn {
             position: absolute;
@@ -2272,15 +2308,14 @@
         @media (max-width: 480px) {
             .brand-title {
                 display: none;
-                /* Solo logo en pantallas muy pequeñas */
             }
 
             .catalogo {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
 
             .image-container {
-                height: 180px;
+                height: 220px;
             }
         }

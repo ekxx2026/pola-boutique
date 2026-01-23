@@ -74,9 +74,9 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         let badgeHtml = '';
         if (prod.badge) {
             const cls = getBadgeClass(prod.badge);
-            badgeHtml = `<div class="badge ${cls}">${prod.badge}</div>`;
+            badgeHtml = `<div class="badge ${cls}" data-label="${prod.badge}"></div>`;
         }
-        if (index % 4 === 0) badgeHtml += `<div class="badge escasez">¡Stock Limitado!</div>`;
+        if (index % 4 === 0) badgeHtml += `<div class="badge escasez" data-label="Stock limitado"></div>`;
 
         card.innerHTML = `
             ${badgeHtml}
