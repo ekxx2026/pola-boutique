@@ -9,6 +9,7 @@ import * as Wishlist from './modules/wishlist.js';
 let state = {
     productos: [],
     filtroActual: "Todos",
+    tagFilter: null,
     currentZoomIndex: 0,
     editingProducto: null
 };
@@ -33,7 +34,8 @@ async function init() {
             (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
             openZoom,
             Wishlist.toggleWishlist,
-            Wishlist.getWishlist()
+            Wishlist.getWishlist(),
+            state.tagFilter
         );
     };
 
@@ -372,6 +374,8 @@ function setupGlobalEvents(dom) {
 
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
+            state.tagFilter = null;
+            document.querySelectorAll('.tag-pill').forEach(pill => pill.classList.remove('active'));
             state.filtroActual = tab.dataset.categoria;
             // Trigger render with current data
             UI.renderCatalog(
@@ -380,7 +384,32 @@ function setupGlobalEvents(dom) {
                 (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
                 openZoom,
                 Wishlist.toggleWishlist,
-                Wishlist.getWishlist()
+                Wishlist.getWishlist(),
+                state.tagFilter
+            );
+        });
+    });
+
+    document.querySelectorAll('.tag-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            const tag = pill.dataset.tag;
+            if (!tag) return;
+            const isActive = pill.classList.contains('active');
+            document.querySelectorAll('.tag-pill').forEach(p => p.classList.remove('active'));
+            if (isActive) {
+                state.tagFilter = null;
+            } else {
+                pill.classList.add('active');
+                state.tagFilter = tag;
+            }
+            UI.renderCatalog(
+                state.productos,
+                state.filtroActual,
+                (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
+                openZoom,
+                Wishlist.toggleWishlist,
+                Wishlist.getWishlist(),
+                state.tagFilter
             );
         });
     });

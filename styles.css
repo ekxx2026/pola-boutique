@@ -188,6 +188,39 @@
             margin: 0 auto;
         }
 
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tag-pill {
+            border-radius: 999px;
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+            cursor: pointer;
+            transition: var(--transicion);
+        }
+
+        .tag-pill:hover {
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--color-negro);
+        }
+
+        .tag-pill.active {
+            background: var(--color-oro);
+            color: var(--color-negro);
+            border-color: var(--color-oro);
+        }
+
         .tabs {
             display: flex;
             justify-content: center;
@@ -561,19 +594,18 @@
         }
 
         .badge.nuevo {
-            background: linear-gradient(135deg, var(--color-oro), var(--color-oro-claro));
-            color: var(--color-blanco);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            background: radial-gradient(circle at 30% 30%, #ffffff, #f4efe8);
+            color: var(--color-oro-oscuro);
         }
 
         .badge.masvendido {
-            background: linear-gradient(135deg, #1A1A1A, #444);
-            color: white;
+            background: radial-gradient(circle at 30% 30%, #111827, #020617);
+            color: #f9fafb;
         }
 
         .badge.edicion {
-            background: linear-gradient(135deg, #C5A028, #EED172);
-            color: black;
+            background: linear-gradient(135deg, #4b1f2f, #7c203a);
+            color: #fef2f2;
         }
 
         .card-content {

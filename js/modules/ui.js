@@ -35,7 +35,7 @@ export function hideLoadingScreen() {
 }
 
 // === CATALOGO ===
-export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZoom, onToggleWishlist, wishlistState = []) {
+export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZoom, onToggleWishlist, wishlistState = [], tagFilter = null) {
     if (!elements.catalogo) return;
     elements.catalogo.innerHTML = "";
 
@@ -49,7 +49,29 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         return;
     }
 
-    const filtrados = filtro === "Todos" ? productos : productos.filter(p => p.categoria === filtro);
+    let filtrados = productos;
+
+    if (filtro && filtro !== "Todos") {
+        filtrados = filtrados.filter(p => p.categoria === filtro);
+    }
+
+    if (tagFilter) {
+        const tf = tagFilter.toLowerCase();
+        if (tf === 'musthave') {
+            filtrados = filtrados.filter(p => (p.badge || '').toLowerCase().includes('vendido'));
+        } else if (tf === 'justarrived') {
+            filtrados = filtrados.filter(p => (p.badge || '').toLowerCase().includes('nuevo'));
+        } else if (tf === 'exclusive') {
+            filtrados = filtrados.filter(p => (p.badge || '').toLowerCase().includes('edición'));
+        } else if (tf === 'sostenible') {
+            filtrados = filtrados.filter(p => (p.descripcion || '').toLowerCase().includes('sostenible'));
+        } else if (tf === 'trendy2026') {
+            filtrados = filtrados.filter(p =>
+                (p.descripcion || '').includes('2026') ||
+                (p.badge || '').includes('2026')
+            );
+        }
+    }
 
     if (filtrados.length === 0) {
         elements.catalogo.innerHTML = `
@@ -81,16 +103,16 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
             let label = prod.badge;
             if (lower.includes('nuevo')) {
                 icon = '🆕';
-                label = 'Nuevo de esta temporada';
-                mobileLabel = 'Nuevo';
+                label = 'New In · SS26';
+                mobileLabel = 'New In';
             } else if (lower.includes('vendido')) {
                 icon = '★';
-                label = 'Más vendido de la boutique';
-                mobileLabel = 'Top ventas';
+                label = 'Most Loved · Favorito';
+                mobileLabel = 'Top Pick';
             } else if (lower.includes('edición')) {
                 icon = '✨';
-                label = 'Edición limitada, pocas unidades';
-                mobileLabel = 'Edición limitada';
+                label = 'Edición limitada · 1 de 50';
+                mobileLabel = 'Limited';
             } else {
                 mobileLabel = prod.badge;
             }
