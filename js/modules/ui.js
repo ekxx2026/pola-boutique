@@ -103,16 +103,16 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
             let label = prod.badge;
             if (lower.includes('nuevo')) {
                 icon = '🆕';
-                label = 'New In · SS26';
-                mobileLabel = 'New In';
+                label = 'Nuevo · Colección 2026';
+                mobileLabel = 'Nuevo';
             } else if (lower.includes('vendido')) {
                 icon = '★';
-                label = 'Most Loved · Favorito';
-                mobileLabel = 'Top Pick';
+                label = 'Más vendido · Favorito';
+                mobileLabel = 'Más vendido';
             } else if (lower.includes('edición')) {
                 icon = '✨';
                 label = 'Edición limitada · 1 de 50';
-                mobileLabel = 'Limited';
+                mobileLabel = 'Edición limitada';
             } else {
                 mobileLabel = prod.badge;
             }

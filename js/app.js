@@ -66,7 +66,6 @@ async function init() {
     }
 
     initSalesToast();
-    initInstagramFeed();
 
     // 5. Routing
     window.addEventListener('hashchange', checkHash);
@@ -84,7 +83,7 @@ async function init() {
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js?v=10').catch(() => {});
+            navigator.serviceWorker.register('/service-worker.js?v=11').catch(() => {});
         });
     }
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pola-galleani-v10';
+const CACHE_NAME = 'pola-galleani-v11';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -9,7 +9,7 @@ const urlsToCache = [
     '/logo-pola.png'
 ];
 
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
     // Force the waiting service worker to become the active service worker
     self.skipWaiting();
     event.waitUntil(
