@@ -177,6 +177,13 @@ function updateCartUI(cartItems) {
 function initSalesToast() {
     const nombres = ["María", "Claudia", "Fernanda", "Javiera", "Valentina", "Pola", "Andrea"];
     const comunas = ["Santiago", "Las Condes", "Vitacura", "Providencia", "Ñuñoa", "Lo Barnechea"];
+    const avatares = [
+        "https://randomuser.me/api/portraits/women/32.jpg",
+        "https://randomuser.me/api/portraits/women/44.jpg",
+        "https://randomuser.me/api/portraits/women/67.jpg",
+        "https://randomuser.me/api/portraits/men/12.jpg",
+        "https://randomuser.me/api/portraits/men/45.jpg"
+    ];
 
     const toast = document.getElementById('salesToast');
     const toastImg = document.getElementById('salesToastImg');
@@ -185,14 +192,19 @@ function initSalesToast() {
 
     if (!toast || !toastImg || !toastTitle || !toastText) return;
 
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('salesToastShown') === '1') {
+        return;
+    }
+
     function mostrarRandom() {
         if (!state.productos || !state.productos.length) return;
 
         const randomProd = state.productos[Math.floor(Math.random() * state.productos.length)];
         const randomNombre = nombres[Math.floor(Math.random() * nombres.length)];
         const randomComuna = comunas[Math.floor(Math.random() * comunas.length)];
+        const randomAvatar = avatares[Math.floor(Math.random() * avatares.length)];
 
-        toastImg.src = randomProd.imagen;
+        toastImg.src = randomAvatar;
         toastTitle.textContent = randomNombre + " de " + randomComuna;
         toastText.textContent = "Acaba de reservar un " + randomProd.nombre;
 
@@ -201,13 +213,14 @@ function initSalesToast() {
         setTimeout(() => {
             toast.classList.remove('active');
         }, 5000);
+
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('salesToastShown', '1');
+        }
     }
 
-    setTimeout(() => {
-        mostrarRandom();
-        const intervalo = Math.random() * (60000 - 30000) + 30000;
-        setInterval(mostrarRandom, intervalo);
-    }, 10000);
+    const delay = Math.random() * (60000 - 30000) + 30000;
+    setTimeout(mostrarRandom, delay);
 }
 
 function initInstagramFeed() {

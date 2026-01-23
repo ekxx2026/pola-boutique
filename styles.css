@@ -1694,7 +1694,7 @@
 
         @media (max-width: 768px) {
             #header {
-                padding: 10px 15px;
+                padding: 6px 10px;
                 flex-wrap: wrap;
                 /* Permitir que baje si es necesario */
             }
@@ -1706,7 +1706,7 @@
 
             .nav-container {
                 margin-left: 0;
-                margin-top: 5px;
+                margin-top: 0;
                 order: 3;
                 /* Poner tabs abajo del todo si falta espacio */
                 width: 100%;
@@ -1724,13 +1724,13 @@
 
 
             .catalogo-container {
-                padding: 150px 20px 40px;
+                padding: 120px 16px 32px;
                 /* Un poco más de espacio para que el título no quede pegado al header en móvil */
             }
 
             .catalogo {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 25px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
             }
 
             .image-container {
@@ -1813,11 +1813,11 @@
             }
 
             .catalogo {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .image-container {
-                height: 300px;
+                height: 220px;
             }
 
             .zoom-content {
@@ -1947,23 +1947,25 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: #25D366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--color-oro-oscuro);
+            width: 56px;
+            height: 56px;
+            border-radius: 999px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            box-shadow: var(--sombra-fuerte);
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
             z-index: 1000;
             text-decoration: none;
             transition: var(--transicion);
+            border: 1px solid rgba(212, 175, 55, 0.8);
         }
 
         .whatsapp-float:hover {
-            transform: scale(1.1) rotate(10deg);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
         }
 
         .whatsapp-float span {
@@ -2443,11 +2445,11 @@
             }
 
             .catalogo {
-                grid-template-columns: 1fr;
-                gap: 12px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
             }
 
             .image-container {
-                height: 220px;
+                height: 190px;
             }
         }
