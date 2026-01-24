@@ -468,6 +468,43 @@ function setupGlobalEvents(dom) {
         if (newIdx >= state.productos.length) newIdx = 0;
         openZoom(state.productos[newIdx]);
     };
+    // Swipe lateral en móviles para navegar en zoom
+    (function enableZoomSwipe() {
+        const img = document.getElementById('zoomImg');
+        const modal = document.getElementById('zoomGaleria');
+        if (!img || !modal) return;
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
+        const threshold = 40; // px
+        img.addEventListener('touchstart', (e) => {
+            const t = e.changedTouches[0];
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+        }, { passive: true });
+        img.addEventListener('touchend', (e) => {
+            const t = e.changedTouches[0];
+            touchEndX = t.clientX;
+            touchEndY = t.clientY;
+            const dx = touchEndX - touchStartX;
+            const dy = Math.abs(touchEndY - touchStartY);
+            // Aceptar solo gestos principalmente horizontales
+            if (Math.abs(dx) > threshold && dy < 60) {
+                if (dx < 0) {
+                    // swipe izquierda -> siguiente
+                    let newIdx = state.currentZoomIndex + 1;
+                    if (newIdx >= state.productos.length) newIdx = 0;
+                    openZoom(state.productos[newIdx]);
+                } else {
+                    // swipe derecha -> anterior
+                    let newIdx = state.currentZoomIndex - 1;
+                    if (newIdx < 0) newIdx = state.productos.length - 1;
+                    openZoom(state.productos[newIdx]);
+                }
+            }
+        }, { passive: true });
+    })();
     document.querySelector('.close-zoom').onclick = () => {
         UI.closeZoomModal();
         history.pushState(null, null, ' '); // Clear hash

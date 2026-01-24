@@ -122,10 +122,10 @@
                 <div class="tab" data-categoria="Short" role="tab" aria-selected="false">Shorts</div>
                 <div class="tab" data-categoria="Vestido" role="tab" aria-selected="false">Vestidos</div>
                 <div class="tab" data-categoria="Blusa" role="tab" aria-selected="false">Blusas</div>
-                <div class="tab" data-categoria="Palazo" role="tab" aria-selected="false">Palazos</div>
+                <div class="tab" data-categoria="Palazo" role="tab" aria-selected="false">Palazzos</div>
                 <button class="tab instagram-tab" aria-label="Visitar nuestro Instagram"
                     onclick="window.open('https://www.instagram.com/polagalleani?igsh=MWc3bDNjMmpkNHRkYQ==', '_blank')">
-                    <span>📷</span> @polagalleani
+                    <span class="instagram-icon">📷</span><span class="instagram-label">@polagalleani</span>
                 </button>
                 <a href="https://wa.me/56962281579" class="whatsapp-button header-whatsapp" target="_blank"
                     aria-label="Contactar por WhatsApp">
@@ -243,6 +243,10 @@
                         </ul>
                     </div>
 
+                    <button id="zoomSizeGuideToggle" class="size-guide-toggle" type="button">
+                        Guía de tallas
+                    </button>
+
                     <div class="zoom-recommendations">
                         <h4>Más para ti</h4>
                         <div id="recommendationsGrid" class="recommendations-grid">
@@ -270,10 +274,61 @@
         </div>
     </div>
 
+    <!-- Guía de tallas -->
+    <div class="size-guide-overlay" id="sizeGuideOverlay" aria-hidden="true">
+        <div class="size-guide-backdrop"></div>
+        <div class="size-guide-panel" role="dialog" aria-modal="true" aria-labelledby="sizeGuideTitle">
+            <button class="size-guide-close" id="sizeGuideClose" aria-label="Cerrar guía de tallas">✕</button>
+            <h3 id="sizeGuideTitle">Guía de tallas</h3>
+            <p class="size-guide-intro">
+                Las medidas son aproximadas y pueden variar levemente según la prenda. Si dudas entre dos tallas, elige la más grande o escríbenos por WhatsApp.
+            </p>
+            <table class="size-guide-table">
+                <thead>
+                    <tr>
+                        <th>Talla</th>
+                        <th>Busto</th>
+                        <th>Cintura</th>
+                        <th>Cadera</th>
+                    </tr>
+                </thead>
+                <tbody id="sizeGuideBody">
+                    <tr>
+                        <td>S</td>
+                        <td>84-88 cm</td>
+                        <td>64-68 cm</td>
+                        <td>90-94 cm</td>
+                    </tr>
+                    <tr>
+                        <td>M</td>
+                        <td>88-94 cm</td>
+                        <td>68-74 cm</td>
+                        <td>94-100 cm</td>
+                    </tr>
+                    <tr>
+                        <td>L</td>
+                        <td>94-100 cm</td>
+                        <td>74-80 cm</td>
+                        <td>100-106 cm</td>
+                    </tr>
+                    <tr>
+                        <td>XL</td>
+                        <td>100-108 cm</td>
+                        <td>80-88 cm</td>
+                        <td>106-114 cm</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="size-guide-note">
+                Para vestidos tipo oversize o palazzos fluidos, la caída puede ser más suelta de lo indicado.
+            </p>
+        </div>
+    </div>
+
     <!-- Carrito de Compras -->
     <div class="carrito-modal" id="carritoModal">
         <div class="carrito-content">
-            <h3>🛒 Tu Carrito</h3>
+            <h3>🛒 Tu Selección</h3>
             <div id="carritoItems">
                 <!-- Los items del carrito se cargan aquí -->
             </div>
@@ -281,7 +336,7 @@
                 Total: $<span id="carritoTotal">0</span>
             </div>
             <div class="carrito-acciones">
-                <button class="btn-vaciar" id="vaciarCarrito">Vaciar Carrito</button>
+                <button class="btn-vaciar" id="vaciarCarrito">Vaciar selección</button>
                 <button class="btn-comprar" id="comprarCarrito">Confirmar por WhatsApp</button>
             </div>
             <p class="carrito-note">
@@ -397,7 +452,7 @@
                         <option value="Short">Short</option>
                         <option value="Vestido">Vestido</option>
                         <option value="Blusa">Blusa</option>
-                        <option value="Palazo">Palazo</option>
+                        <option value="Palazo">Palazzos</option>
                     </select>
                 </div>
 

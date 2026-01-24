@@ -118,14 +118,18 @@
             align-items: center;
             gap: 15px;
             transition: var(--transicion);
+            position: relative;
+            overflow: visible;
         }
 
         .logo {
-            max-width: 90px;
-            /* Aumentado de 50px */
+            max-width: 120px;
+            /* Logo más protagonista en pantallas grandes */
             height: auto;
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
             transition: var(--transicion);
+            position: relative;
+            z-index: 2;
         }
 
         .brand-title {
@@ -145,6 +149,48 @@
             margin-top: 5px;
             font-weight: 500;
             text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            inset: -40px -60px;
+            background-image: url('img/mariposas-dorado-negro.png');
+            background-repeat: no-repeat;
+            background-size: 130% auto;
+            background-position: 0% 100%;
+            opacity: 0.45;
+            pointer-events: none;
+            z-index: 1;
+            animation: butterflies-fly 18s ease-in-out infinite;
+        }
+
+        @keyframes butterflies-fly {
+            0% {
+                transform: translateX(-20%) translateY(15%) scale(0.9);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 0.4;
+            }
+
+            50% {
+                transform: translateX(0%) translateY(0) scale(1.02);
+                opacity: 0.55;
+            }
+
+            85% {
+                transform: translateX(18%) translateY(-10%) scale(1.05);
+                opacity: 0.15;
+            }
+
+            100% {
+                transform: translateX(22%) translateY(-15%) scale(1.05);
+                opacity: 0;
+            }
         }
 
         .contact-info {
@@ -278,8 +324,15 @@
             background: transparent;
         }
 
-        .instagram-tab span {
+        .instagram-icon {
+            margin-right: 4px;
             font-size: 1.1rem;
+        }
+
+        .instagram-label {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         /* ===== CARRITO DE COMPRAS ===== */
@@ -349,7 +402,7 @@
             background: var(--color-glass);
             backdrop-filter: var(--blur);
             -webkit-backdrop-filter: var(--blur);
-            padding: 45px;
+            padding: 36px 32px 28px;
             border-radius: 32px;
             width: 100%;
             max-width: 550px;
@@ -363,7 +416,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #eee;
         }
 
@@ -376,7 +429,7 @@
 
         .carrito-item-info {
             flex: 1;
-            margin-left: 15px;
+            margin-left: 12px;
         }
 
         .carrito-item-titulo {
@@ -416,8 +469,8 @@
 
         .carrito-acciones {
             display: flex;
-            gap: 15px;
-            margin-top: 24px;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .carrito-note {
@@ -642,6 +695,10 @@
             margin-bottom: 20px;
             flex-grow: 1;
             line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .card-actions {
@@ -704,6 +761,20 @@
             -webkit-backdrop-filter: blur(12px);
         }
 
+        #zoomGaleria::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('img/mariposas-dorado-negro.png');
+            background-repeat: no-repeat;
+            background-size: 65% auto;
+            background-position: center top;
+            opacity: 0.35;
+            pointer-events: none;
+            mix-blend-mode: normal;
+            z-index: 0;
+        }
+
         #zoomGaleria.show {
             display: flex;
             opacity: 1;
@@ -727,6 +798,7 @@
             gap: 40px;
             align-items: center;
             position: relative;
+            z-index: 1;
         }
 
         .zoom-image-container {
@@ -761,7 +833,7 @@
 
         .zoom-info {
             background: var(--color-glass);
-            padding: 45px;
+            padding: 38px 34px 30px;
             border-radius: 40px;
             width: 440px;
             box-shadow: var(--sombra-fuerte);
@@ -771,6 +843,7 @@
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
+            color: #000;
         }
 
         .zoom-info h3 {
@@ -782,6 +855,8 @@
             line-height: 1.1;
             font-style: italic;
             letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
         }
 
         .zoom-price {
@@ -805,8 +880,8 @@
         }
 
         .zoom-description {
-            color: #666;
-            margin-bottom: 25px;
+            color: #000;
+            margin-bottom: 20px;
             line-height: 1.6;
             font-size: 1rem;
             padding-bottom: 20px;
@@ -828,6 +903,103 @@
             font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+
+        .size-guide-toggle {
+            margin-top: 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            background: transparent;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: var(--color-oro-oscuro);
+            transition: var(--transicion);
+            align-self: flex-start;
+        }
+
+        .size-guide-toggle:hover {
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .size-guide-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2200;
+        }
+
+        .size-guide-overlay.active {
+            display: flex;
+        }
+
+        .size-guide-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .size-guide-panel {
+            position: relative;
+            max-width: 520px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 24px;
+            padding: 24px 24px 20px;
+            box-shadow: var(--sombra-fuerte);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            z-index: 1;
+        }
+
+        .size-guide-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .size-guide-intro {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 10px 0 18px;
+        }
+
+        .size-guide-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .size-guide-table th,
+        .size-guide-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        .size-guide-table th {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        .size-guide-note {
+            font-size: 0.8rem;
+            color: #777;
         }
 
         .zoom-details ul {
@@ -1706,7 +1878,7 @@
 
             .nav-container {
                 margin-left: 0;
-                margin-top: 0;
+                margin-top: 2px;
                 order: 3;
                 /* Poner tabs abajo del todo si falta espacio */
                 width: 100%;
@@ -1732,6 +1904,18 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 16px;
             }
+
+            .tag-cloud {
+                gap: 8px;
+                margin-bottom: 20px;
+            }
+
+            .tab {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+                letter-spacing: 2px;
+            }
+
 
             .image-container {
                 height: 340px;
@@ -1773,15 +1957,71 @@
             }
 
             .zoom-info h3 {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
             }
 
             .zoom-price {
-                font-size: 1.4rem;
+                font-size: 1.1rem;
+                margin-bottom: 12px;
             }
 
             .product-item-actions {
                 flex-direction: column;
+            }
+
+            .zoom-details {
+                margin-top: 12px;
+                padding: 10px;
+            }
+
+            .zoom-details h4 {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+
+            .zoom-details li {
+                font-size: 0.85rem;
+                margin-bottom: 6px;
+            }
+
+            .zoom-actions-container {
+                gap: 8px;
+                margin-top: 14px;
+            }
+
+            .zoom-actions-container .btn-agregar-carrito,
+            .zoom-actions-container .btn-reserva {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .zoom-note {
+                margin-top: 6px;
+                font-size: 0.75rem;
+            }
+
+            .zoom-info {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .zoom-actions-container {
+                position: sticky;
+                bottom: 0;
+                padding-top: 8px;
+                padding-bottom: 6px;
+                background: linear-gradient(to top, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.8));
+            }
+
+            .zoom-recommendations {
+                display: none;
+            }
+
+            #zoomGaleria::before {
+                background-size: 85% auto;
+                background-position: 50% 5%;
+                opacity: 0.25;
             }
 
             .btn-editar,
@@ -1801,6 +2041,7 @@
                 overflow-x: auto;
                 padding-bottom: 10px;
                 scrollbar-width: thin;
+                flex-wrap: nowrap;
             }
 
             .tabs::-webkit-scrollbar {
@@ -1810,6 +2051,43 @@
             .tabs::-webkit-scrollbar-thumb {
                 background: var(--color-oro);
                 border-radius: 2px;
+            }
+
+            .instagram-tab {
+                padding: 0;
+                width: 40px;
+                height: 40px;
+                border-radius: 999px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--color-oro);
+                background: transparent;
+                color: var(--color-oro);
+                flex-shrink: 0;
+            }
+
+            .instagram-icon {
+                margin: 0;
+                font-size: 1.1rem;
+            }
+
+            .instagram-label {
+                display: none;
+            }
+
+            .tag-cloud {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding: 0 4px 6px;
+            }
+
+            .tag-pill {
+                white-space: nowrap;
+            }
+
+            .zoom-indicator {
+                display: none;
             }
 
             .catalogo {
@@ -2412,20 +2690,35 @@
             /* Modal Zoom Mobile */
             .zoom-content {
                 flex-direction: column;
-                padding: 15px;
-                height: auto;
-                max-height: 90vh;
+                padding: 8px 8px 12px;
+                height: 100vh;
+                max-height: 100vh;
+                box-sizing: border-box;
+                gap: 8px;
                 overflow-y: auto;
             }
 
             .zoom-image-container {
                 width: 100%;
-                height: 300px;
+                max-height: 72vh;
+                min-height: 62vh;
+                padding: 4px;
+                border-radius: 20px;
+            }
+
+            #zoomImg {
+                padding: 4px;
+                max-height: 100%;
             }
 
             .zoom-info {
                 width: 100%;
-                padding: 15px 0;
+                padding: 6px 0 10px;
+                max-height: 30vh;
+                overflow-y: auto;
+                background: transparent;
+                border: none;
+                box-shadow: none;
             }
 
             .zoom-actions-container {
@@ -2450,6 +2743,14 @@
             }
 
             .image-container {
-                height: 190px;
+                height: 200px;
+            }
+
+            footer {
+                padding: 30px 20px 24px;
+            }
+
+            .footer-section h4 {
+                font-size: 1.2rem;
             }
         }

@@ -220,6 +220,28 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
             elements.zoomDetalles.appendChild(li);
         });
 
+        const sizeGuideOverlay = document.getElementById('sizeGuideOverlay');
+        const sizeGuideToggle = document.getElementById('zoomSizeGuideToggle');
+        const sizeGuideClose = document.getElementById('sizeGuideClose');
+        if (sizeGuideOverlay && sizeGuideToggle && sizeGuideClose) {
+            sizeGuideOverlay.classList.remove('active');
+            sizeGuideOverlay.setAttribute('aria-hidden', 'true');
+            sizeGuideToggle.onclick = () => {
+                sizeGuideOverlay.classList.add('active');
+                sizeGuideOverlay.setAttribute('aria-hidden', 'false');
+            };
+            sizeGuideClose.onclick = () => {
+                sizeGuideOverlay.classList.remove('active');
+                sizeGuideOverlay.setAttribute('aria-hidden', 'true');
+            };
+            sizeGuideOverlay.onclick = (e) => {
+                if (e.target === sizeGuideOverlay || e.target.classList.contains('size-guide-backdrop')) {
+                    sizeGuideOverlay.classList.remove('active');
+                    sizeGuideOverlay.setAttribute('aria-hidden', 'true');
+                }
+            };
+        }
+
         // Bind Actions
         if (elements.zoomAddToCart) elements.zoomAddToCart.onclick = () => {
             onAddToCart(prod);
