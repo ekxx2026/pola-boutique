@@ -132,7 +132,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         card.innerHTML = `
             ${badgeHtml}
             <div class="image-container">
-                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img" loading="lazy">
+                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img" loading="lazy" decoding="async" sizes="(max-width: 768px) 50vw, 25vw">
                 <div class="zoom-indicator">🔍</div>
                 <button class="wishlist-btn ${wishlistState.includes(prod.id) ? 'active' : ''}" aria-label="Añadir a lista de deseos">
                     ${wishlistState.includes(prod.id) ? '❤️' : '🤍'}
@@ -273,7 +273,6 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
                 }
 
             } catch (err) {
-                console.log('Share cancelled');
             }
         };
 
@@ -304,7 +303,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
             recs.forEach(r => {
                 const div = document.createElement('div');
                 div.className = 'rec-item';
-                div.innerHTML = `<img src="${r.imagen}"><div class="rec-item-info">${r.nombre}</div>`;
+                div.innerHTML = `<img src="${r.imagen}" alt="${r.nombre}" loading="lazy" decoding="async" sizes="(max-width: 768px) 40vw, 15vw"><div class="rec-item-info">${r.nombre}</div>`;
                 div.onclick = () => onNavigate(allProducts.findIndex(p => p.id === r.id));
                 elements.recommendationsGrid.appendChild(div);
             });

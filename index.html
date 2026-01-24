@@ -30,34 +30,38 @@
     <meta name="twitter:description" content="Moda exclusiva y elegante. Reserva tu prenda favorita vía WhatsApp.">
     <meta name="twitter:image" content="https://pola-boutique.vercel.app/og-image.png">
 
-    <!-- Analytics & Tracking (Fase 3.2) -->
-    <!-- Google Analytics 4 (Placeholder: G-XXXXXXXXXX) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
-    </script>
+        (function () {
+            const GA_ID = '';
+            const FB_PIXEL_ID = '';
 
-    <!-- Meta Pixel (Placeholder: XXXXXXXXXX) -->
-    <script>
-        !function (f, b, e, v, n, t, s) {
-            if (f.fbq) return; n = f.fbq = function () {
-                n.callMethod ?
-                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-            n.queue = []; t = b.createElement(e); t.async = !0;
-            t.src = v; s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', 'XXXXXXXXXX');
-        fbq('track', 'PageView');
+            if (GA_ID) {
+                const s = document.createElement('script');
+                s.async = true;
+                s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`;
+                document.head.appendChild(s);
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', GA_ID);
+            }
+
+            if (FB_PIXEL_ID) {
+                !function (f, b, e, v, n, t, s) {
+                    if (f.fbq) return; n = f.fbq = function () {
+                        n.callMethod ?
+                            n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                    };
+                    if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+                    n.queue = []; t = b.createElement(e); t.async = !0;
+                    t.src = v; s = b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t, s)
+                }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', FB_PIXEL_ID);
+                fbq('track', 'PageView');
+            }
+        })();
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-            src="https://www.facebook.com/tr?id=XXXXXXXXXX&ev=PageView&noscript=1" /></noscript>
 
     <!-- Schema.org JSON-LD (Google Rich Results) -->
     <script type="application/ld+json">
@@ -92,6 +96,7 @@
     <!-- Fuentes mejoradas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://i.ibb.co">
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Tenor+Sans&family=Montserrat:wght@300;400;600&display=swap"
         rel="stylesheet">
@@ -185,7 +190,7 @@
                 <p class="testimonio-text">"Cada prenda se siente única. El ajuste y la tela son de otro nivel.
                     Definitivamente mi tienda favorita."</p>
                 <div class="testimonio-autor">
-                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Foto de María González">
+                    <img src="logo-pola.png" alt="Foto de María González" loading="lazy" decoding="async">
                     <div>
                         <h4>María González</h4>
                         <p>Clienta VIP</p>
@@ -196,7 +201,7 @@
                 <p class="testimonio-text">"Lujo real sin precios exagerados. La atención al detalle es fascinante y los
                     envíos son muy rápidos."</p>
                 <div class="testimonio-autor">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Foto de Laura M.">
+                    <img src="logo-pola.png" alt="Foto de Laura M." loading="lazy" decoding="async">
                     <div>
                         <h4>Laura M.</h4>
                         <p>Clienta Feliz</p>
@@ -207,7 +212,7 @@
                 <p class="testimonio-text">"Me encanta que la ropa sea tan elegante y accesible. El packaging es
                     hermoso, toda una experiencia."</p>
                 <div class="testimonio-autor">
-                    <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Foto de Ana Martínez">
+                    <img src="logo-pola.png" alt="Foto de Ana Martínez" loading="lazy" decoding="async">
                     <div>
                         <h4>Ana Martínez</h4>
                         <p>Compra Online</p>
@@ -226,7 +231,7 @@
 
             <div class="zoom-content">
                 <div class="zoom-image-container">
-                    <img id="zoomImg" alt="Vista ampliada del producto">
+                    <img id="zoomImg" alt="Vista ampliada del producto" decoding="async" sizes="(max-width: 768px) 100vw, 50vw">
                     <div class="zoom-progress" id="zoomProgress"></div>
                 </div>
 
@@ -556,7 +561,7 @@
         </div>
 
         <div class="copyright">
-            © 2024 Boutique Ultra-Lujo. Todos los derechos reservados. | Ropa al alcance de todos | v2.0 (Seguro)
+            © 2026 Pola Galleani. Todos los derechos reservados. | Ropa al alcance de todos
         </div>
     </footer>
     <!-- Elementos de Neuromarketing -->
@@ -586,7 +591,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script type="module" src="js/app.js"></script>
-    <!-- Deploy Trigger v2.1: Modular Refactor -->
 </body>
 
 </html>

@@ -5,10 +5,8 @@ export function initAuthObserver(callbacks) {
 
     auth.onAuthStateChanged(user => {
         if (user) {
-            console.log("👤 Admin conectado:", user.email);
             if (callbacks.onLogin) callbacks.onLogin(user);
         } else {
-            console.log("👤 Admin desconectado");
             if (callbacks.onLogout) callbacks.onLogout();
         }
     });

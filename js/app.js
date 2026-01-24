@@ -20,8 +20,6 @@ let activeFocusTrap = null;
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-    console.log("🚀 App v2.0 Modular Inicializada");
-
     // 1. Init UI References
     const dom = UI.initUIElements();
 
@@ -178,11 +176,8 @@ function initSalesToast() {
     const nombres = ["María", "Claudia", "Fernanda", "Javiera", "Valentina", "Pola", "Andrea"];
     const comunas = ["Santiago", "Las Condes", "Vitacura", "Providencia", "Ñuñoa", "Lo Barnechea"];
     const avatares = [
-        "https://randomuser.me/api/portraits/women/32.jpg",
-        "https://randomuser.me/api/portraits/women/44.jpg",
-        "https://randomuser.me/api/portraits/women/67.jpg",
-        "https://randomuser.me/api/portraits/men/12.jpg",
-        "https://randomuser.me/api/portraits/men/45.jpg"
+        "logo-pola.png",
+        "logo.png"
     ];
 
     const toast = document.getElementById('salesToast');
@@ -323,7 +318,6 @@ async function handleProductSubmit(e) {
         // Handle File Upload
         if (type === "file" && fileInput.files.length > 0) {
             finalImageUrl = await DB.subirImagenImgBB(fileInput.files[0]);
-            console.log("✅ Imagen subida a ImgBB:", finalImageUrl);
         } else if (type === "url") {
             finalImageUrl = document.getElementById('productImageUrl').value || document.getElementById('productImage').value;
         }
@@ -351,7 +345,6 @@ async function handleProductSubmit(e) {
         }
         cancelEdit();
     } catch (err) {
-        console.error(err);
         UI.showToast("Error: " + err.message, 'error');
     } finally {
         btn.disabled = false;
@@ -470,27 +463,27 @@ function setupGlobalEvents(dom) {
     };
     // Swipe lateral en móviles para navegar en zoom
     (function enableZoomSwipe() {
-        const img = document.getElementById('zoomImg');
+        const container = document.querySelector('.zoom-image-container');
         const modal = document.getElementById('zoomGaleria');
-        if (!img || !modal) return;
+        if (!container || !modal) return;
         let touchStartX = 0;
         let touchEndX = 0;
         let touchStartY = 0;
         let touchEndY = 0;
-        const threshold = 40; // px
-        img.addEventListener('touchstart', (e) => {
+        const threshold = 30; // px
+        container.addEventListener('touchstart', (e) => {
             const t = e.changedTouches[0];
             touchStartX = t.clientX;
             touchStartY = t.clientY;
         }, { passive: true });
-        img.addEventListener('touchend', (e) => {
+        container.addEventListener('touchend', (e) => {
             const t = e.changedTouches[0];
             touchEndX = t.clientX;
             touchEndY = t.clientY;
             const dx = touchEndX - touchStartX;
             const dy = Math.abs(touchEndY - touchStartY);
             // Aceptar solo gestos principalmente horizontales
-            if (Math.abs(dx) > threshold && dy < 60) {
+            if (Math.abs(dx) > threshold && dy < 80) {
                 if (dx < 0) {
                     // swipe izquierda -> siguiente
                     let newIdx = state.currentZoomIndex + 1;

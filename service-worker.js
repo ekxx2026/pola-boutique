@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pola-galleani-v11';
+const CACHE_NAME = 'pola-galleani-v13';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -6,7 +6,10 @@ const urlsToCache = [
     '/js/app.js',
     '/products.js',
     '/logo.png',
-    '/logo-pola.png'
+    '/logo-pola.png',
+    '/og-image.png',
+    '/manifest.json',
+    '/img/mariposas-dorado-negro.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -15,7 +18,6 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
     );

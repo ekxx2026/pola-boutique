@@ -1,16 +1,10 @@
 // ===== DATABASE & API MODULE =====
-// Asume que 'db' y 'auth' ya están inicializados en el scope global por firebase-config.js
-// o los importaremos si decidimos modularizar la config también.
-// Por ahora, asumiremos que firebase-config.js corre antes y deja 'db' global, 
-// o mejor, exportamos referencias si cambiamos firebase-config (lo haremos en un paso posterior si es necesario).
-// Para mantener compatibilidad simple, usaremos las globales 'db' existentes.
 
 const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e";
 
 export async function subirImagenImgBB(file) {
     if (!file) return null;
 
-    console.log("📤 Subiendo imagen a ImgBB (Gratis)...");
     const formData = new FormData();
     formData.append('image', file);
 
