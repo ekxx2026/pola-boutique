@@ -25,7 +25,11 @@ async function init() {
     const dom = UI.initUIElements();
     
     // Init Creative Effects (Cursor, Marquee, Text Reveal)
-    initEffects();
+    try {
+        initEffects();
+    } catch (error) {
+        console.warn('Effects initialization failed:', error);
+    }
 
     // 2. Subscribe to Data
     const renderApp = () => {
@@ -45,7 +49,10 @@ async function init() {
         renderApp();
         UI.renderAdminList(state.productos, startEdit, deleteProduct);
         checkHash();
+        UI.hideLoadingScreen();
     });
+
+    initInstagramFeed();
 
     Wishlist.subscribeToWishlist(() => renderApp());
 
