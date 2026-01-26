@@ -132,35 +132,94 @@ function openZoom(prod, updateHistory = true) {
     );
 }
 
+let cartTimerInterval;
+
+function startCartTimer() {
+    const timerEl = document.getElementById('cartTimer');
+    if (!timerEl) return;
+
+    // Get end time from storage or set new (15 mins)
+    let endTime = localStorage.getItem('cartTimerEnd');
+    if (!endTime) {
+        endTime = Date.now() + 15 * 60 * 1000;
+        localStorage.setItem('cartTimerEnd', endTime);
+    }
+
+    clearInterval(cartTimerInterval);
+    
+    function update() {
+        const now = Date.now();
+        const diff = endTime - now;
+        
+        if (diff <= 0) {
+            timerEl.innerHTML = "Reserva expirada";
+            localStorage.removeItem('cartTimerEnd');
+            clearInterval(cartTimerInterval);
+            return;
+        }
+        
+        const m = Math.floor(diff / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        timerEl.innerHTML = `Su reserva expira en <span>${m}:${s.toString().padStart(2, '0')}</span>`;
+    }
+    
+    update();
+    cartTimerInterval = setInterval(update, 1000);
+}
+
 function updateCartUI(cartItems) {
     // Update count badge
     const count = Cart.getCartCount();
     const badge = document.getElementById('carritoCount');
     if (badge) badge.textContent = count;
 
-    // Render internals if modal is open (or just always update DOM)
-    // Simplified rendering logic here or in UI module
+    // Render internals
     const list = document.getElementById('carritoItems');
     const totalEl = document.getElementById('carritoTotal');
+    const modalContent = document.querySelector('.carrito-content h3');
+    
+    // Inject or update timer container
+    let timerContainer = document.getElementById('cartTimer');
+    if (cartItems.length > 0 && !timerContainer && modalContent) {
+        timerContainer = document.createElement('div');
+        timerContainer.id = 'cartTimer';
+        timerContainer.className = 'cart-timer';
+        modalContent.after(timerContainer);
+        startCartTimer();
+    } else if (cartItems.length === 0 && timerContainer) {
+        timerContainer.remove();
+        clearInterval(cartTimerInterval);
+        localStorage.removeItem('cartTimerEnd');
+    }
+
     if (list) {
-        list.innerHTML = cartItems.map(item => `
-            <div class="cart-item">
-                <img src="${item.imagen}" width="50">
-                <div>
-                    <b>${item.nombre}</b><br>
-                    $${Utils.formatPrice(item.precio)} x ${item.cantidad}
+        if (cartItems.length === 0) {
+            list.innerHTML = '<p class="empty-cart-msg">Tu bolsa está vacía.</p>';
+        } else {
+            list.innerHTML = cartItems.map(item => `
+                <div class="cart-item">
+                    <img src="${item.imagen}" width="60" alt="${item.nombre}">
+                    <div class="cart-item-details">
+                        <b>${item.nombre}</b>
+                        <div class="cart-item-price">$${Utils.formatPrice(item.precio)}</div>
+                    </div>
+                    <div class="controls">
+                        <button class="btn-qty" data-id="${item.id}" data-action="minus">-</button>
+                        <span>${item.cantidad}</span>
+                        <button class="btn-qty" data-id="${item.id}" data-action="plus">+</button>
+                    </div>
                 </div>
-                <div class="controls">
-                    <button class="btn-qty" data-id="${item.id}" data-action="minus">-</button>
-                    ${item.cantidad}
-                    <button class="btn-qty" data-id="${item.id}" data-action="plus">+</button>
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
 
         // Bind dynamic buttons in cart
-        list.querySelectorAll('.btn-qty').forEach(btn => {
-            btn.onclick = () => {
+        // Bind dynamic buttons in cart
+        const qtyBtns = list.querySelectorAll('.btn-qty');
+        UI.attachRipple(qtyBtns); // Attach ripple to new buttons
+        
+        qtyBtns.forEach(btn => {
+            btn.onclick = (e) => {
+                // Ripple handles itself via click event, but we need logic
                 const id = parseInt(btn.dataset.id); // Assuming IDs are numbers
                 const act = btn.dataset.action;
                 Cart.updateQuantity(id, act === 'plus' ? 1 : -1);
