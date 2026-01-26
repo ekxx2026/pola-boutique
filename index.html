@@ -110,6 +110,14 @@
 </head>
 
 <body>
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+        <p>Cargando Colección...</p>
+    </div>
+
+    <!-- 1. Grain Overlay -->
+    <div class="grain-overlay"></div>
+
     <!-- Header -->
     <header id="header">
         <div class="logo-container">
@@ -148,6 +156,26 @@
             </nav>
         </div>
     </header>
+
+    <!-- 2. Infinite Marquee Section -->
+    <div class="marquee-section" aria-hidden="true">
+        <div class="marquee-content">
+            <span>LUXURY</span>
+            <span>•</span>
+            <span>TIMELESS</span>
+            <span>•</span>
+            <span>ELEGANCE</span>
+            <span>•</span>
+            <span>POLA GALLEANI</span>
+            <span>•</span>
+            <span>EXCLUSIVE</span>
+            <span>•</span>
+            <span>HANDMADE</span>
+            <span>•</span>
+            <span>2026 COLLECTION</span>
+            <span>•</span>
+        </div>
+    </div>
 
     <!-- Botón del carrito -->
     <button class="carrito-btn" id="carritoBtn" aria-label="Abrir carrito de compras">

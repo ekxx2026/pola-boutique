@@ -5,6 +5,7 @@ import * as Cart from './modules/cart.js';
 import * as UI from './modules/ui.js';
 import * as DB from './modules/db.js';
 import * as Wishlist from './modules/wishlist.js';
+import { initEffects } from './modules/effects.js';
 
 let state = {
     productos: [],
@@ -22,8 +23,10 @@ document.addEventListener('DOMContentLoaded', init);
 async function init() {
     // 1. Init UI References
     const dom = UI.initUIElements();
+    
+    // Init Creative Effects (Cursor, Marquee, Text Reveal)
+    initEffects();
 
-    // 2. Subscribe to Data
     // 2. Subscribe to Data
     const renderApp = () => {
         UI.renderCatalog(
