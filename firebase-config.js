@@ -10,3 +10,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database(); // Cambiado a Realtime Database
 const auth = firebase.auth();
+
+// Expose to window for modules
+window.db = db;
+window.auth = auth;

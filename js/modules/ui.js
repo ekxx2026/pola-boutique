@@ -1,5 +1,6 @@
 // ===== UI MODULE =====
 import { formatPrice, getBadgeClass, WHATSAPP_NUMERO } from './utils.js';
+import { TEXTS } from '../config.js';
 
 // DOM Cache
 const elements = {};
@@ -156,15 +157,15 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
             let label = prod.badge;
             if (lower.includes('nuevo')) {
                 icon = '🆕';
-                label = 'Nuevo · Colección 2026';
+                label = TEXTS.BADGE_NEW;
                 mobileLabel = 'Nuevo';
             } else if (lower.includes('vendido')) {
                 icon = '★';
-                label = 'Más vendido · Favorito';
+                label = TEXTS.BADGE_BESTSELLER;
                 mobileLabel = 'Más vendido';
             } else if (lower.includes('edición')) {
                 icon = '✨';
-                label = 'Edición limitada · 1 de 50';
+                label = TEXTS.BADGE_LIMITED;
                 mobileLabel = 'Edición limitada';
             } else {
                 mobileLabel = prod.badge;
@@ -249,10 +250,10 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
             onAddToCart(prod);
             // Visual feedback
             const btn = e.currentTarget;
-            btn.innerHTML = '<span>✅</span> Agregado';
+            btn.innerHTML = `<span>✅</span> ${TEXTS.BTN_ADDED}`;
             btn.style.background = '#4CAF50';
             setTimeout(() => {
-                btn.innerHTML = '<span>🛒</span> Reservar';
+                btn.innerHTML = `<span>🛒</span> ${TEXTS.BTN_RESERVE}`;
                 btn.style.background = '';
             }, 2000);
         });
@@ -291,6 +292,51 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
         
         zoomContainer.addEventListener('touchstart', zoomSwipeHandlers.start, { passive: true });
         zoomContainer.addEventListener('touchend', zoomSwipeHandlers.end, { passive: true });
+
+        // === SWIPE HINT (Mobile Only - First Time) ===
+        if (window.innerWidth <= 768) {
+            // 1. Persistent Arrows
+            let leftArrow = zoomContainer.querySelector('.mobile-nav-arrow.left');
+            let rightArrow = zoomContainer.querySelector('.mobile-nav-arrow.right');
+
+            if (!leftArrow) {
+                leftArrow = document.createElement('div');
+                leftArrow.className = 'mobile-nav-arrow left';
+                leftArrow.innerHTML = '‹';
+                zoomContainer.appendChild(leftArrow);
+                
+                rightArrow = document.createElement('div');
+                rightArrow.className = 'mobile-nav-arrow right';
+                rightArrow.innerHTML = '›';
+                zoomContainer.appendChild(rightArrow);
+            }
+
+            // Bind Arrow Clicks
+            leftArrow.onclick = (e) => {
+                e.stopPropagation();
+                onNavigate((currentIndex - 1 + allProducts.length) % allProducts.length);
+            };
+            rightArrow.onclick = (e) => {
+                e.stopPropagation();
+                onNavigate((currentIndex + 1) % allProducts.length);
+            };
+
+            // 2. Tutorial Overlay (Only once)
+            if (!localStorage.getItem('swipeHintShown')) {
+                const hint = document.createElement('div');
+                hint.className = 'swipe-hint-overlay active';
+                hint.innerHTML = `
+                    <div class="swipe-hand">👆</div>
+                    <div class="swipe-text">${TEXTS.SWIPE_HINT}</div>
+                `;
+                zoomContainer.appendChild(hint);
+                
+                // Mark as shown after delay
+                setTimeout(() => {
+                    localStorage.setItem('swipeHintShown', 'true');
+                }, 3000);
+            }
+        }
     }
 
     elements.zoomImg.classList.remove("showZoom");
@@ -350,7 +396,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
                 if (navigator.share) {
                     await navigator.share({
                         title: prod.nombre,
-                        text: `Mira este increíble ${prod.nombre} en Pola Galleani`,
+                        text: `${TEXTS.SHARE_TITLE}${prod.nombre}${TEXTS.SHARE_TEXT}`,
                         url: window.location.href
                     });
                 } else {

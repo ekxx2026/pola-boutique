@@ -6,11 +6,13 @@ import * as UI from './modules/ui.js';
 import * as DB from './modules/db.js';
 import * as Wishlist from './modules/wishlist.js';
 import { initEffects } from './modules/effects.js';
+import { CONFIG, TEXTS } from './config.js';
 
 let state = {
     productos: [],
-    filtroActual: "Todos",
+    filtroActual: localStorage.getItem('filtroActual') || "Todos",
     tagFilter: null,
+    searchQuery: "",
     currentZoomIndex: 0,
     editingProducto: null
 };
@@ -33,8 +35,19 @@ async function init() {
 
     // 2. Subscribe to Data
     const renderApp = () => {
+        let products = state.productos;
+        
+        // Search Filter
+        if (state.searchQuery) {
+            const q = state.searchQuery.toLowerCase();
+            products = products.filter(p => 
+                p.nombre.toLowerCase().includes(q) || 
+                (p.descripcion && p.descripcion.toLowerCase().includes(q))
+            );
+        }
+
         UI.renderCatalog(
-            state.productos,
+            products,
             state.filtroActual,
             (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
             openZoom,
@@ -64,8 +77,41 @@ async function init() {
         onLogout: () => UI.toggleAdmin(false)
     });
 
+    // Helper: Smooth Transition
+    const animateCatalogUpdate = (updateFn) => {
+        const catalogo = document.getElementById('catalogo');
+        if (!catalogo) {
+            updateFn();
+            return;
+        }
+        
+        catalogo.classList.add('fade-out');
+        
+        setTimeout(() => {
+            updateFn();
+            // Optional: scroll to top of catalog if needed
+            // window.scrollTo({ top: catalogo.offsetTop - 100, behavior: 'smooth' });
+            
+            catalogo.classList.remove('fade-out');
+            catalogo.classList.add('fade-in');
+            
+            setTimeout(() => {
+                catalogo.classList.remove('fade-in');
+            }, 400); 
+        }, 300); // 300ms matches CSS transition
+    };
+
     UI.setupImageHandlers();
-    setupGlobalEvents(dom);
+    setupGlobalEvents(dom, renderApp, animateCatalogUpdate);
+
+    // Search Listener
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            state.searchQuery = e.target.value.trim();
+            renderApp();
+        });
+    }
 
     if (dom.header) {
         window.addEventListener('scroll', () => {
@@ -204,7 +250,13 @@ function updateCartUI(cartItems) {
 
     if (list) {
         if (cartItems.length === 0) {
-            list.innerHTML = '<p class="empty-cart-msg">Tu bolsa está vacía.</p>';
+            list.innerHTML = `
+                <div class="empty-cart-container">
+                    <p class="empty-cart-msg">${TEXTS.CART_EMPTY}</p>
+                    <button class="btn-discover" onclick="document.querySelector('.carrito-modal').classList.remove('active'); document.getElementById('catalogo').scrollIntoView({behavior:'smooth'});">
+                        ${TEXTS.CART_DISCOVER}
+                    </button>
+                </div>`;
         } else {
             list.innerHTML = cartItems.map(item => `
                 <div class="cart-item">
@@ -300,13 +352,23 @@ function initInstagramFeed() {
     const feed = document.getElementById('instagramFeed');
     if (!feed) return;
 
-    feed.innerHTML = '';
-    imagenes.forEach((img, index) => {
-        const item = document.createElement('div');
-        item.className = 'instagram-item';
-        item.innerHTML = `<img src="${img}" alt="Publicación de Instagram ${index + 1}" loading="lazy">`;
-        feed.appendChild(item);
-    });
+    // Lazy load logic with IntersectionObserver
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                feed.innerHTML = '';
+                imagenes.forEach((img, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'instagram-item';
+                    item.innerHTML = `<img src="${img}" alt="Publicación de Instagram ${index + 1}" loading="lazy" decoding="async">`;
+                    feed.appendChild(item);
+                });
+                observer.disconnect();
+            }
+        });
+    }, { rootMargin: "200px" });
+
+    observer.observe(feed);
 }
 
 
@@ -430,7 +492,7 @@ async function deleteProduct(prod) {
 
 // ===== EVENT BINDING =====
 
-function setupGlobalEvents(dom) {
+function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
     // Tabs
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
@@ -451,16 +513,14 @@ function setupGlobalEvents(dom) {
             state.tagFilter = null;
             document.querySelectorAll('.tag-pill').forEach(pill => pill.classList.remove('active'));
             state.filtroActual = tab.dataset.categoria;
-            // Trigger render with current data
-            UI.renderCatalog(
-                state.productos,
-                state.filtroActual,
-                (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
-                openZoom,
-                Wishlist.toggleWishlist,
-                Wishlist.getWishlist(),
-                state.tagFilter
-            );
+            localStorage.setItem('filtroActual', state.filtroActual);
+            
+            // Trigger render with animation
+            if (animateCatalogUpdate) {
+                animateCatalogUpdate(renderApp);
+            } else {
+                renderApp();
+            }
         });
     });
 
@@ -476,15 +536,12 @@ function setupGlobalEvents(dom) {
                 pill.classList.add('active');
                 state.tagFilter = tag;
             }
-            UI.renderCatalog(
-                state.productos,
-                state.filtroActual,
-                (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
-                openZoom,
-                Wishlist.toggleWishlist,
-                Wishlist.getWishlist(),
-                state.tagFilter
-            );
+            
+            if (animateCatalogUpdate) {
+                animateCatalogUpdate(renderApp);
+            } else {
+                renderApp();
+            }
         });
     });
 
