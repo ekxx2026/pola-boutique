@@ -3,6 +3,7 @@ import { formatPrice, getBadgeClass, WHATSAPP_NUMERO } from './utils.js';
 
 // DOM Cache
 const elements = {};
+let zoomSwipeHandlers = { start: null, end: null };
 
 export function initUIElements() {
     const ids = [
@@ -132,7 +133,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         card.innerHTML = `
             ${badgeHtml}
             <div class="image-container">
-                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img" loading="lazy" decoding="async" sizes="(max-width: 480px) 95vw, (max-width: 768px) 50vw, 25vw">
+                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img" loading="lazy" decoding="async" sizes="(max-width: 480px) 85vw, (max-width: 768px) 50vw, 25vw">
                 <div class="zoom-indicator">🔍</div>
                 <button class="wishlist-btn ${wishlistState.includes(prod.id) ? 'active' : ''}" aria-label="Añadir a lista de deseos">
                     ${wishlistState.includes(prod.id) ? '❤️' : '🤍'}
@@ -197,6 +198,32 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
 // === ZOOM MODAL ===
 export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAddToCart, onToggleWishlist, wishlistState = []) {
     if (!elements.zoomGaleria) return;
+
+    // === SWIPE SUPPORT (Mobile) ===
+    const zoomContainer = elements.zoomImg ? elements.zoomImg.parentElement : elements.zoomGaleria;
+    if (zoomContainer) {
+        if (zoomSwipeHandlers.start) {
+            zoomContainer.removeEventListener('touchstart', zoomSwipeHandlers.start);
+            zoomContainer.removeEventListener('touchend', zoomSwipeHandlers.end);
+        }
+        
+        let touchStartX = 0;
+        zoomSwipeHandlers.start = (e) => { touchStartX = e.changedTouches[0].screenX; };
+        zoomSwipeHandlers.end = (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) { // Threshold 50px
+                if (diff > 0) { // Swipe Left -> Next
+                    onNavigate((currentIndex + 1) % allProducts.length);
+                } else { // Swipe Right -> Prev
+                    onNavigate((currentIndex - 1 + allProducts.length) % allProducts.length);
+                }
+            }
+        };
+        
+        zoomContainer.addEventListener('touchstart', zoomSwipeHandlers.start, { passive: true });
+        zoomContainer.addEventListener('touchend', zoomSwipeHandlers.end, { passive: true });
+    }
 
     elements.zoomImg.classList.remove("showZoom");
     setTimeout(() => {

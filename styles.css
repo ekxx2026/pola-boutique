@@ -397,8 +397,28 @@ footer { background: var(--color-negro); color: var(--color-blanco); padding: 60
     .tabs { justify-content: flex-start; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; padding-right: 20px; }
     .tabs::-webkit-scrollbar { height: 4px; }
     .tabs::-webkit-scrollbar-thumb { background: var(--color-oro); border-radius: 2px; }
-    .catalogo { grid-template-columns: 1fr; }
-    .image-container { height: 300px; }
+    
+    /* === SWIPEABLE CATALOG ON MOBILE === */
+    .catalogo {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 15px;
+        padding: 10px 20px 30px 20px; /* Bottom padding for scrollbar/shadow */
+        grid-template-columns: unset; /* Override grid */
+        scrollbar-width: none; /* Hide scrollbar Firefox */
+    }
+    .catalogo::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+    
+    .card {
+        flex: 0 0 85%; /* Show 85% of width */
+        min-width: 85%;
+        scroll-snap-align: center;
+        margin-bottom: 0;
+    }
+    
+    .image-container { height: 450px; } /* Taller images for immersive feel */
+    
     .zoom-content { max-width: 95%; gap: 20px; }
     .zoom-info { padding: 20px; }
     .zoom-info h3 { font-size: 1.4rem; }
