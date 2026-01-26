@@ -202,6 +202,133 @@ body {
     
     .zoom-nav { display: none; } /* Use swipe instead */
 }
+/* === RIPPLE EFFECT === */
+span.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    background-color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* === STICKY CTA MOBILE === */
+@media (max-width: 480px) {
+    .zoom-actions-container {
+        position: sticky;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px 20px;
+        margin: 0 -20px -20px -20px; /* Stretch to edges */
+        border-top: 1px solid rgba(212, 175, 55, 0.2);
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+        z-index: 20;
+        backdrop-filter: blur(5px);
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .zoom-info {
+        padding-bottom: 0; /* Let sticky container handle bottom spacing */
+    }
+}
+
+/* === FASE 2: MICRO-INTERACCIONES & ANIMACIONES === */
+
+/* 1. Global FadeIn Up Animation for Cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    opacity: 0; /* Hidden initially */
+    /* transform is handled by animation, but we keep transition for hover */
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                box-shadow 0.3s ease;
+    will-change: opacity, transform;
+    background: white; /* Ensure clean background */
+}
+
+.card.show {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 2. Hover Lift Effect (Desktop) */
+@media (min-width: 1024px) {
+    /* Need to ensure hover doesn't conflict with entry animation transform */
+    .card.show:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+}
+
+/* 3. Ripple Effect for Buttons */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    background-color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+button {
+    position: relative;
+    overflow: hidden; /* For ripple */
+}
+
+/* 4. Smooth Modal Entry */
+#zoomGaleria.show .zoom-content {
+    animation: zoomContentEnter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes zoomContentEnter {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* 5. Image Loading Fade */
+img.lazy-load {
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+}
+img.lazy-load.loaded {
+    opacity: 1;
+}
+
+/* Mobile Scroll Snap Animation Fix */
+@media (max-width: 480px) {
+    .card {
+        opacity: 1; /* Disable opacity hide on mobile to avoid flicker during scroll if observer is slow */
+        transform: none;
+        animation: none;
+    }
+    .card.show {
+        animation: none;
+    }
+    /* Subtle scale on scroll snap focus could be added via JS, but keep simple for now */
+}
+
 .badge {
     position: absolute; top: 15px; left: 15px; padding: 4px 10px;
     border-radius: 0; font-size: 0.65rem; font-weight: 600;

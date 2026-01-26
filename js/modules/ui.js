@@ -5,6 +5,25 @@ import { formatPrice, getBadgeClass, WHATSAPP_NUMERO } from './utils.js';
 const elements = {};
 let zoomSwipeHandlers = { start: null, end: null };
 
+// Helper: Ripple Effect
+function createRipple(e) {
+    const button = e.currentTarget;
+    const circle = document.createElement("span");
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    const rect = button.getBoundingClientRect();
+    
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - rect.left - radius}px`;
+    circle.style.top = `${e.clientY - rect.top - radius}px`;
+    circle.classList.add("ripple");
+    
+    const ripple = button.getElementsByClassName("ripple")[0];
+    if (ripple) ripple.remove();
+    
+    button.appendChild(circle);
+}
+
 export function initUIElements() {
     const ids = [
         'loadingScreen', 'header', 'catalogo', 'zoomGaleria', 'zoomImg',
@@ -83,16 +102,28 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         return;
     }
 
-    // GSAP ScrollTrigger Animation
-    if (window.gsap && window.ScrollTrigger) {
-        gsap.registerPlugin(ScrollTrigger);
-    }
+    // Intersection Observer for Animations (Phase 2)
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const cardObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
 
     filtrados.forEach((prod, index) => {
         const card = document.createElement("div");
         card.className = "card";
+        // Staggered animation delay
         const delay = (index % 8) * 0.1;
-        card.style.transitionDelay = `${delay}s`;
+        card.style.animationDelay = `${delay}s`;
 
         let badgeHtml = '';
         let mobileLabel = '';
@@ -133,7 +164,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         card.innerHTML = `
             ${badgeHtml}
             <div class="image-container">
-                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img" loading="lazy" decoding="async" sizes="(max-width: 480px) 85vw, (max-width: 768px) 50vw, 25vw">
+                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img lazy-load" loading="lazy" decoding="async" sizes="(max-width: 480px) 85vw, (max-width: 768px) 50vw, 25vw">
                 <div class="zoom-indicator">🔍</div>
                 <button class="wishlist-btn ${wishlistState.includes(prod.id) ? 'active' : ''}" aria-label="Añadir a lista de deseos">
                     ${wishlistState.includes(prod.id) ? '❤️' : '🤍'}
@@ -151,8 +182,15 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
             </div>
         `;
 
+        // Image lazy load handler
+        const img = card.querySelector('.card-img');
+        if (img) {
+            img.onload = () => img.classList.add('loaded');
+            if (img.complete) img.classList.add('loaded');
+        }
+
         elements.catalogo.appendChild(card);
-        card.classList.add('show');
+        cardObserver.observe(card);
 
         // Bind Events
         card.querySelector('.zoom-indicator').addEventListener('click', () => onOpenZoom(prod));
@@ -160,6 +198,11 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
             // Ignore if clicked on wishlist btn
             if (e.target.closest('.wishlist-btn')) return;
             onOpenZoom(prod);
+        });
+
+        // Add Ripple to buttons
+        card.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', createRipple);
         });
 
         const wishBtn = card.querySelector('.wishlist-btn');
@@ -307,7 +350,8 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
             const isWished = wishlistState.includes(prod.id);
             elements.zoomWishlist.innerHTML = isWished ? '❤️' : '🤍';
             elements.zoomWishlist.className = `wishlist-btn-zoom ${isWished ? 'active' : ''}`;
-            elements.zoomWishlist.onclick = () => {
+            elements.zoomWishlist.onclick = (e) => {
+                createRipple(e);
                 const added = onToggleWishlist(prod.id);
                 if (added) {
                     elements.zoomWishlist.innerHTML = '❤️';
