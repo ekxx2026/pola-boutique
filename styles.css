@@ -497,9 +497,9 @@ img.lazy-load.loaded {
     border-radius: 5px; cursor: pointer; font-size: 0.85rem; transition: var(--transicion);
 }
 .btn-eliminar:hover { background: #ff2222; transform: translateY(-2px); }
-.instagram-feed { padding: 60px 40px; background: var(--color-negro); color: white; text-align: center; }
-.instagram-feed h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 40px; color: var(--color-oro); }
-.instagram-grid {
+.instagram-section { padding: 60px 40px; background: var(--color-negro); color: white; text-align: center; }
+.instagram-section h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 40px; color: var(--color-oro); }
+.instagram-feed {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 15px; max-width: 1200px; margin: 0 auto;
 }
