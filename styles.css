@@ -394,10 +394,31 @@ footer { background: var(--color-negro); color: var(--color-blanco); padding: 60
 }
 @media (max-width: 480px) {
     #header.scrolled .contact-info { display: none; }
-    .tabs { justify-content: flex-start; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; padding-right: 20px; }
-    .tabs::-webkit-scrollbar { height: 4px; }
-    .tabs::-webkit-scrollbar-thumb { background: var(--color-oro); border-radius: 2px; }
     
+    /* === COMPACT HEADER MOBILE === */
+    .logo-container { transform: scale(0.9); margin-bottom: 5px; }
+    .nav-container { margin-top: 10px; }
+    
+    /* Horizontal Scrollable Menu */
+    .tabs { 
+        justify-content: flex-start; 
+        flex-wrap: nowrap; 
+        overflow-x: auto; 
+        padding-bottom: 5px; 
+        scrollbar-width: none; /* Hide scrollbar Firefox */
+        -webkit-overflow-scrolling: touch;
+        gap: 10px;
+        padding-right: 20px; /* Right padding for last item */
+    }
+    .tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome */
+    
+    .tab { 
+        white-space: nowrap; 
+        padding: 8px 16px; 
+        font-size: 0.85rem; 
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
     /* === SWIPEABLE CATALOG ON MOBILE === */
     .catalogo {
         display: flex;
