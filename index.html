@@ -113,7 +113,7 @@
     <!-- Header -->
     <header id="header">
         <div class="logo-container">
-            <img src="logo-pola.png" alt="Logo Pola Galleani" class="logo"
+            <img src="logo-pola.png" alt="Logo Pola Galleani" class="logo" fetchpriority="high"
                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iNTAiIGZpbGw9IiMwQTAwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjRDQgQkYgMzc/IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Qk9VVElRVUU8L3RleHQ+PC9zdmc+'">
             <div>
                 <h1 class="brand-title">POLA GALLEANI</h1>
@@ -142,10 +142,7 @@
                             d="M12.015 24C18.665 24 24.032 18.633 24.032 11.984C24.032 5.334 18.665 -0.032 12.015 -0.032C5.365 -0.032 -0.003 5.334 -0.003 11.984C-0.003 14.07 0.509 16.037 1.417 17.766L0 23.003L5.344 21.564C6.985 22.482 8.878 22.999 10.887 22.999H12.015V24ZM12.016 1.956C17.525 1.956 22.008 6.44 22.008 11.948C22.008 17.457 17.525 21.941 12.016 21.941C10.147 21.941 8.411 21.432 6.921 20.547L6.568 20.337L3.633 21.127L4.437 18.239L4.205 17.859C3.18 16.185 2.583 14.192 2.583 12.052C2.583 6.543 6.815 1.956 12.016 1.956Z" />
                     </svg> WhatsApp
                 </a>
-                <button class="tab" id="btnAdmin"
-                    style="background: transparent; color: var(--color-negro); opacity: 0.1; padding: 10px; border: none; box-shadow: none; filter: grayscale(100%); transition: opacity 0.3s;"
-                    onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.1'" title="Administración"
-                    aria-label="Abrir panel de administración">
+                <button class="tab" id="btnAdmin" title="Administración" aria-label="Abrir panel de administración">
                     <span>🔒</span>
                 </button>
             </nav>
@@ -161,11 +158,10 @@
     <!-- Main Content -->
     <main class="catalogo-container">
         <section aria-labelledby="titulo-catalogo">
-            <h2 id="titulo-catalogo"
-                style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 15px; text-align: center;">
+            <h2 id="titulo-catalogo" class="section-title">
                 Nueva Colección 2026
             </h2>
-            <p style="color: #666; max-width: 600px; margin: 0 auto 40px; text-align: center;">
+            <p class="section-subtitle">
                 Piezas seleccionadas para resaltar tu esencia. Ropa al alcance de todos, con calidad premium.
             </p>
             <div class="tag-cloud" aria-label="Tendencias 2026">
@@ -378,24 +374,21 @@
         <div class="admin-form">
             <div class="form-header">
                 <h3>🔧 Panel de Administración</h3>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <button type="button" id="logoutBtn" title="Cerrar Sesión"
-                        style="background: #ef5350; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <div class="admin-controls">
+                    <button type="button" id="logoutBtn" title="Cerrar Sesión" class="btn-admin-action btn-admin-logout">
                         <span>🚪</span> Salir
                     </button>
                     <button type="button" id="migrateBtn" title="Migrar de forma segura (manual)"
-                        onclick="window.toggleLocalList()"
-                        style="background: #FF9800; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        onclick="window.toggleLocalList()" class="btn-admin-action btn-admin-migrate">
                         <span>📷</span> Importar Manual
                     </button>
                     <div id="modoEdicion" class="modo-edicion" style="display: none;">Modo Edición</div>
                     <button type="button" id="downloadCatalogBtn" title="Descargar Catálogo JSON"
-                        onclick="window.exportarCatalogoJS()"
-                        style="background: #2196F3; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; gap: 5px;">
+                        onclick="window.exportarCatalogoJS()" class="btn-admin-action btn-admin-json">
                         <span>📥</span> JSON
                     </button>
                     <button type="button" id="downloadSitemapBtn" title="Generar Sitemap XML para Google"
-                        style="background: #4CAF50; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; gap: 5px;">
+                        class="btn-admin-action btn-admin-sitemap">
                         <span>🗺️</span> Sitemap
                     </button>
                 </div>
@@ -429,13 +422,12 @@
                 </div>
 
                 <!-- ===== OPCIÓN ALTERNATIVA: URL ===== -->
-                <div class="form-group" id="urlImageSection" style="margin-top: 10px;">
-                    <label for="productImageUrl" style="font-size: 0.8rem; color: #666;">¿Ya tienes un link? Pégalo
+                <div class="form-group url-section-group" id="urlImageSection">
+                    <label for="productImageUrl" class="url-section-label">¿Ya tienes un link? Pégalo
                         aquí:</label>
                     <div class="url-input-container">
                         <input type="url" id="productImageUrl" placeholder="https://ejemplo.com/imagen.jpg">
-                        <button type="button" class="upload-button" id="loadUrlButton"
-                            style="padding: 5px 10px; font-size: 0.8rem;">
+                        <button type="button" class="upload-button btn-url-load" id="loadUrlButton">
                             <span>🔗</span> Link
                         </button>
                     </div>
@@ -578,17 +570,17 @@
         <span>💬</span>
     </a>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js" defer></script>
+    <script src="firebase-config.js" defer></script>
 
     <!-- Scripts -->
-    <script src="products.js"></script>
+    <script src="products.js" defer></script>
     <!-- GSAP for Elite Animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
 
     <script type="module" src="js/app.js"></script>
 </body>

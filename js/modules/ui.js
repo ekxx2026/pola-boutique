@@ -132,7 +132,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         card.innerHTML = `
             ${badgeHtml}
             <div class="image-container">
-                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img" loading="lazy" decoding="async" sizes="(max-width: 768px) 50vw, 25vw">
+                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img" loading="lazy" decoding="async" sizes="(max-width: 480px) 95vw, (max-width: 768px) 50vw, 25vw">
                 <div class="zoom-indicator">🔍</div>
                 <button class="wishlist-btn ${wishlistState.includes(prod.id) ? 'active' : ''}" aria-label="Añadir a lista de deseos">
                     ${wishlistState.includes(prod.id) ? '❤️' : '🤍'}
