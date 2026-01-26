@@ -182,10 +182,14 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
             ? `<div class="badge-label-mobile">${mobileLabel}</div>`
             : '';
 
+        const isLCP = index < 4;
+        const imgClass = isLCP ? "card-img" : "card-img lazy-load";
+        const loadingAttr = isLCP ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"';
+        
         card.innerHTML = `
             ${badgeHtml}
             <div class="image-container">
-                <img src="${prod.imagen}" alt="${prod.nombre}" class="card-img lazy-load" loading="lazy" decoding="async" sizes="(max-width: 480px) 85vw, (max-width: 768px) 50vw, 25vw">
+                <img src="${prod.imagen}" alt="${prod.nombre}" class="${imgClass}" ${loadingAttr} sizes="(max-width: 480px) 85vw, (max-width: 768px) 50vw, 25vw">
                 <div class="zoom-indicator">🔍</div>
                 <button class="wishlist-btn ${wishlistState.includes(prod.id) ? 'active' : ''}" aria-label="Añadir a lista de deseos">
                     ${wishlistState.includes(prod.id) ? '❤️' : '🤍'}
