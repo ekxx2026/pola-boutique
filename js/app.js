@@ -461,47 +461,35 @@ function setupGlobalEvents(dom) {
         if (newIdx >= state.productos.length) newIdx = 0;
         openZoom(state.productos[newIdx]);
     };
-    // Swipe lateral en móviles para navegar en zoom
-    (function enableZoomSwipe() {
-        const container = document.querySelector('.zoom-image-container');
-        const modal = document.getElementById('zoomGaleria');
-        if (!container || !modal) return;
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let touchStartY = 0;
-        let touchEndY = 0;
-        const threshold = 30; // px
-        container.addEventListener('touchstart', (e) => {
-            const t = e.changedTouches[0];
-            touchStartX = t.clientX;
-            touchStartY = t.clientY;
-        }, { passive: true });
-        container.addEventListener('touchend', (e) => {
-            const t = e.changedTouches[0];
-            touchEndX = t.clientX;
-            touchEndY = t.clientY;
-            const dx = touchEndX - touchStartX;
-            const dy = Math.abs(touchEndY - touchStartY);
-            // Aceptar solo gestos principalmente horizontales
-            if (Math.abs(dx) > threshold && dy < 80) {
-                if (dx < 0) {
-                    // swipe izquierda -> siguiente
-                    let newIdx = state.currentZoomIndex + 1;
-                    if (newIdx >= state.productos.length) newIdx = 0;
-                    openZoom(state.productos[newIdx]);
-                } else {
-                    // swipe derecha -> anterior
-                    let newIdx = state.currentZoomIndex - 1;
-                    if (newIdx < 0) newIdx = state.productos.length - 1;
-                    openZoom(state.productos[newIdx]);
-                }
-            }
-        }, { passive: true });
-    })();
+
+    // Swipe lateral handled in UI.showZoomModal
+
     document.querySelector('.close-zoom').onclick = () => {
         UI.closeZoomModal();
         history.pushState(null, null, ' '); // Clear hash
     };
+
+    // === RIPPLE EFFECTS ===
+    // Attach ripple to static global buttons
+    const rippleSelectors = [
+        '#carritoBtn', '#vaciarCarrito', '#comprarCarrito', 
+        '#prev', '#next', '.close-zoom', 
+        '#logoutBtn', '#cancelAdmin', '#cancelEdit', '#cancelLogin',
+        '.whatsapp-button', '.btn-qty', '.tab'
+    ];
+    
+    // Convert selectors to elements
+    const rippleElements = [];
+    rippleSelectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => rippleElements.push(el));
+    });
+    
+    // Also dynamic forms submit buttons
+    if (dom.loginForm) rippleElements.push(dom.loginForm.querySelector('button[type="submit"]'));
+    if (dom.productForm) rippleElements.push(dom.productForm.querySelector('button[type="submit"]'));
+    
+    UI.attachRipple(rippleElements);
+
 
     if (dom.loginForm) dom.loginForm.onsubmit = async (e) => {
         e.preventDefault();

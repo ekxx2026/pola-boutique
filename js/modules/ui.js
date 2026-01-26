@@ -5,23 +5,44 @@ import { formatPrice, getBadgeClass, WHATSAPP_NUMERO } from './utils.js';
 const elements = {};
 let zoomSwipeHandlers = { start: null, end: null };
 
-// Helper: Ripple Effect
-function createRipple(e) {
-    const button = e.currentTarget;
+// Helper: Ripple Effect (Exported)
+export function createRipple(e) {
+    // If not a button (e.g. icon click), find closest button
+    const button = e.currentTarget.closest('button') || e.currentTarget;
+    
+    // Ensure relative positioning for ripple containment
+    const computedStyle = window.getComputedStyle(button);
+    if (computedStyle.position === 'static') {
+        button.style.position = 'relative';
+    }
+
     const circle = document.createElement("span");
     const diameter = Math.max(button.clientWidth, button.clientHeight);
     const radius = diameter / 2;
     const rect = button.getBoundingClientRect();
     
+    // Handle touch vs mouse
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
     circle.style.width = circle.style.height = `${diameter}px`;
-    circle.style.left = `${e.clientX - rect.left - radius}px`;
-    circle.style.top = `${e.clientY - rect.top - radius}px`;
+    circle.style.left = `${clientX - rect.left - radius}px`;
+    circle.style.top = `${clientY - rect.top - radius}px`;
     circle.classList.add("ripple");
     
     const ripple = button.getElementsByClassName("ripple")[0];
     if (ripple) ripple.remove();
     
     button.appendChild(circle);
+}
+
+// Bind Ripple to a specific element or list
+export function attachRipple(elements) {
+    if (!elements) return;
+    const list = elements instanceof NodeList || Array.isArray(elements) ? elements : [elements];
+    list.forEach(el => {
+        if (el) el.addEventListener('click', createRipple);
+    });
 }
 
 export function initUIElements() {
