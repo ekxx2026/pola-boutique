@@ -507,18 +507,7 @@ async function deleteProduct(prod) {
 // ===== EVENT BINDING =====
 
 function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
-    // Zoom Card Flip Logic
-    document.querySelectorAll('.zoom-flip-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const card = document.querySelector('.zoom-card');
-            if (card) {
-                card.classList.toggle('is-flipped');
-            }
-        });
-    });
-
-    // Close buttons logic
+    // Zoom Card Flip Logic - Handled in UI.js
     document.querySelectorAll('.close-zoom, .close-zoom-back').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -622,12 +611,6 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
     };
 
     // Swipe lateral handled in UI.showZoomModal
-
-    document.querySelector('.close-zoom').onclick = () => {
-        UI.closeZoomModal();
-        history.pushState(null, null, ' '); // Clear hash
-    };
-
     // === RIPPLE EFFECTS ===
     // Attach ripple to static global buttons
     const rippleSelectors = [

@@ -271,7 +271,26 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
     const zoomCard = elements.zoomGaleria.querySelector('.zoom-card');
     
     // Reset Flip State on Open
-    if (zoomCard) zoomCard.classList.remove('is-flipped');
+    if (zoomCard) {
+        zoomCard.classList.remove('is-flipped');
+
+        // Flip Logic
+        const btnToBack = elements.zoomGaleria.querySelector('.zoom-flip-btn.to-back');
+        const btnToFront = elements.zoomGaleria.querySelector('.zoom-flip-btn.to-front');
+
+        if (btnToBack) {
+            btnToBack.onclick = (e) => {
+                e.stopPropagation();
+                zoomCard.classList.add('is-flipped');
+            };
+        }
+        if (btnToFront) {
+            btnToFront.onclick = (e) => {
+                e.stopPropagation();
+                zoomCard.classList.remove('is-flipped');
+            };
+        }
+    }
 
     // === SWIPE SUPPORT (Mobile) ===
     // Use zoom-front for swipe detection as it's the interactive face
@@ -599,21 +618,6 @@ function releaseZoomFocus() {
         modal.removeEventListener('keydown', modal._trapHandler);
         delete modal._trapHandler;
     }
-}
-
-// === WHATSAPP ===
-export function openWhatsappProduct(prod) {
-    const msg = `Hola, me interesa: *${prod.nombre}* ($${formatPrice(prod.precio)}). ¿Disponible?`;
-    window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-export function openWhatsappCart(cartItems, total) {
-    let msg = "Hola, quiero pedir:\n\n";
-    cartItems.forEach(item => {
-        msg += `- ${item.nombre} (x${item.cantidad}): $${formatPrice(item.precio * item.cantidad)}\n`;
-    });
-    msg += `\n*Total: $${formatPrice(total)}*`;
-    window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // === ADMIN UI ===
