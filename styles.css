@@ -263,6 +263,126 @@ span.ripple {
     }
 }
 
+/* === FULL SCREEN ZOOM OVERRIDES (IMMERSIVE) === */
+.zoom-scene, .zoom-card, .zoom-front, .zoom-back {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.zoom-front #zoomImg {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    max-height: none !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+.zoom-overlay-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 60px 20px 30px;
+    color: white;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.zoom-overlay-info h3 {
+    font-size: 1.8rem;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 5px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+#zoomPrecioFront {
+    font-size: 1.2rem;
+    color: var(--color-oro);
+    font-weight: 600;
+}
+
+.zoom-flip-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.3s ease, background 0.3s;
+    pointer-events: auto;
+}
+
+.zoom-flip-btn:hover {
+    background: rgba(212, 175, 55, 0.8);
+    transform: scale(1.1) rotate(10deg);
+}
+
+.zoom-flip-btn.to-front {
+    top: 30px;
+    left: 20px;
+    bottom: auto;
+    right: auto;
+    color: #333;
+    background: rgba(0,0,0,0.1);
+    border-color: rgba(0,0,0,0.1);
+}
+
+/* Back Face Styling */
+.zoom-back {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.zoom-info-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 80px 20px 100px;
+}
+
+.zoom-back .zoom-info {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+    max-height: none;
+    background: transparent;
+    backdrop-filter: none;
+}
+
+/* Fix Controls */
+.zoom-nav {
+    background: rgba(0,0,0,0.2) !important;
+    border: none !important;
+}
+.close-zoom {
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.3);
+    border: none;
+}
+
 /* === FASE 2: MICRO-INTERACCIONES & ANIMACIONES === */
 
 /* 1. Global FadeIn Up Animation for Cards */
@@ -419,7 +539,7 @@ img.lazy-load.loaded {
     display: flex; align-items: center; justify-content: center;
     min-width: 500px; min-height: 600px;
 }
-#zoomImg { max-width: 100%; max-height: 85vh; display: block; opacity: 0; transition: opacity 0.5s ease; object-fit: contain; padding: 30px; }
+#zoomImg { width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.5s ease; object-fit: cover; padding: 0; }
 #zoomImg.showZoom { opacity: 1; }
 .zoom-info {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 248, 248, 0.99) 100%);
@@ -747,8 +867,8 @@ footer {
     .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; font-size: 14px; }
     .btn-submit, .btn-cancel { padding: 10px; font-size: 14px; }
     #productList { max-height: 150px; }
-    .zoom-image-container { min-width: 200px; min-height: 300px; padding: 10px; }
-    #zoomImg { padding: 15px; }
+    .zoom-image-container { min-width: 200px; min-height: 300px; padding: 0; }
+    #zoomImg { padding: 0; }
     .nav-container { mask-image: linear-gradient(to right, black 90%, transparent 100%); -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%); }
     .section-title { font-size: 2rem; padding: 0 10px; }
     .section-subtitle { font-size: 0.9rem; padding: 0 15px; margin-bottom: 25px; }
@@ -1274,4 +1394,245 @@ h1, h2, h3, .brand-title {
 .catalogo.fade-in {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* =========================================
+   FLIP CARD ZOOM MODAL (Mobile First)
+   ========================================= */
+
+/* Modal Container Override */
+#zoomGaleria {
+    padding: 0;
+    background: #000; /* Dark background for immersion */
+    overflow: hidden; /* Prevent body scroll interaction */
+}
+
+/* 3D Scene */
+.zoom-scene {
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* The Card */
+.zoom-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy transition */
+}
+
+.zoom-card.is-flipped {
+    transform: rotateY(180deg);
+}
+
+/* Faces Common Styles */
+.zoom-card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden; /* Safari */
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+/* === FRONT FACE (IMAGE) === */
+.zoom-front {
+    background: #000;
+    z-index: 2;
+}
+
+.zoom-front #zoomImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Fill the screen */
+    display: block;
+}
+
+/* Front Overlay Info */
+.zoom-overlay-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 80px 20px 40px; /* Gradient space */
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+    color: white;
+    pointer-events: none; /* Let clicks pass through */
+    text-align: left;
+}
+
+.zoom-overlay-info h3 {
+    font-size: 1.8rem;
+    font-family: 'Playfair Display', serif;
+    margin: 0 0 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.zoom-overlay-info #zoomPrecioFront {
+    font-size: 1.2rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* Flip Button (Front) */
+.zoom-flip-btn {
+    position: absolute;
+    bottom: 120px; /* Above the text */
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    animation: pulseSoft 2s infinite;
+}
+
+.zoom-flip-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.zoom-flip-btn.to-front {
+    top: 20px;
+    left: 20px;
+    bottom: auto;
+    right: auto;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-negro);
+    border-color: rgba(0,0,0,0.1);
+}
+
+/* Close Button Override */
+.close-zoom, .close-zoom-back {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-zoom-back {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-negro);
+}
+
+/* Navigation Arrows (Front) */
+.zoom-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 60px;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: background 0.3s;
+}
+
+.zoom-nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.zoom-nav.prev-nav { left: 0; border-radius: 0 10px 10px 0; }
+.zoom-nav.next-nav { right: 0; border-radius: 10px 0 0 10px; }
+
+
+/* === BACK FACE (DETAILS) === */
+.zoom-back {
+    background: #fff;
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+}
+
+.zoom-info-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 80px 20px 100px; /* Top padding for close btn, bottom for footer */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Hide existing close button in back face logic handled by new one */
+.zoom-back .close-zoom { display: none; }
+
+/* Sticky Footer (Back) */
+.zoom-actions-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 20px 30px; /* Safe area padding */
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+}
+
+.zoom-secondary-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Responsive Tweaks */
+@media (min-width: 769px) {
+    /* Desktop: Keep it centered card-like but still flip */
+    .zoom-scene {
+        padding: 40px;
+    }
+    
+    .zoom-card {
+        max-width: 450px; /* Mobile width simulator */
+        height: 85vh;
+        margin: 0 auto;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        border-radius: 20px;
+    }
+    
+    .zoom-card-face {
+        border-radius: 20px;
+    }
+    
+    .zoom-nav {
+        /* Move arrows outside on desktop */
+        position: fixed;
+        background: transparent;
+        font-size: 4rem;
+    }
+    .zoom-nav:hover { background: transparent; transform: scale(1.2) translateY(-50%); }
+    .zoom-nav.prev-nav { left: 20%; }
+    .zoom-nav.next-nav { right: 20%; }
 }

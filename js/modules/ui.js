@@ -268,12 +268,19 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
 export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAddToCart, onToggleWishlist, wishlistState = []) {
     if (!elements.zoomGaleria) return;
 
+    const zoomCard = elements.zoomGaleria.querySelector('.zoom-card');
+    
+    // Reset Flip State on Open
+    if (zoomCard) zoomCard.classList.remove('is-flipped');
+
     // === SWIPE SUPPORT (Mobile) ===
-    const zoomContainer = elements.zoomImg ? elements.zoomImg.parentElement : elements.zoomGaleria;
-    if (zoomContainer) {
+    // Use zoom-front for swipe detection as it's the interactive face
+    const zoomFront = elements.zoomGaleria.querySelector('.zoom-front');
+    
+    if (zoomFront) {
         if (zoomSwipeHandlers.start) {
-            zoomContainer.removeEventListener('touchstart', zoomSwipeHandlers.start);
-            zoomContainer.removeEventListener('touchend', zoomSwipeHandlers.end);
+            zoomFront.removeEventListener('touchstart', zoomSwipeHandlers.start);
+            zoomFront.removeEventListener('touchend', zoomSwipeHandlers.end);
         }
         
         let touchStartX = 0;
@@ -290,58 +297,36 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
             }
         };
         
-        zoomContainer.addEventListener('touchstart', zoomSwipeHandlers.start, { passive: true });
-        zoomContainer.addEventListener('touchend', zoomSwipeHandlers.end, { passive: true });
+        zoomFront.addEventListener('touchstart', zoomSwipeHandlers.start, { passive: true });
+        zoomFront.addEventListener('touchend', zoomSwipeHandlers.end, { passive: true });
 
         // === SWIPE HINT (Mobile Only - First Time) ===
-        if (window.innerWidth <= 768) {
-            // 1. Persistent Arrows
-            let leftArrow = zoomContainer.querySelector('.mobile-nav-arrow.left');
-            let rightArrow = zoomContainer.querySelector('.mobile-nav-arrow.right');
-
-            if (!leftArrow) {
-                leftArrow = document.createElement('div');
-                leftArrow.className = 'mobile-nav-arrow left';
-                leftArrow.innerHTML = '‹';
-                zoomContainer.appendChild(leftArrow);
-                
-                rightArrow = document.createElement('div');
-                rightArrow.className = 'mobile-nav-arrow right';
-                rightArrow.innerHTML = '›';
-                zoomContainer.appendChild(rightArrow);
-            }
-
-            // Bind Arrow Clicks
-            leftArrow.onclick = (e) => {
-                e.stopPropagation();
-                onNavigate((currentIndex - 1 + allProducts.length) % allProducts.length);
-            };
-            rightArrow.onclick = (e) => {
-                e.stopPropagation();
-                onNavigate((currentIndex + 1) % allProducts.length);
-            };
-
-            // 2. Tutorial Overlay (Only once)
-            if (!localStorage.getItem('swipeHintShown')) {
-                const hint = document.createElement('div');
-                hint.className = 'swipe-hint-overlay active';
-                hint.innerHTML = `
-                    <div class="swipe-hand">👆</div>
-                    <div class="swipe-text">${TEXTS.SWIPE_HINT}</div>
-                `;
-                zoomContainer.appendChild(hint);
-                
-                // Mark as shown after delay
-                setTimeout(() => {
-                    localStorage.setItem('swipeHintShown', 'true');
-                }, 3000);
-            }
+        if (window.innerWidth <= 768 && !localStorage.getItem('swipeHintShown')) {
+            const hint = document.createElement('div');
+            hint.className = 'swipe-hint-overlay active';
+            hint.innerHTML = `
+                <div class="swipe-hand">👆</div>
+                <div class="swipe-text">${TEXTS.SWIPE_HINT}</div>
+            `;
+            zoomFront.appendChild(hint);
+            
+            setTimeout(() => {
+                localStorage.setItem('swipeHintShown', 'true');
+            }, 3000);
         }
     }
 
     elements.zoomImg.classList.remove("showZoom");
     setTimeout(() => {
         elements.zoomImg.src = prod.imagen;
+        
+        // Populate Front Info
+        const nombreFront = document.getElementById('zoomNombreFront');
+        const precioFront = document.getElementById('zoomPrecioFront');
+        if (nombreFront) nombreFront.textContent = prod.nombre;
+        if (precioFront) precioFront.textContent = `$${formatPrice(prod.precio)}`;
+
+        // Populate Back Info
         elements.zoomNombre.textContent = prod.nombre;
         elements.zoomPrecio.textContent = `$${formatPrice(prod.precio)}`;
         elements.zoomDescripcion.textContent = prod.descripcion || "";

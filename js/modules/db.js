@@ -66,3 +66,17 @@ export async function migrarProductoIndividual(prod, finalUrl) {
     cleanProd.imagen = finalUrl;
     return await db.ref("productos").push(cleanProd);
 }
+
+// Monitor de conexión
+export function monitorConnection(onStatusChange) {
+    if (typeof db === 'undefined') return;
+    
+    const connectedRef = db.ref(".info/connected");
+    connectedRef.on("value", (snap) => {
+        if (snap.val() === true) {
+            onStatusChange(true);
+        } else {
+            onStatusChange(false);
+        }
+    });
+}

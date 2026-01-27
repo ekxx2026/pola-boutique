@@ -77,6 +77,20 @@ async function init() {
         onLogout: () => UI.toggleAdmin(false)
     });
 
+    // 4. Connection Monitor
+    let wasOffline = false;
+    DB.monitorConnection((isConnected) => {
+        if (!isConnected) {
+            wasOffline = true;
+            // Optional: UI.showToast('Conexión inestable...', 'info');
+        } else {
+            if (wasOffline) {
+                UI.showToast('Conexión restablecida 🟢', 'success');
+                wasOffline = false;
+            }
+        }
+    });
+
     // Helper: Smooth Transition
     const animateCatalogUpdate = (updateFn) => {
         const catalogo = document.getElementById('catalogo');
@@ -493,6 +507,25 @@ async function deleteProduct(prod) {
 // ===== EVENT BINDING =====
 
 function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
+    // Zoom Card Flip Logic
+    document.querySelectorAll('.zoom-flip-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = document.querySelector('.zoom-card');
+            if (card) {
+                card.classList.toggle('is-flipped');
+            }
+        });
+    });
+
+    // Close buttons logic
+    document.querySelectorAll('.close-zoom, .close-zoom-back').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            UI.closeZoomModal();
+        });
+    });
+
     // Tabs
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
