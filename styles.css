@@ -3360,37 +3360,93 @@ h3,
 
 .gold-petal {
     position: absolute;
-    /* High Definition Gold Texture */
+    /* High Definition Gold Texture + Specular Shimmer */
     background:
-        /* Veins texture */
-        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.05) 0px, rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 4px),
-        /* Deep Gold Gradient */
-        radial-gradient(circle at 30% 30%, #FFD700, transparent 80%),
-        linear-gradient(135deg, #B8860B 0%, #F4E4A6 50%, #8B4513 100%);
-    background-blend-mode: overlay, normal, normal;
-    background-color: rgba(212, 175, 55, 0.8);
+        /* Veins texture (subtle) */
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 3px),
+        /* Metallic Gradient */
+        linear-gradient(135deg, #B8860B 0%, #FFD700 40%, #FFF8DC 50%, #FFD700 60%, #8B4513 100%);
+    background-size: 200% 200%;
+    /* For shimmer animation */
+    background-color: rgba(212, 175, 55, 0.9);
 
-    /* Organic Shape */
-    border-radius: 50% 0 60% 50%;
+    /* Default Organic Shape */
+    border-radius: 50% 0 50% 50%;
 
     /* 3D Depth */
     box-shadow:
-        inset -1px -1px 4px rgba(0, 0, 0, 0.2),
-        /* Inner depth */
-        1px 4px 8px rgba(0, 0, 0, 0.15);
+        inset -2px -2px 6px rgba(139, 69, 19, 0.3),
+        /* Deep gold shadow */
+        1px 2px 4px rgba(0, 0, 0, 0.2);
     /* Soft drop shadow */
 
     mix-blend-mode: multiply;
     transform-style: preserve-3d;
     animation: floatWind var(--float-duration) linear infinite,
         swayVertical calc(var(--float-duration) * 0.5) ease-in-out infinite alternate,
-        tumble3D var(--tumble-speed) cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        tumble3D var(--tumble-speed) cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate,
+        shimmerGold 4s linear infinite;
+    /* Light reflection */
     animation-delay: var(--delay);
     opacity: 0;
 
     /* Crisp edges */
     -webkit-font-smoothing: antialiased;
     backface-visibility: visible;
+}
+
+/* === GIF OVERLAY === */
+.header-gif-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Adjust this to 'contain' if it gets cut off */
+    opacity: 0.9;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    /* Blends nicely with white/light backgrounds */
+    z-index: 1;
+}
+
+/* Shape Variations for Natural Look */
+.gold-petal:nth-child(2n) {
+    border-radius: 60% 0 60% 50%;
+}
+
+/* Wider */
+.gold-petal:nth-child(3n) {
+    border-radius: 0 50% 50% 50%;
+}
+
+/* Inverted curve */
+.gold-petal:nth-child(4n) {
+    border-radius: 50% 50% 0 50%;
+}
+
+/* Rounder */
+.gold-petal:nth-child(5n) {
+    background-image: linear-gradient(135deg, #DAA520 0%, #F0E68C 50%, #B8860B 100%);
+}
+
+/* Lighter variant */
+
+/* Shimmer Animation */
+@keyframes shimmerGold {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Horizontal Wind with acceleration/deceleration (Gusts) */
@@ -3447,5 +3503,66 @@ h3,
 
     100% {
         transform: rotateX(360deg) rotateY(180deg) rotateZ(calc(var(--rotate-offset) + 180deg));
+    }
+}
+
+/* === GIF PARTICLE === */
+/* === SISTEMA DE IDENTIDAD PERSISTENTE (CONTINUIDAD TOTAL) === */
+.butterfly-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    /* Forzamos GPU para evitar micro-tirones de CPU */
+    will-change: transform, opacity;
+}
+
+.butterfly-img {
+    width: 100%;
+    height: auto;
+    /* Para fondos negros use 'screen', para blancos 'multiply' */
+    mix-blend-mode: screen;
+    /* Ajustamos brillo y contraste para que no se vea el recuadro negro en el fondo blanco */
+    filter: brightness(1.2) contrast(1.2) saturate(1.2);
+    /* Bajamos un poco la opacidad base para que se "camufle" mejor */
+    opacity: 0.8;
+    /* Balanceo vertical independiente */
+    animation: swayVertical 4s ease-in-out infinite alternate;
+}
+
+@keyframes vueloHorizontal {
+    0% {
+        /* Fuera a la izquierda */
+        transform: translate3d(-350px, 0, 0);
+        opacity: 0;
+    }
+
+    3% {
+        /* Aparece rápido pero suave */
+        opacity: 1;
+    }
+
+    97% {
+        /* Se mantiene visible hasta el puro final de la pantalla */
+        opacity: 1;
+    }
+
+    100% {
+        /* Sale completamente y se vuelve invisible justo antes del respawn */
+        transform: translate3d(calc(100vw + 350px), 0, 0);
+        opacity: 0;
+    }
+}
+
+/* Sube y baja orgánico */
+@keyframes swayVertical {
+    0% {
+        transform: translateY(-40px);
+    }
+
+    100% {
+        transform: translateY(40px);
     }
 }

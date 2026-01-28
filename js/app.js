@@ -35,11 +35,11 @@ async function init() {
         console.warn('Effects initialization failed:', error);
     }
 
-    // Init Gold Petals
+    // Init Gold Petals (GIFs)
     try { initPetals(); } catch (e) { console.warn("Petals init fail", e); }
 
     // Init Living Butterflies
-    try { initButterflies(); } catch (e) { console.warn("Butterflies init fail", e); }
+    // try { initButterflies(); } catch (e) { console.warn("Butterflies init fail", e); }
 
     // 2. Subscribe to Data
     const renderApp = () => {

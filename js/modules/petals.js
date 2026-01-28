@@ -1,40 +1,81 @@
-
 export function initPetals() {
     const container = document.querySelector('.header-butterflies-container');
     if (!container) return;
 
-    // Clear existing butterflies if any
     container.innerHTML = '';
 
-    // Number of petals
-    const PETAL_COUNT = 15; // More particles for a nice wind effect
+    // Mantenemos una buena densidad
+    const BUTTERFLY_COUNT = 18;
 
-    for (let i = 0; i < PETAL_COUNT; i++) {
-        spawnPetal(container, i * 1500); // Stagger spawn
+    // Lista de mariposas disponibles
+    const butterflyAssets = [
+        'img/butterfly-animation-22.gif',
+        'img/butterfly-animation-11.gif'
+    ];
+
+    for (let i = 0; i < BUTTERFLY_COUNT; i++) {
+        // Generamos propiedades iniciales únicas para cada "individuo"
+        const props = {
+            // Tamaño reducido según la solicitud (antes 70-180, ahora 45-110)
+            size: Math.random() * (110 - 45) + 45,
+            top: Math.random() * 80 + 10,
+            duration: Math.random() * (22 - 14) + 14,
+            // Asignamos un tipo de mariposa aleatorio que será persistente
+            asset: butterflyAssets[Math.floor(Math.random() * butterflyAssets.length)]
+        };
+
+        spawnHeroButterfly(container, props, Math.random() * 15000);
     }
 }
 
-function spawnPetal(container, delay) {
-    const petal = document.createElement('div');
-    petal.className = 'gold-petal';
+/**
+ * Crea una mariposa con propiedades persistentes para que parezca la misma al repetir
+ */
+function spawnHeroButterfly(container, props, delay = 0) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'butterfly-wrapper';
 
-    // Randomize properties
-    const size = Math.random() * (25 - 12) + 12; // 12px to 25px
-    const duration = Math.random() * (35 - 20) + 20; // 20s to 35s float time
-    const startTop = Math.random() * 90 + 5; // 5% to 95% vertical start
+    const img = document.createElement('img');
+    img.src = props.asset; // Usamos el activo asignado
+    img.className = 'butterfly-img';
 
-    // Apply styles
-    petal.style.width = `${size}px`;
-    petal.style.height = `${size}px`;
-    petal.style.top = `${startTop}%`;
-    petal.style.left = '-50px';
-    petal.style.setProperty('--float-duration', `${duration}s`);
-    petal.style.setProperty('--delay', `${delay}ms`);
+    wrapper.style.width = `${props.size}px`;
+    wrapper.style.top = `${props.top}%`;
+    wrapper.style.setProperty('--vuelo-duration', `${props.duration}s`);
 
-    // Physics variables
-    petal.style.setProperty('--tumble-speed', `${Math.random() * 3 + 2}s`);
-    petal.style.setProperty('--sway-amount', `${Math.random() * 40 + 20}px`); // 20-60px vertical sway
-    petal.style.setProperty('--rotate-offset', `${Math.random() * 360}deg`);
+    wrapper.appendChild(img);
 
-    container.appendChild(petal);
+    if (delay > 0) {
+        wrapper.style.visibility = 'hidden';
+        setTimeout(() => {
+            if (container.contains(wrapper)) {
+                wrapper.style.visibility = 'visible';
+                animate(wrapper, container, props);
+            }
+        }, delay);
+    } else {
+        animate(wrapper, container, props);
+    }
+
+    container.appendChild(wrapper);
+}
+
+function animate(el, container, props) {
+    el.style.animation = `vueloHorizontal var(--vuelo-duration) linear forwards`;
+
+    const lifeTime = parseFloat(props.duration) * 1000;
+
+    // Relevo anticipado (500ms) para fluidez total
+    setTimeout(() => {
+        if (container.contains(el)) {
+            spawnHeroButterfly(container, props, 0);
+        }
+    }, lifeTime - 500);
+
+    // Borrado al terminar
+    setTimeout(() => {
+        if (container.contains(el)) {
+            el.remove();
+        }
+    }, lifeTime);
 }
