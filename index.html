@@ -104,7 +104,20 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Google Analytics (Dynamic Loader) -->
+    <script type="module">
+        import { CONFIG } from './js/config.js';
+        if (CONFIG.GA_MEASUREMENT_ID && CONFIG.GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') {
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${CONFIG.GA_MEASUREMENT_ID}`;
+            document.head.appendChild(script);
+        }
+    </script>
 
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -120,6 +133,7 @@
 
     <!-- Header -->
     <header id="header">
+        <div class="header-butterflies-container" aria-hidden="true"></div>
         <div class="logo-container">
             <img src="logo-pola.png" alt="Logo Pola Galleani" class="logo" fetchpriority="high"
                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iNTAiIGZpbGw9IiMwQTAwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjRDQgQkYgMzc/IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Qk9VVElRVUU8L3RleHQ+PC9zdmc+'">
@@ -127,6 +141,8 @@
                 <h1 class="brand-title">POLA GALLEANI</h1>
                 <p class="eslogan">ROPA AL ALCANCE DE TODOS</p>
             </div>
+            <!-- Dynamic 3D Butterflies -->
+            <div class="header-butterflies-container" aria-hidden="true"></div>
         </div>
 
         <div class="nav-container">
@@ -257,7 +273,7 @@
                 <!-- Front Face: Full Screen Image -->
                 <div class="zoom-card-face zoom-front">
                     <img id="zoomImg" alt="Vista ampliada del producto" decoding="async">
-                    
+
                     <div class="zoom-overlay-info">
                         <h3 id="zoomNombreFront"></h3>
                         <div id="zoomPrecioFront"></div>
@@ -266,7 +282,7 @@
                     <button class="zoom-flip-btn to-back" aria-label="Ver detalles">
                         <span>ℹ️</span>
                     </button>
-                    
+
                     <button class="close-zoom" aria-label="Cerrar zoom">✕</button>
 
                     <!-- Navigation Arrows (Front) -->
@@ -305,7 +321,7 @@
                                     <!-- Productos recomendados se cargarán aquí -->
                                 </div>
                             </div>
-                            
+
                             <p class="zoom-note">
                                 Te ayudamos a elegir talla y coordinar entrega por WhatsApp.
                             </p>
@@ -321,8 +337,10 @@
                             <span>💬</span> WhatsApp
                         </button>
                         <div class="zoom-secondary-actions">
-                            <button id="zoomWishlist" class="wishlist-btn-zoom" title="Añadir a lista de deseos">🤍</button>
-                            <button id="zoomShare" class="wishlist-btn-zoom" title="Compartir producto">🔗</button>
+                            <button id="zoomWishlist" class="wishlist-btn-zoom" title="Añadir a lista de deseos"
+                                aria-label="Añadir a lista de deseos">🤍</button>
+                            <button id="zoomShare" class="wishlist-btn-zoom" title="Compartir producto"
+                                aria-label="Compartir producto">🔗</button>
                         </div>
                     </div>
                 </div>
@@ -337,7 +355,8 @@
             <button class="size-guide-close" id="sizeGuideClose" aria-label="Cerrar guía de tallas">✕</button>
             <h3 id="sizeGuideTitle">Guía de tallas</h3>
             <p class="size-guide-intro">
-                Las medidas son aproximadas y pueden variar levemente según la prenda. Si dudas entre dos tallas, elige la más grande o escríbenos por WhatsApp.
+                Las medidas son aproximadas y pueden variar levemente según la prenda. Si dudas entre dos tallas, elige
+                la más grande o escríbenos por WhatsApp.
             </p>
             <table class="size-guide-table">
                 <thead>
@@ -382,9 +401,9 @@
     </div>
 
     <!-- Carrito de Compras -->
-    <div class="carrito-modal" id="carritoModal">
+    <div class="carrito-modal" id="carritoModal" role="dialog" aria-modal="true" aria-labelledby="carritoTitle">
         <div class="carrito-content">
-            <h3>🛒 Tu Selección</h3>
+            <h3 id="carritoTitle">🛒 Tu Selección</h3>
             <div id="carritoItems">
                 <!-- Los items del carrito se cargan aquí -->
             </div>
@@ -402,9 +421,9 @@
     </div>
 
     <!-- Login Admin -->
-    <div class="login-modal" id="loginModal">
+    <div class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
         <div class="login-form">
-            <h3>🔐 Acceso Administrador</h3>
+            <h3 id="loginTitle">🔐 Acceso Administrador</h3>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="adminEmail">Email</label>
@@ -425,12 +444,13 @@
     </div>
 
     <!-- Admin Modal con carga por URL y edición -->
-    <div class="admin-modal" id="adminModal">
+    <div class="admin-modal" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
         <div class="admin-form">
             <div class="form-header">
-                <h3>🔧 Panel de Administración</h3>
+                <h3 id="adminTitle">🔧 Panel de Administración</h3>
                 <div class="admin-controls">
-                    <button type="button" id="logoutBtn" title="Cerrar Sesión" class="btn-admin-action btn-admin-logout">
+                    <button type="button" id="logoutBtn" title="Cerrar Sesión"
+                        class="btn-admin-action btn-admin-logout">
                         <span>🚪</span> Salir
                     </button>
                     <button type="button" id="migrateBtn" title="Migrar de forma segura (manual)"
@@ -644,6 +664,7 @@
     <!-- GSAP for Elite Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script type="module" src="js/app.js"></script>
 </body>

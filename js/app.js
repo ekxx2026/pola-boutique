@@ -5,7 +5,9 @@ import * as Cart from './modules/cart.js';
 import * as UI from './modules/ui.js';
 import * as DB from './modules/db.js';
 import * as Wishlist from './modules/wishlist.js';
+import { Analytics } from './modules/analytics.js';
 import { initEffects } from './modules/effects.js';
+import { initPetals } from './modules/petals.js';
 import { CONFIG, TEXTS } from './config.js';
 
 let state = {
@@ -25,7 +27,7 @@ document.addEventListener('DOMContentLoaded', init);
 async function init() {
     // 1. Init UI References
     const dom = UI.initUIElements();
-    
+
     // Init Creative Effects (Cursor, Marquee, Text Reveal)
     try {
         initEffects();
@@ -33,15 +35,21 @@ async function init() {
         console.warn('Effects initialization failed:', error);
     }
 
+    // Init Gold Petals
+    try { initPetals(); } catch (e) { console.warn("Petals init fail", e); }
+
+    // Init Living Butterflies
+    try { initButterflies(); } catch (e) { console.warn("Butterflies init fail", e); }
+
     // 2. Subscribe to Data
     const renderApp = () => {
         let products = state.productos;
-        
+
         // Search Filter
         if (state.searchQuery) {
             const q = state.searchQuery.toLowerCase();
-            products = products.filter(p => 
-                p.nombre.toLowerCase().includes(q) || 
+            products = products.filter(p =>
+                p.nombre.toLowerCase().includes(q) ||
                 (p.descripcion && p.descripcion.toLowerCase().includes(q))
             );
         }
@@ -98,20 +106,20 @@ async function init() {
             updateFn();
             return;
         }
-        
+
         catalogo.classList.add('fade-out');
-        
+
         setTimeout(() => {
             updateFn();
             // Optional: scroll to top of catalog if needed
             // window.scrollTo({ top: catalogo.offsetTop - 100, behavior: 'smooth' });
-            
+
             catalogo.classList.remove('fade-out');
             catalogo.classList.add('fade-in');
-            
+
             setTimeout(() => {
                 catalogo.classList.remove('fade-in');
-            }, 400); 
+            }, 400);
         }, 300); // 300ms matches CSS transition
     };
 
@@ -133,7 +141,10 @@ async function init() {
         });
     }
 
-    initSalesToast();
+    // Modules Init
+    Wishlist.init();
+    Analytics.init(); // Start tracking
+    initSalesToast(); // Notificacion venta
 
     // 5. Routing
     window.addEventListener('hashchange', checkHash);
@@ -151,7 +162,7 @@ async function init() {
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js?v=11').catch(() => {});
+            navigator.serviceWorker.register('/service-worker.js?v=11').catch(() => { });
         });
     }
 }
@@ -186,10 +197,63 @@ function openZoom(prod, updateHistory = true) {
         }
     }
 
+    // === CINEMATIC VIEW TRANSITION ===
+    if (!document.startViewTransition) {
+        // Fallback for browsers without support
+        showZoomUI(prod);
+        return;
+    }
+
+    // 1. Find source image
+    let sourceImg = null;
+    const allImages = document.querySelectorAll('.card-img');
+    for (let img of allImages) {
+        // Match by src since we don't have IDs on imgs. 
+        // Note: prod.imagen might be relative or full, so we check includes
+        if (img.src === prod.imagen || img.src.includes(prod.imagen)) {
+            sourceImg = img;
+            break;
+        }
+    }
+
+    // 2. Prepare "Before" state
+    if (sourceImg) {
+        sourceImg.style.viewTransitionName = 'zoom-image';
+        sourceImg.style.contain = 'layout paint'; // Perf optimization
+    }
+
+    // 3. Start Transition
+    const transition = document.startViewTransition(() => {
+        // === DOM UPDATE ===
+        // Remove name from source so it doesn't conflict in "After" state
+        if (sourceImg) sourceImg.style.viewTransitionName = '';
+
+        // Show Modal
+        showZoomUI(prod);
+
+        // Add name to target (Modal Image)
+        const targetImg = document.getElementById('zoomImg');
+        if (targetImg) {
+            targetImg.style.viewTransitionName = 'zoom-image';
+            // Reset GSAP opacity/scale if any, so ViewTransition handles the geometry
+            targetImg.style.opacity = "1";
+            targetImg.classList.remove('showZoom'); // Avoid CSS conflict
+        }
+    });
+
+    // 4. Cleanup after transition
+    transition.finished.then(() => {
+        const targetImg = document.getElementById('zoomImg');
+        if (targetImg) targetImg.style.viewTransitionName = '';
+        if (sourceImg) sourceImg.style.viewTransitionName = '';
+    });
+}
+
+function showZoomUI(prod) {
     UI.showZoomModal(
         prod,
         state.productos,
-        index,
+        state.currentZoomIndex,
         (newIndex) => {
             state.currentZoomIndex = newIndex;
             if (state.productos[newIndex]) {
@@ -216,23 +280,23 @@ function startCartTimer() {
     }
 
     clearInterval(cartTimerInterval);
-    
+
     function update() {
         const now = Date.now();
         const diff = endTime - now;
-        
+
         if (diff <= 0) {
             timerEl.innerHTML = "Reserva expirada";
             localStorage.removeItem('cartTimerEnd');
             clearInterval(cartTimerInterval);
             return;
         }
-        
+
         const m = Math.floor(diff / 60000);
         const s = Math.floor((diff % 60000) / 1000);
         timerEl.innerHTML = `Su reserva expira en <span>${m}:${s.toString().padStart(2, '0')}</span>`;
     }
-    
+
     update();
     cartTimerInterval = setInterval(update, 1000);
 }
@@ -247,7 +311,7 @@ function updateCartUI(cartItems) {
     const list = document.getElementById('carritoItems');
     const totalEl = document.getElementById('carritoTotal');
     const modalContent = document.querySelector('.carrito-content h3');
-    
+
     // Inject or update timer container
     let timerContainer = document.getElementById('cartTimer');
     if (cartItems.length > 0 && !timerContainer && modalContent) {
@@ -292,7 +356,7 @@ function updateCartUI(cartItems) {
         // Bind dynamic buttons in cart
         const qtyBtns = list.querySelectorAll('.btn-qty');
         UI.attachRipple(qtyBtns); // Attach ripple to new buttons
-        
+
         qtyBtns.forEach(btn => {
             btn.onclick = (e) => {
                 // Ripple handles itself via click event, but we need logic
@@ -536,7 +600,7 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
             document.querySelectorAll('.tag-pill').forEach(pill => pill.classList.remove('active'));
             state.filtroActual = tab.dataset.categoria;
             localStorage.setItem('filtroActual', state.filtroActual);
-            
+
             // Trigger render with animation
             if (animateCatalogUpdate) {
                 animateCatalogUpdate(renderApp);
@@ -558,7 +622,7 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
                 pill.classList.add('active');
                 state.tagFilter = tag;
             }
-            
+
             if (animateCatalogUpdate) {
                 animateCatalogUpdate(renderApp);
             } else {
@@ -614,22 +678,22 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
     // === RIPPLE EFFECTS ===
     // Attach ripple to static global buttons
     const rippleSelectors = [
-        '#carritoBtn', '#vaciarCarrito', '#comprarCarrito', 
-        '#prev', '#next', '.close-zoom', 
+        '#carritoBtn', '#vaciarCarrito', '#comprarCarrito',
+        '#prev', '#next', '.close-zoom',
         '#logoutBtn', '#cancelAdmin', '#cancelEdit', '#cancelLogin',
         '.whatsapp-button', '.btn-qty', '.tab'
     ];
-    
+
     // Convert selectors to elements
     const rippleElements = [];
     rippleSelectors.forEach(sel => {
         document.querySelectorAll(sel).forEach(el => rippleElements.push(el));
     });
-    
+
     // Also dynamic forms submit buttons
     if (dom.loginForm) rippleElements.push(dom.loginForm.querySelector('button[type="submit"]'));
     if (dom.productForm) rippleElements.push(dom.productForm.querySelector('button[type="submit"]'));
-    
+
     UI.attachRipple(rippleElements);
 
 

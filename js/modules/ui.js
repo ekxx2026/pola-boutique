@@ -6,6 +6,22 @@ import { TEXTS } from '../config.js';
 const elements = {};
 let zoomSwipeHandlers = { start: null, end: null };
 
+function openWhatsappProduct(prod) {
+    const precio = formatPrice(prod.precio);
+    let mensaje = "¡Hola Pola Galleani! ✨\n\n";
+    mensaje += "Vi este producto en la tienda y me encantó:\n\n";
+    mensaje += `🛍️ *${prod.nombre}*\n`;
+    mensaje += `💰 Precio: $${precio} CLP\n\n`;
+    mensaje += "¿Podrías confirmarme disponibilidad y tallas recomendadas?\n\n";
+    mensaje += `📍 Link del producto: ${window.location.href}`;
+
+    const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+    const win = window.open(url, '_blank');
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+        showToast('No se pudo abrir WhatsApp. Revisa los bloqueadores de ventanas.', 'error');
+    }
+}
+
 // Helper: Ripple Effect (Exported)
 export function createRipple(e) {
     // If not a button (e.g. icon click), find closest button
@@ -418,6 +434,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
                 }
 
             } catch (err) {
+                showToast('No se pudo compartir el enlace', 'error');
             }
         };
 

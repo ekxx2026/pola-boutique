@@ -1,6 +1,8 @@
 // ===== DATABASE & API MODULE =====
 
-const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e";
+import { CONFIG } from '../config.js';
+
+// const IMGBB_API_KEY = "d9bd33d5542aa36bb37534513c186e5e"; // Moved to config.js
 
 export async function subirImagenImgBB(file) {
     if (!file) return null;
@@ -9,7 +11,7 @@ export async function subirImagenImgBB(file) {
     formData.append('image', file);
 
     try {
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${CONFIG.IMGBB_API_KEY}`, {
             method: 'POST',
             body: formData
         });
@@ -70,7 +72,7 @@ export async function migrarProductoIndividual(prod, finalUrl) {
 // Monitor de conexión
 export function monitorConnection(onStatusChange) {
     if (typeof db === 'undefined') return;
-    
+
     const connectedRef = db.ref(".info/connected");
     connectedRef.on("value", (snap) => {
         if (snap.val() === true) {

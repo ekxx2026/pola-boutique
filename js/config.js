@@ -3,7 +3,11 @@ export const CONFIG = {
     BRAND_NAME: 'Pola Galleani',
     CURRENCY: 'CLP',
     LOCALE: 'es-CL',
-    IG_PROFILE: 'https://www.instagram.com/polagalleani?igsh=MWc3bDNjMmpkNHRkYQ=='
+    // Analytics
+    GA_MEASUREMENT_ID: 'G-WNCY2WT7WD',
+    IG_PROFILE: 'https://www.instagram.com/polagalleani?igsh=MWc3bDNjMmpkNHRkYQ==',
+    // Security: This should be an environment variable in production
+    IMGBB_API_KEY: 'd9bd33d5542aa36bb37534513c186e5e'
 };
 
 export const TEXTS = {

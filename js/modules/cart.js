@@ -59,6 +59,16 @@ export function addToCart(producto) {
         });
     }
 
+    // === Cinematic Effect: Gold Confetti ===
+    if (typeof confetti !== 'undefined') {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#D4AF37', '#F4E4A6', '#FFFFFF'] // Gold & White
+        });
+    }
+
     saveCart();
 }
 
