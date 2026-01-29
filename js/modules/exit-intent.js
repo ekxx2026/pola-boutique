@@ -74,7 +74,7 @@ function showExitModal() {
     document.body.appendChild(modal);
 
     // Save state immediately
-    localStorage.setItem('pola_exit_popup_v2', 'true');
+    localStorage.setItem('pola_exit_popup_completed', 'true');
 
     // Slight delay for animation
     requestAnimationFrame(() => {
