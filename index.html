@@ -93,10 +93,11 @@
     }
     </script>
 
-    <!-- Fuentes mejoradas -->
+    <!-- Preconnect to Google Fonts for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://i.ibb.co">
+
+    <!-- Google Fonts with font-display=swap for performance -->
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Tenor+Sans&family=Montserrat:wght@300;400;600&display=swap"
         rel="stylesheet">
@@ -119,7 +120,159 @@
         }
     </script>
 
-    <link rel="stylesheet" href="styles.css">
+    <!-- Critical CSS (inline for fastest FCP) -->
+    <style>
+        :root {
+            --color-oro: #D4AF37;
+            --color-oro-claro: #F4E4A6;
+            --color-negro: #0A0A0A;
+            --color-gris-oscuro: #1A1A1A;
+            --color-gris-claro: #F8F8F8;
+            --color-blanco: #FFFFFF;
+            --color-marron: #8B4513;
+            --sombra-suave: 0 5px 15px rgba(0, 0, 0, 0.04);
+            --sombra-fuerte: 0 15px 40px rgba(0, 0, 0, 0.12);
+            --transicion: all 0.5s cubic-bezier(0.19, 1, 0.22, 1)
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--color-gris-oscuro);
+            background: #FAFAFA;
+            overflow-x: hidden;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased
+        }
+
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-negro);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1)
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top-color: var(--color-oro);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            margin-bottom: 20px
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transicion);
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05)
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transicion);
+            position: relative
+        }
+
+        .logo {
+            max-width: 160px;
+            height: auto;
+            transition: var(--transicion)
+        }
+
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            letter-spacing: 6px;
+            color: #000;
+            margin-top: 5px;
+            text-align: center;
+            transition: var(--transicion);
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 2px 4px rgba(0, 0, 0, 0.1)
+        }
+
+        .eslogan {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: #8B5E00;
+            margin-top: 5px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            opacity: 1;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            transition: var(--transicion)
+        }
+
+        .catalogo-container {
+            padding: 200px 40px 60px
+        }
+
+        .catalogo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 35px;
+            max-width: 1400px;
+            margin: 0 auto
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='6.29' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.018;
+            pointer-events: none;
+            z-index: 9998;
+            animation: grain 8s steps(10) infinite
+        }
+    </style>
+
+    <!-- Async load full CSS (non-blocking) -->
+    <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="styles.css">
+    </noscript>
 </head>
 
 <body>
