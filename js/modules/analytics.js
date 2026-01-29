@@ -1,20 +1,22 @@
 import { CONFIG } from '../config.js';
 
-// Initialize the Data Layer
-window.dataLayer = window.dataLayer || [];
-function gtag() { window.dataLayer.push(arguments); }
+// Use the globally initialized dataLayer and gtag from index.html
+// This module extends the basic GA4 setup with comprehensive e-commerce event tracking
 
 export const Analytics = {
     init: () => {
         if (!CONFIG.GA_MEASUREMENT_ID || CONFIG.GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
-            console.warn('Analytics: No Measurement ID provided.');
+            console.warn('⚠️ Analytics: No Measurement ID provided.');
             return;
         }
 
-        // Initialize GA4
-        gtag('js', new Date());
-        gtag('config', CONFIG.GA_MEASUREMENT_ID);
-        console.log('✅ Analytics Initialized:', CONFIG.GA_MEASUREMENT_ID);
+        // gtag is already initialized in index.html
+        // Just confirm it's ready
+        if (window.gtag) {
+            console.log('✅ Analytics module ready - Event tracking enabled');
+        } else {
+            console.warn('⚠️ gtag not loaded yet, events may not track properly');
+        }
     },
 
     trackPageView: (pagePath) => {

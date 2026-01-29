@@ -112,11 +112,24 @@
     <!-- Google Analytics (Dynamic Loader) -->
     <script type="module">
         import { CONFIG } from './js/config.js';
+
+        // Initialize dataLayer
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+
         if (CONFIG.GA_MEASUREMENT_ID && CONFIG.GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') {
             const script = document.createElement('script');
             script.async = true;
             script.src = `https://www.googletagmanager.com/gtag/js?id=${CONFIG.GA_MEASUREMENT_ID}`;
             document.head.appendChild(script);
+
+            // Initialize after script loads
+            script.onload = () => {
+                gtag('js', new Date());
+                gtag('config', CONFIG.GA_MEASUREMENT_ID);
+                console.log('✅ Google Analytics loaded:', CONFIG.GA_MEASUREMENT_ID);
+            };
         }
     </script>
 
