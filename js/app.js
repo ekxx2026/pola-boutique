@@ -6,6 +6,7 @@ import * as UI from './modules/ui.js';
 import * as DB from './modules/db.js';
 import * as Wishlist from './modules/wishlist.js';
 import { Analytics } from './modules/analytics.js';
+import { initExitIntent } from './modules/exit-intent.js';
 import { CONFIG, TEXTS } from './config.js';
 
 let state = {
@@ -141,6 +142,7 @@ async function init() {
 
     // Modules Init
     Wishlist.init();
+    initExitIntent();
     Analytics.init(); // Start tracking
     initSalesToast(); // Notificacion venta
 
