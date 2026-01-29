@@ -3605,3 +3605,68 @@ h3,
         transform: translateX(100%);
     }
 }
+
+
+/* === MOBILE OPTIMIZATIONS === */
+@media (max-width: 480px) {
+    .catalogo-container {
+        padding: 120px 15px 40px;
+        /* Reduced side padding (40px -> 15px) */
+    }
+
+    .catalogo {
+        /* Ensure 1 column on small screens */
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        /* Smaller title */
+        letter-spacing: 2px;
+    }
+
+    .brand-title {
+        font-size: 1.8rem;
+    }
+
+    /* Sticky Actions in Zoom Modal */
+    .zoom-overlay-info {
+        padding-bottom: 80px;
+        /* Space for sticky button */
+    }
+}
+
+/* Sticky Bottom Action for Mobile Zoom */
+@media (max-width: 768px) {
+    .zoom-card-face.zoom-back {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .zoom-detalles {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 80px;
+    }
+
+    .zoom-actions {
+        position: fixed;
+        /* Sticky effect within modal */
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 15px;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #eee;
+    }
+
+    .zoom-actions button {
+        flex: 1;
+        margin: 0;
+    }
+}
