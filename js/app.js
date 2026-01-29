@@ -6,8 +6,6 @@ import * as UI from './modules/ui.js';
 import * as DB from './modules/db.js';
 import * as Wishlist from './modules/wishlist.js';
 import { Analytics } from './modules/analytics.js';
-import { initEffects } from './modules/effects.js';
-import { initPetals } from './modules/petals.js';
 import { CONFIG, TEXTS } from './config.js';
 
 let state = {
@@ -27,19 +25,6 @@ document.addEventListener('DOMContentLoaded', init);
 async function init() {
     // 1. Init UI References
     const dom = UI.initUIElements();
-
-    // Init Creative Effects (Cursor, Marquee, Text Reveal)
-    try {
-        initEffects();
-    } catch (error) {
-        console.warn('Effects initialization failed:', error);
-    }
-
-    // Init Gold Petals (GIFs)
-    try { initPetals(); } catch (e) { console.warn("Petals init fail", e); }
-
-    // Init Living Butterflies
-    // try { initButterflies(); } catch (e) { console.warn("Butterflies init fail", e); }
 
     // 2. Subscribe to Data
     const renderApp = () => {
@@ -149,16 +134,14 @@ async function init() {
     // 5. Routing
     window.addEventListener('hashchange', checkHash);
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            UI.closeZoomModal();
-            if (dom.carritoModal) dom.carritoModal.classList.remove('active');
-            if (dom.adminModal) dom.adminModal.classList.remove('active');
-            if (dom.loginModal) dom.loginModal.classList.remove('active');
-            history.pushState(null, null, ' ');
-            releaseFocusTrap();
+    // Global Escape Handler (Capturing phase for maximum reliability)
+    const handleEscape = (e) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            UI.closeAllModals();
         }
-    });
+    };
+    document.removeEventListener('keydown', handleEscape, true);
+    document.addEventListener('keydown', handleEscape, true);
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -450,38 +433,7 @@ function initInstagramFeed() {
 }
 
 
-function trapFocus(modal) {
-    releaseFocusTrap();
-    if (!modal) return;
-    const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-    const focusable = Array.from(modal.querySelectorAll(selectors)).filter(el => !el.disabled && el.offsetParent !== null);
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    function onKeyDown(e) {
-        if (e.key !== 'Tab') return;
-        if (e.shiftKey) {
-            if (document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            }
-        } else {
-            if (document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
-        }
-    }
-    modal.addEventListener('keydown', onKeyDown);
-    first.focus();
-    activeFocusTrap = { modal, onKeyDown };
-}
-
-function releaseFocusTrap() {
-    if (!activeFocusTrap) return;
-    activeFocusTrap.modal.removeEventListener('keydown', activeFocusTrap.onKeyDown);
-    activeFocusTrap = null;
-}
+// Focus trap logic managed in UI.js
 
 
 // ===== ADMIN LOGIC =====
@@ -586,10 +538,10 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
             if (tab.id === 'btnAdmin') {
                 if (auth.currentUser) {
                     dom.adminModal.classList.add('active');
-                    trapFocus(dom.adminModal);
+                    UI.trapFocus(dom.adminModal);
                 } else {
                     dom.loginModal.classList.add('active');
-                    trapFocus(dom.loginModal);
+                    UI.trapFocus(dom.loginModal);
                 }
                 return;
             }
@@ -634,13 +586,13 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
     if (dom.carritoBtn) dom.carritoBtn.onclick = () => {
         if (dom.carritoModal) {
             dom.carritoModal.classList.add('active');
-            trapFocus(dom.carritoModal);
+            UI.trapFocus(dom.carritoModal);
         }
     };
     if (dom.carritoModal) dom.carritoModal.onclick = (e) => {
         if (e.target === dom.carritoModal) {
             dom.carritoModal.classList.remove('active');
-            releaseFocusTrap();
+            UI.releaseFocus();
         }
     };
     if (dom.vaciarCarrito) dom.vaciarCarrito.onclick = () => Cart.clearCart();
@@ -704,24 +656,25 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
             dom.loginModal.classList.remove('active');
             dom.adminModal.classList.add('active');
             dom.loginForm.reset();
-            releaseFocusTrap();
+            UI.releaseFocus();
+            UI.trapFocus(dom.adminModal);
         } catch (err) {
             UI.showToast(err.message, 'error');
         }
     };
     document.getElementById('cancelLogin').onclick = () => {
         dom.loginModal.classList.remove('active');
-        releaseFocusTrap();
+        UI.releaseFocus();
     };
 
     if (dom.logoutBtn) dom.logoutBtn.onclick = () => {
         Auth.logout();
         dom.adminModal.classList.remove('active');
-        releaseFocusTrap();
+        UI.releaseFocus();
     };
     if (dom.cancelAdmin) dom.cancelAdmin.onclick = () => {
         dom.adminModal.classList.remove('active');
-        releaseFocusTrap();
+        UI.releaseFocus();
     };
     if (dom.productForm) dom.productForm.onsubmit = handleProductSubmit;
     if (dom.cancelEdit) dom.cancelEdit.onclick = cancelEdit;

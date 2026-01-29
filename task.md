@@ -28,4 +28,9 @@ Basado en el Informe de Auditoría 2026.
 ## Fase 3: Optimización y Conversión (Auditoría Pro 2026)
 - [x] **CRO: Optimizar Funnel WhatsApp** (Mensaje pre-rellenado) <!-- id: 13 -->
 - [ ] **Analytics: GA4 + Meta Pixel** (Tracking completo) <!-- id: 14 -->
-- [ ] **Accesibilidad: WCAG 2.1 AA** (Trap focus, ESC, contraste) <!-- id: 15 -->
+- [x] **Accesibilidad: WCAG 2.1 AA** (Teclas ESC y Trampa de Foco) <!-- id: 15 -->
+## Fase 4: Refinamiento Estético y Multimedia
+- [x] **Integrar Video Header (MP4)** (Reemplazar mariposas JS por video loop) <!-- id: 16 -->
+- [x] Eliminar lógica de mariposas `petals.js` y `butterflies.js` <!-- id: 17 -->
+- [x] Mejorar legibilidad de textos en header (Contraste Elite) <!-- id: 18 -->
+- [x] Eliminar cursor personalizado y restaurar nativo <!-- id: 19 -->

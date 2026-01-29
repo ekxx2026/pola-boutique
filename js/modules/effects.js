@@ -5,7 +5,7 @@
  */
 
 export function initEffects() {
-    initCustomCursor();
+    // initCustomCursor(); // Disabled as per user request
     initHeroReveal();
     initMarquee();
 }
@@ -46,13 +46,13 @@ function initCustomCursor() {
 function initHeroReveal() {
     const heroTitle = document.querySelector('.brand-title');
     const heroSubtitle = document.querySelector('.eslogan');
-    
+
     if (!heroTitle) return;
 
     // Wrap text in spans for animation if not already done
     if (!heroTitle.classList.contains('animated')) {
         const text = heroTitle.innerText;
-        heroTitle.innerHTML = text.split('').map((char, index) => 
+        heroTitle.innerHTML = text.split('').map((char, index) =>
             `<span class="char-reveal" style="animation-delay: ${index * 0.03}s">${char === ' ' ? '&nbsp;' : char}</span>`
         ).join('');
         heroTitle.classList.add('animated');

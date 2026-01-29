@@ -133,7 +133,11 @@
 
     <!-- Header -->
     <header id="header">
-        <div class="header-butterflies-container" aria-hidden="true"></div>
+        <!-- Video Loop Placeholder (Ready for video.mp4) -->
+        <video id="headerVideo" autoplay loop muted playsinline class="header-video" poster="img/header-poster.jpg">
+            <source src="img/video.mp4" type="video/mp4">
+        </video>
+
         <div class="logo-container">
             <img src="logo-pola.png" alt="Logo Pola Galleani" class="logo" fetchpriority="high"
                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iNTAiIGZpbGw9IiMwQTAwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjRDQgQkYgMzc/IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Qk9VVElRVUU8L3RleHQ+PC9zdmc+'">
@@ -141,8 +145,6 @@
                 <h1 class="brand-title">POLA GALLEANI</h1>
                 <p class="eslogan">ROPA AL ALCANCE DE TODOS</p>
             </div>
-            <!-- Dynamic 3D Butterflies -->
-            <div class="header-butterflies-container" aria-hidden="true"></div>
         </div>
 
         <div class="nav-container">
@@ -449,6 +451,10 @@
             <div class="form-header">
                 <h3 id="adminTitle">🔧 Panel de Administración</h3>
                 <div class="admin-controls">
+                    <button type="button" id="cancelAdmin" title="Cerrar Panel"
+                        class="btn-admin-action btn-admin-close">
+                        <span>✖</span> Cerrar
+                    </button>
                     <button type="button" id="logoutBtn" title="Cerrar Sesión"
                         class="btn-admin-action btn-admin-logout">
                         <span>🚪</span> Salir

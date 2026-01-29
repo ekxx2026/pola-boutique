@@ -26,7 +26,7 @@ function openWhatsappProduct(prod) {
 export function createRipple(e) {
     // If not a button (e.g. icon click), find closest button
     const button = e.currentTarget.closest('button') || e.currentTarget;
-    
+
     // Ensure relative positioning for ripple containment
     const computedStyle = window.getComputedStyle(button);
     if (computedStyle.position === 'static') {
@@ -37,7 +37,7 @@ export function createRipple(e) {
     const diameter = Math.max(button.clientWidth, button.clientHeight);
     const radius = diameter / 2;
     const rect = button.getBoundingClientRect();
-    
+
     // Handle touch vs mouse
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -46,10 +46,10 @@ export function createRipple(e) {
     circle.style.left = `${clientX - rect.left - radius}px`;
     circle.style.top = `${clientY - rect.top - radius}px`;
     circle.classList.add("ripple");
-    
+
     const ripple = button.getElementsByClassName("ripple")[0];
     if (ripple) ripple.remove();
-    
+
     button.appendChild(circle);
 }
 
@@ -146,7 +146,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         rootMargin: '0px',
         threshold: 0.1
     };
-    
+
     const cardObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -202,7 +202,7 @@ export function renderCatalog(productos, filtro = "Todos", onAddToCart, onOpenZo
         const isLCP = index < 4;
         const imgClass = isLCP ? "card-img" : "card-img lazy-load";
         const loadingAttr = isLCP ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"';
-        
+
         card.innerHTML = `
             ${badgeHtml}
             <div class="image-container">
@@ -285,7 +285,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
     if (!elements.zoomGaleria) return;
 
     const zoomCard = elements.zoomGaleria.querySelector('.zoom-card');
-    
+
     // Reset Flip State on Open
     if (zoomCard) {
         zoomCard.classList.remove('is-flipped');
@@ -311,13 +311,13 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
     // === SWIPE SUPPORT (Mobile) ===
     // Use zoom-front for swipe detection as it's the interactive face
     const zoomFront = elements.zoomGaleria.querySelector('.zoom-front');
-    
+
     if (zoomFront) {
         if (zoomSwipeHandlers.start) {
             zoomFront.removeEventListener('touchstart', zoomSwipeHandlers.start);
             zoomFront.removeEventListener('touchend', zoomSwipeHandlers.end);
         }
-        
+
         let touchStartX = 0;
         zoomSwipeHandlers.start = (e) => { touchStartX = e.changedTouches[0].screenX; };
         zoomSwipeHandlers.end = (e) => {
@@ -331,7 +331,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
                 }
             }
         };
-        
+
         zoomFront.addEventListener('touchstart', zoomSwipeHandlers.start, { passive: true });
         zoomFront.addEventListener('touchend', zoomSwipeHandlers.end, { passive: true });
 
@@ -344,7 +344,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
                 <div class="swipe-text">${TEXTS.SWIPE_HINT}</div>
             `;
             zoomFront.appendChild(hint);
-            
+
             setTimeout(() => {
                 localStorage.setItem('swipeHintShown', 'true');
             }, 3000);
@@ -354,7 +354,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
     elements.zoomImg.classList.remove("showZoom");
     setTimeout(() => {
         elements.zoomImg.src = prod.imagen;
-        
+
         // Populate Front Info
         const nombreFront = document.getElementById('zoomNombreFront');
         const precioFront = document.getElementById('zoomPrecioFront');
@@ -390,6 +390,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
             sizeGuideToggle.onclick = () => {
                 sizeGuideOverlay.classList.add('active');
                 sizeGuideOverlay.setAttribute('aria-hidden', 'false');
+                trapFocus(sizeGuideOverlay);
             };
             sizeGuideClose.onclick = () => {
                 sizeGuideOverlay.classList.remove('active');
@@ -474,7 +475,7 @@ export function showZoomModal(prod, allProducts, currentIndex, onNavigate, onAdd
 
         elements.zoomGaleria.classList.add("show");
         document.body.style.overflow = "hidden";
-        trapFocusZoom();
+        trapFocus(elements.zoomGaleria);
 
         // GSAP: Silk Reveal Animation
         if (window.gsap) {
@@ -515,7 +516,7 @@ export function closeZoomModal() {
         elements.zoomGaleria.classList.remove("show");
         document.body.style.overflow = "auto";
         resetSEOTags();
-        releaseZoomFocus();
+        releaseFocus();
     }
 }
 
@@ -600,40 +601,82 @@ function injectJSONLD(data) {
     script.textContent = JSON.stringify(data);
 }
 
-function trapFocusZoom() {
-    if (!elements.zoomGaleria) return;
-    const modal = elements.zoomGaleria;
+// === GLOBAL MODAL HELPERS (Accessibility) ===
+let activeFocusTrapHandler = null;
+let lastActiveElement = null;
+
+export function trapFocus(modal) {
+    if (!modal) return;
+
+    // Release previous trap if exists
+    releaseFocus();
+
+    // Store current focus to return it later
+    lastActiveElement = document.activeElement;
+
     const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-    const focusable = Array.from(modal.querySelectorAll(selectors)).filter(el => !el.disabled && el.offsetParent !== null);
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    function onKeyDown(e) {
+    const focusableElements = Array.from(modal.querySelectorAll(selectors))
+        .filter(el => !el.disabled && el.offsetParent !== null);
+
+    if (focusableElements.length === 0) return;
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    activeFocusTrapHandler = (e) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            closeAllModals();
+            return;
+        }
+
         if (e.key !== 'Tab') return;
-        if (e.shiftKey) {
-            if (document.activeElement === first) {
+
+        if (e.shiftKey) { // Shift + Tab
+            if (document.activeElement === firstElement) {
                 e.preventDefault();
-                last.focus();
+                lastElement.focus();
             }
-        } else {
-            if (document.activeElement === last) {
+        } else { // Tab
+            if (document.activeElement === lastElement) {
                 e.preventDefault();
-                first.focus();
+                firstElement.focus();
             }
         }
-    }
-    modal.addEventListener('keydown', onKeyDown);
-    first.focus();
-    modal.dataset.trapHandler = 'true';
-    modal._trapHandler = onKeyDown;
+    };
+
+    modal.addEventListener('keydown', activeFocusTrapHandler);
+
+    // Small delay to ensure modal is visible/rendered before focusing
+    setTimeout(() => firstElement.focus(), 50);
 }
 
-function releaseZoomFocus() {
-    if (!elements.zoomGaleria) return;
-    const modal = elements.zoomGaleria;
-    if (modal._trapHandler) {
-        modal.removeEventListener('keydown', modal._trapHandler);
-        delete modal._trapHandler;
+export function releaseFocus() {
+    if (activeFocusTrapHandler) {
+        const modals = document.querySelectorAll('[role="dialog"], .active, .show');
+        modals.forEach(m => m.removeEventListener('keydown', activeFocusTrapHandler));
+        activeFocusTrapHandler = null;
+    }
+
+    if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
+        lastActiveElement.focus();
+        lastActiveElement = null;
+    }
+}
+
+export function closeAllModals() {
+    // 1. Zoom
+    closeZoomModal();
+
+    // 2. Generic Modals (Carrito, Admin, Login, Size Guide)
+    const overlays = document.querySelectorAll('.carrito-modal, .admin-modal, .login-modal, .size-guide-overlay');
+    overlays.forEach(m => m.classList.remove('active'));
+
+    // 3. Clean up focus
+    releaseFocus();
+
+    // 4. URL cleanup
+    if (window.location.hash) {
+        history.pushState(null, null, ' ');
     }
 }
 
