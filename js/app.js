@@ -42,7 +42,11 @@ async function init() {
         UI.renderCatalog(
             products,
             state.filtroActual,
-            (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
+            (prod) => {
+                Cart.addToCart(prod);
+                Analytics.trackAddToCart(prod);
+                UI.showToast(`Añadido: ${prod.nombre}`, 'success');
+            },
             openZoom,
             Wishlist.toggleWishlist,
             Wishlist.getWishlist(),
@@ -114,9 +118,18 @@ async function init() {
     // Search Listener
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
+        let searchTimeout;
         searchInput.addEventListener('input', (e) => {
             state.searchQuery = e.target.value.trim();
             renderApp();
+
+            // Track search after user stops typing (debounce)
+            clearTimeout(searchTimeout);
+            if (state.searchQuery) {
+                searchTimeout = setTimeout(() => {
+                    Analytics.trackSearch(state.searchQuery);
+                }, 1000);
+            }
         });
     }
 
@@ -233,6 +246,9 @@ function openZoom(prod, updateHistory = true) {
 }
 
 function showZoomUI(prod) {
+    // Track product view
+    Analytics.trackViewItem(prod);
+
     UI.showZoomModal(
         prod,
         state.productos,
@@ -243,7 +259,11 @@ function showZoomUI(prod) {
                 openZoom(state.productos[newIndex]);
             }
         },
-        (prod) => { Cart.addToCart(prod); UI.showToast(`Añadido: ${prod.nombre}`, 'success'); },
+        (prod) => {
+            Cart.addToCart(prod);
+            Analytics.trackAddToCart(prod);
+            UI.showToast(`Añadido: ${prod.nombre}`, 'success');
+        },
         Wishlist.toggleWishlist,
         Wishlist.getWishlist()
     );
@@ -289,6 +309,12 @@ function updateCartUI(cartItems) {
     const count = Cart.getCartCount();
     const badge = document.getElementById('carritoCount');
     if (badge) badge.textContent = count;
+
+    // Track view_cart when items exist
+    if (cartItems.length > 0) {
+        const total = Cart.getCartTotal();
+        Analytics.trackViewCart(cartItems, total);
+    }
 
     // Render internals
     const list = document.getElementById('carritoItems');
@@ -345,6 +371,13 @@ function updateCartUI(cartItems) {
                 // Ripple handles itself via click event, but we need logic
                 const id = parseInt(btn.dataset.id); // Assuming IDs are numbers
                 const act = btn.dataset.action;
+                const product = cartItems.find(item => item.id === id);
+
+                // Track removal if quantity goes to 0
+                if (act === 'minus' && product && product.cantidad === 1) {
+                    Analytics.trackRemoveFromCart(product);
+                }
+
                 Cart.updateQuantity(id, act === 'plus' ? 1 : -1);
             };
         });
@@ -553,6 +586,9 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
             state.filtroActual = tab.dataset.categoria;
             localStorage.setItem('filtroActual', state.filtroActual);
 
+            // Track filter change
+            Analytics.trackFilterChange(state.filtroActual);
+
             // Trigger render with animation
             if (animateCatalogUpdate) {
                 animateCatalogUpdate(renderApp);
@@ -587,6 +623,12 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
         if (dom.carritoModal) {
             dom.carritoModal.classList.add('active');
             UI.trapFocus(dom.carritoModal);
+
+            // Track cart view
+            const cartItems = Cart.getCart();
+            if (cartItems.length > 0) {
+                Analytics.trackViewCart(cartItems, Cart.getCartTotal());
+            }
         }
     };
     if (dom.carritoModal) dom.carritoModal.onclick = (e) => {
@@ -601,10 +643,15 @@ function setupGlobalEvents(dom, renderApp, animateCatalogUpdate) {
     const comprarBtn = document.getElementById('comprarCarrito');
     if (comprarBtn) {
         comprarBtn.onclick = () => {
-            if (Cart.getCart().length === 0) {
+            const cartItems = Cart.getCart();
+            if (cartItems.length === 0) {
                 UI.showToast('El carrito está vacío', 'error');
                 return;
             }
+
+            // Track checkout initiation
+            const total = Cart.getCartTotal();
+            Analytics.trackBeginCheckout(cartItems, total);
 
             const whatsappUrl = Cart.generarEnlaceWhatsApp();
             if (whatsappUrl) window.open(whatsappUrl, '_blank');

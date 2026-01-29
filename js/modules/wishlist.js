@@ -21,7 +21,7 @@ function notifyListeners() {
     listeners.forEach(cb => cb(wishlist));
 }
 
-export function toggleWishlist(productId) {
+export function toggleWishlist(productId, product = null) {
     // Ensure ID is correct type/format if needed, assuming match with product.id
     const index = wishlist.indexOf(productId);
     let added = false;
@@ -37,15 +37,16 @@ export function toggleWishlist(productId) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(wishlist));
     notifyListeners();
 
-    // === Analytics (Wishlist) ===
-    if (added && typeof gtag !== 'undefined') {
-        gtag('event', 'add_to_wishlist', {
-            currency: 'CLP',
-            items: [{
-                item_id: productId
-            }]
-        });
+    // Track wishlist changes if Analytics module available and product data provided
+    if (product && window.Analytics) {
+        import('../modules/analytics.js').then(({ Analytics }) => {
+            Analytics.trackWishlist(product, added);
+        }).catch(() => { });
     }
 
     return added;
+}
+
+export function init() {
+    // Wishlist initialization (if needed)
 }
