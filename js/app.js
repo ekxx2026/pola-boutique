@@ -141,10 +141,17 @@ async function init() {
     }
 
     // Modules Init
-    Wishlist.init();
-    initExitIntent();
-    Analytics.init(); // Start tracking
-    initSalesToast(); // Notificacion venta
+    // Modules Init
+    try { Wishlist.init(); } catch (e) { console.error('Wishlist init failed:', e); }
+
+    try {
+        initExitIntent();
+    } catch (e) {
+        console.error('Exit Intent init failed:', e);
+    }
+
+    try { Analytics.init(); } catch (e) { console.error('Analytics init failed:', e); }
+    try { initSalesToast(); } catch (e) { console.error('Sales Toast init failed:', e); }
 
     // 5. Routing
     window.addEventListener('hashchange', checkHash);
