@@ -73,5 +73,11 @@
       "destination": "/index.html#admin",
       "permanent": false
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap.xml"
+    }
   ]
 }
