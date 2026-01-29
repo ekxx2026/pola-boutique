@@ -1,36 +1,46 @@
 export function initExitIntent() {
-    // Check if already shown
-    if (localStorage.getItem('pola_exit_popup_shown') === 'true') {
+    console.log('🎁 Exit Intent Initialized (Debug Mode)');
+
+    // Check if already shown (New key to force reset)
+    if (localStorage.getItem('pola_exit_popup_v2') === 'true') {
+        console.log('🎁 Popup already shown previously');
         return;
     }
 
     let hasInteraction = false;
 
-    // Detect user engagement first
-    const markInteraction = () => { hasInteraction = true; };
+    // Detect user engagement
+    const markInteraction = () => {
+        hasInteraction = true;
+        console.log('🎁 User interaction detected');
+    };
+    document.addEventListener('mouseover', markInteraction, { once: true });
     document.addEventListener('scroll', markInteraction, { once: true });
     document.addEventListener('click', markInteraction, { once: true });
+    document.addEventListener('keydown', markInteraction, { once: true });
 
     // Desktop: Mouse leaves top of window
     document.addEventListener('mouseleave', (e) => {
-        if (e.clientY < 10 && hasInteraction && !localStorage.getItem('pola_exit_popup_shown')) {
+        // Increased sensitivity area from 10px to 50px
+        if (e.clientY < 50 && !localStorage.getItem('pola_exit_popup_v2')) {
+            console.log('🎁 Exit intent detected (Mouse leave)');
             showExitModal();
         }
     });
 
-    // Mobile: Show after 30s of inactivity or scroll up (simplified for now to timer/scroll)
-    // For mobile "exit intent" is hard, often done via back button or scrolling up fast
-    // We'll use a simple time-based trigger for mobile if they haven't bought yet
+    // Mobile: Timer fallback
     if (window.innerWidth <= 768) {
         setTimeout(() => {
-            if (hasInteraction && !localStorage.getItem('pola_exit_popup_shown')) {
+            if (!localStorage.getItem('pola_exit_popup_v2')) {
+                console.log('🎁 Exit intent detected (Mobile Timer)');
                 showExitModal();
             }
-        }, 45000); // 45 seconds
+        }, 15000); // Reduced to 15s for testing
     }
 }
 
 function showExitModal() {
+    console.log('🎁 Showing Modal Now');
     // Create Modal HTML
     const modal = document.createElement('div');
     modal.className = 'exit-intent-modal';
@@ -56,7 +66,7 @@ function showExitModal() {
     document.body.appendChild(modal);
 
     // Save state immediately
-    localStorage.setItem('pola_exit_popup_shown', 'true');
+    localStorage.setItem('pola_exit_popup_v2', 'true');
 
     // Slight delay for animation
     requestAnimationFrame(() => {
