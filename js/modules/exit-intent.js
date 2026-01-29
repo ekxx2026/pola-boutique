@@ -1,46 +1,47 @@
 export function initExitIntent() {
-    console.log('🎁 Exit Intent Initialized (Debug Mode)');
+    console.log('🎁 Exit Intent: WAITING FOR ACTION...');
 
-    // Check if already shown (New key to force reset)
-    if (localStorage.getItem('pola_exit_popup_v2') === 'true') {
-        console.log('🎁 Popup already shown previously');
-        return;
+    // Force reset with new key
+    const STORAGE_KEY = 'pola_exit_popup_debug_v3';
+
+    if (localStorage.getItem(STORAGE_KEY) === 'true') {
+        console.log('🎁 Popup blocked by localStorage (Already shown)');
+        // Forcing show anyway for this test if they requested it
+        // return; 
     }
 
-    let hasInteraction = false;
+    let hasInteraction = true; // Assume interaction for testing
 
-    // Detect user engagement
-    const markInteraction = () => {
-        hasInteraction = true;
-        console.log('🎁 User interaction detected');
-    };
-    document.addEventListener('mouseover', markInteraction, { once: true });
-    document.addEventListener('scroll', markInteraction, { once: true });
-    document.addEventListener('click', markInteraction, { once: true });
-    document.addEventListener('keydown', markInteraction, { once: true });
+    // Trigger Function
+    function triggerPopup(source) {
+        if (localStorage.getItem(STORAGE_KEY) === 'true') return;
 
-    // Desktop: Mouse leaves top of window
+        console.log(`🎁 TRIGGERED BY: ${source}`);
+        showExitModal();
+        localStorage.setItem(STORAGE_KEY, 'true');
+    }
+
+    // 1. Mouse Leave Strategy (Standard)
     document.addEventListener('mouseleave', (e) => {
-        // Increased sensitivity area from 10px to 50px
-        if (e.clientY < 50 && !localStorage.getItem('pola_exit_popup_v2')) {
-            console.log('🎁 Exit intent detected (Mouse leave)');
-            showExitModal();
+        if (e.clientY <= 50) triggerPopup('Mouse Leave (Top)');
+    });
+
+    // 2. Mouse Out Strategy (Fallback for older browsers/specific cases)
+    document.addEventListener('mouseout', (e) => {
+        if (e.relatedTarget === null && e.clientY <= 50) {
+            triggerPopup('Mouse Out (Top)');
         }
     });
 
-    // Mobile: Timer fallback
-    if (window.innerWidth <= 768) {
-        setTimeout(() => {
-            if (!localStorage.getItem('pola_exit_popup_v2')) {
-                console.log('🎁 Exit intent detected (Mobile Timer)');
-                showExitModal();
-            }
-        }, 15000); // Reduced to 15s for testing
-    }
+    // 3. FAIL-SAFE TIMER (Show after 10s no matter what)
+    // Esto garantiza que el usuario vea que el popup EXISTE visualmente
+    setTimeout(() => {
+        triggerPopup('Fail-Safe Timer (10s)');
+    }, 10000);
 }
 
 function showExitModal() {
-    console.log('🎁 Showing Modal Now');
+    console.log('🎁 BUILDING DOM ELEMENTS...');
     // Create Modal HTML
     const modal = document.createElement('div');
     modal.className = 'exit-intent-modal';
