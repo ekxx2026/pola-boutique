@@ -1,43 +1,50 @@
 export function initExitIntent() {
-    console.log('🎁 Exit Intent: WAITING FOR ACTION...');
+    // Production Storage Key
+    const STORAGE_KEY = 'pola_exit_popup_completed';
 
-    // Force reset with new key
-    const STORAGE_KEY = 'pola_exit_popup_debug_v3';
-
+    // Check if already shown
     if (localStorage.getItem(STORAGE_KEY) === 'true') {
-        console.log('🎁 Popup blocked by localStorage (Already shown)');
-        // Forcing show anyway for this test if they requested it
-        // return; 
+        return;
     }
 
-    let hasInteraction = true; // Assume interaction for testing
+    let hasInteraction = false;
+
+    // Detect user engagement
+    const markInteraction = () => { hasInteraction = true; };
+    document.addEventListener('scroll', markInteraction, { once: true });
+    document.addEventListener('click', markInteraction, { once: true });
+    document.addEventListener('keydown', markInteraction, { once: true });
 
     // Trigger Function
-    function triggerPopup(source) {
+    function triggerPopup() {
         if (localStorage.getItem(STORAGE_KEY) === 'true') return;
 
-        console.log(`🎁 TRIGGERED BY: ${source}`);
-        showExitModal();
-        localStorage.setItem(STORAGE_KEY, 'true');
+        // Require interaction to avoid showing to immediate bouncers or bots
+        if (hasInteraction) {
+            showExitModal();
+            localStorage.setItem(STORAGE_KEY, 'true');
+        }
     }
 
-    // 1. Mouse Leave Strategy (Standard)
+    // 1. Desktop: Mouse Leave Strategy
     document.addEventListener('mouseleave', (e) => {
-        if (e.clientY <= 50) triggerPopup('Mouse Leave (Top)');
+        if (e.clientY <= 50) triggerPopup();
     });
 
-    // 2. Mouse Out Strategy (Fallback for older browsers/specific cases)
+    // 2. Desktop: Mouse Out Strategy (Fallback)
     document.addEventListener('mouseout', (e) => {
         if (e.relatedTarget === null && e.clientY <= 50) {
-            triggerPopup('Mouse Out (Top)');
+            triggerPopup();
         }
     });
 
-    // 3. FAIL-SAFE TIMER (Show after 10s no matter what)
-    // Esto garantiza que el usuario vea que el popup EXISTE visualmente
-    setTimeout(() => {
-        triggerPopup('Fail-Safe Timer (10s)');
-    }, 10000);
+    // 3. Mobile: Timer Logic (Only for mobile)
+    if (window.innerWidth <= 768) {
+        // Show after 45 seconds of reading if they haven't bought
+        setTimeout(() => {
+            triggerPopup();
+        }, 45000);
+    }
 }
 
 function showExitModal() {
