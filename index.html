@@ -115,7 +115,10 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-        gtag('config', 'G-WNCY2WT7WD');
+        gtag('config', 'G-WNCY2WT7WD', {
+            'cookie_domain': 'auto',
+            'cookie_flags': 'SameSite=None;Secure'
+        });
         console.log('✅ Google Analytics 4 initialized: G-WNCY2WT7WD');
     </script>
 
@@ -286,7 +289,7 @@
     <!-- Header -->
     <header id="header">
         <!-- Video Loop Placeholder (Ready for video.mp4) -->
-        <video id="headerVideo" autoplay loop muted playsinline class="header-video">
+        <video id="headerVideo" autoplay loop muted playsinline class="header-video" poster="logo-pola.png">
             <source src="img/video.mp4" type="video/mp4">
         </video>
 
@@ -376,7 +379,35 @@
         </section>
 
         <div class="catalogo" id="catalogo" role="list">
-            <!-- Productos se cargan aquí dinámicamente -->
+            <!-- Skeleton Loaders (Prevent CLS) -->
+            <div class="card skeleton">
+                <div class="image-container skeleton-img"></div>
+                <div class="card-content">
+                    <div class="skeleton-text skeleton-title"></div>
+                    <div class="skeleton-text skeleton-price"></div>
+                </div>
+            </div>
+            <div class="card skeleton">
+                <div class="image-container skeleton-img"></div>
+                <div class="card-content">
+                    <div class="skeleton-text skeleton-title"></div>
+                    <div class="skeleton-text skeleton-price"></div>
+                </div>
+            </div>
+            <div class="card skeleton">
+                <div class="image-container skeleton-img"></div>
+                <div class="card-content">
+                    <div class="skeleton-text skeleton-title"></div>
+                    <div class="skeleton-text skeleton-price"></div>
+                </div>
+            </div>
+            <div class="card skeleton">
+                <div class="image-container skeleton-img"></div>
+                <div class="card-content">
+                    <div class="skeleton-text skeleton-title"></div>
+                    <div class="skeleton-text skeleton-price"></div>
+                </div>
+            </div>
         </div>
     </main>
 
